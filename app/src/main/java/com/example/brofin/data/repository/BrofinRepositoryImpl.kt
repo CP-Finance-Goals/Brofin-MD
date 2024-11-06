@@ -3,12 +3,18 @@ package com.example.brofin.data.repository
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserDao
+import com.example.brofin.data.mapper.toBudgetingDiary
+import com.example.brofin.data.mapper.toBudgetingDiaryEntity
+import com.example.brofin.data.mapper.toFinancialGoals
+import com.example.brofin.data.mapper.toFinancialGoalsEntity
+import com.example.brofin.data.mapper.toUser
 import com.example.brofin.data.mapper.toUserEntity
 import com.example.brofin.domain.contract.repository.room.BrofinRepository
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.User
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class BrofinRepositoryImpl @Inject constructor(
@@ -21,48 +27,66 @@ class BrofinRepositoryImpl @Inject constructor(
         userDao.insertUser(user = user.toUserEntity())
     }
 
-    override suspend fun getUser(): Flow<User> {
-        
+    override suspend fun getUser(): Flow<User?> = userDao.getUser().map { userEntity ->
+        userEntity?.toUser()
     }
 
     override suspend fun updateUser(user: User) {
-        TODO("Not yet implemented")
+        userDao.updateUser(user = user.toUserEntity())
     }
 
     override suspend fun deleteUser() {
-        TODO("Not yet implemented")
+        userDao.deleteUser()
     }
+
+    override suspend fun getCurrentBalance(): Flow<Double?> = budgetingDiaryDao.getCurrentBalance()
 
     override suspend fun insertFinancialGoal(goal: FinancialGoals) {
-        TODO("Not yet implemented")
+        financialGoalsDao.insertGoal(goal.toFinancialGoalsEntity())
     }
 
-    override suspend fun getAllFinancialGoals(): Flow<List<FinancialGoals>> {
-        TODO("Not yet implemented")
+    override suspend fun getAllFinancialGoals(): Flow<List<FinancialGoals?>> = financialGoalsDao.getAllGoals().map { goals ->
+        goals.map { it?.toFinancialGoals() }
     }
 
     override suspend fun updateFinancialGoal(goal: FinancialGoals) {
-        TODO("Not yet implemented")
+        financialGoalsDao.updateGoal(goal.toFinancialGoalsEntity())
     }
 
     override suspend fun deleteFinancialGoal(goalId: Int) {
-        TODO("Not yet implemented")
+        financialGoalsDao.deleteGoalById(goalId)
     }
 
     override suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary) {
-        TODO("Not yet implemented")
+        budgetingDiaryDao.insertBudgetingDiary(entry.toBudgetingDiaryEntity())
     }
 
-    override suspend fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary>> {
-        TODO("Not yet implemented")
+    override suspend fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary?>> = budgetingDiaryDao.getAllBudgetingDiaries().map { entries ->
+        entries.map { it?.toBudgetingDiary()}
     }
 
     override suspend fun updateBudgetingDiaryEntry(entry: BudgetingDiary) {
-        TODO("Not yet implemented")
+        budgetingDiaryDao.updateBudgetingDiary(entry.toBudgetingDiaryEntity())
     }
 
     override suspend fun deleteBudgetingDiaryEntry(entryId: Int) {
-        TODO("Not yet implemented")
+        budgetingDiaryDao.deleteBudgetingDiaryById(entryId)
     }
 
+    override suspend fun getTotalIncome(): Flow<Double?> {
+        return budgetingDiaryDao.getTotalIncome()
+    }
+
+    override suspend fun getTotalExpenses(): Flow<Double?> {
+        return budgetingDiaryDao.getTotalExpenses()
+    }
+
+    override suspend fun getBudgetingDiaryEntriesByDateRange(
+        startDate: Long,
+        endDate: Long
+    ): Flow<List<BudgetingDiary?>> {
+        return budgetingDiaryDao.getBudgetingDiariesByDateRange(startDate, endDate).map { entries ->
+            entries.map { it?.toBudgetingDiary()}
+        }
+    }
 }

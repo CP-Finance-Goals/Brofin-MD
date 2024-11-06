@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.2"
+agp = "8.5.0"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -96,6 +96,8 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 
 # Material
 material = { module = "com.google.android.material:material", version.ref = "material" }
+
+# Firebase
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
