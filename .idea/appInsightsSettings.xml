@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.brofin" />
+                  <option name="mobileSdkAppId" value="1:911582459244:android:c1939e6bf4f303515d2f49" />
+                  <option name="projectId" value="brofin-d5961" />
+                  <option name="projectNumber" value="911582459244" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

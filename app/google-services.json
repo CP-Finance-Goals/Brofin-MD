@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "911582459244",
+    "project_id": "brofin-d5961",
+    "storage_bucket": "brofin-d5961.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911582459244:android:c1939e6bf4f303515d2f49",
+        "android_client_info": {
+          "package_name": "com.example.brofin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzm0Le2Ph7flk-bgI10on68479lS_AEU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
