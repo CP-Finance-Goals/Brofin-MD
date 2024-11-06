@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.brofin"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.brofin"
@@ -77,6 +77,8 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
 
     // Coil
     implementation(libs.coil.compose)

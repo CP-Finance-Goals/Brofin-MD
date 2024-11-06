@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import com.example.brofin.data.local.datastore.utils.PreferencesKeys
 import com.example.brofin.data.local.datastore.utils.UserPreferences
-import com.example.brofin.domain.contract.repository.datastore.UserPreferencesRepository
+import com.example.brofin.contract.repository.datastore.UserPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

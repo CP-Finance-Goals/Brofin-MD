@@ -5,7 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.example.brofin.data.local.datastore.repository.UserPreferencesRepositoryImpl
 import com.example.brofin.data.local.datastore.utils.userPreferences
-import com.example.brofin.domain.contract.repository.datastore.UserPreferencesRepository
+import com.example.brofin.contract.repository.datastore.UserPreferencesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

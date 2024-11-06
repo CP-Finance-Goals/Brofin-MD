@@ -17,7 +17,7 @@ interface FinancialGoalsDao {
     suspend fun updateGoal(financialGoals: FinancialGoalsEntity)
 
     @Query("SELECT * FROM financial_goals")
-    suspend fun getAllGoals(): Flow<List<FinancialGoalsEntity?>>
+    fun getAllGoals(): Flow<List<FinancialGoalsEntity?>>
 
     @Query("DELETE FROM financial_goals WHERE goalId = :goalId")
     suspend fun deleteGoalById(goalId: Int)

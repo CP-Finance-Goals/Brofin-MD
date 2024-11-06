@@ -9,15 +9,14 @@ import com.example.brofin.data.mapper.toFinancialGoals
 import com.example.brofin.data.mapper.toFinancialGoalsEntity
 import com.example.brofin.data.mapper.toUser
 import com.example.brofin.data.mapper.toUserEntity
-import com.example.brofin.domain.contract.repository.room.BrofinRepository
+import com.example.brofin.contract.repository.BrofinRepository
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class BrofinRepositoryImpl @Inject constructor(
+class BrofinRepositoryImpl (
     private val userDao: UserDao,
     private val financialGoalsDao: FinancialGoalsDao,
     private val budgetingDiaryDao: BudgetingDiaryDao
