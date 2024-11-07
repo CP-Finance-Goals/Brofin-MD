@@ -15,7 +15,7 @@ import com.example.brofin.data.local.room.entity.UserEntity
         UserEntity::class,
         FinancialGoalsEntity::class,
         BudgetingDiaryEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class BrofinDatabase: RoomDatabase() {

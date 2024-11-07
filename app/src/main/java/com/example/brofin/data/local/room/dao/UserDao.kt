@@ -22,4 +22,7 @@ interface UserDao {
     @Query("DELETE FROM user")
     suspend fun deleteUser()
 
+    @Query("SELECT EXISTS(SELECT 1 FROM user LIMIT 1)")
+    suspend fun isUserExists(): Boolean
+
 }

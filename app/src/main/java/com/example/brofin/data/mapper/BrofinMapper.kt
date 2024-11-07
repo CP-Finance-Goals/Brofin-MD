@@ -37,10 +37,12 @@ fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
 
 // To Entity
 fun User.toUserEntity() = UserEntity(
+    userId = userId,
     name = name,
     email = email,
     phoneNumber = phoneNumber,
     createdAt = createdAt,
+    currentBalance = currentBalance
 )
 
 fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(

@@ -6,5 +6,5 @@ data class User (
     val email: String,
     val phoneNumber: String?,
     val createdAt: Long,
-    val currentBalance: Double = 0.0
+    val currentBalance: Double? = 0.0
 )

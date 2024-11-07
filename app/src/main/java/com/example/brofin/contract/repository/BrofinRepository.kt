@@ -13,6 +13,7 @@ interface BrofinRepository {
     suspend fun updateUser(user: User)
     suspend fun deleteUser()
     suspend fun getCurrentBalance(): Flow<Double?>
+    suspend fun isUserExists(): Boolean
 
     // Financial Goals Methods
     suspend fun insertFinancialGoal(goal: FinancialGoals)

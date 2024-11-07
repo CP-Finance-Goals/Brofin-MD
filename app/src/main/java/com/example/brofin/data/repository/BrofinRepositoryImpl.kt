@@ -40,6 +40,8 @@ class BrofinRepositoryImpl (
 
     override suspend fun getCurrentBalance(): Flow<Double?> = budgetingDiaryDao.getCurrentBalance()
 
+    override suspend fun isUserExists(): Boolean = userDao.isUserExists()
+
     override suspend fun insertFinancialGoal(goal: FinancialGoals) {
         financialGoalsDao.insertGoal(goal.toFinancialGoalsEntity())
     }
