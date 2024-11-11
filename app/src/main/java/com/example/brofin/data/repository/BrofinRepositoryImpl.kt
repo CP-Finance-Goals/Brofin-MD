@@ -9,7 +9,7 @@ import com.example.brofin.data.mapper.toFinancialGoals
 import com.example.brofin.data.mapper.toFinancialGoalsEntity
 import com.example.brofin.data.mapper.toUser
 import com.example.brofin.data.mapper.toUserEntity
-import com.example.brofin.contract.repository.BrofinRepository
+import com.example.brofin.domain.repository.BrofinRepository
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.User

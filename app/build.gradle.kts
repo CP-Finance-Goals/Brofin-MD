@@ -63,8 +63,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Extended Icons
-    implementation(libs.material)
+    implementation(libs.androidx.runtime)
+
+    // Icon Extended
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
@@ -77,8 +79,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Coil
     implementation(libs.coil.compose)
@@ -96,6 +97,7 @@ dependencies {
     // Google Fonts
     implementation(libs.androidx.ui.text.google.fonts)
 
+
     // Accompanist for permission
     implementation(libs.accompanist.permissions)
 
@@ -104,4 +106,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
+    // Pager
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 }

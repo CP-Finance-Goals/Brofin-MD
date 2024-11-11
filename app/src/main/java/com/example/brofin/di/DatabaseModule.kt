@@ -23,7 +23,9 @@ object DatabaseModule {
             context.applicationContext,
             BrofinDatabase::class.java,
             "brofin_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
