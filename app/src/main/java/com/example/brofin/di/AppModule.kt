@@ -2,7 +2,7 @@ package com.example.brofin.di
 
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
-import com.example.brofin.data.local.room.dao.UserDao
+import com.example.brofin.data.local.room.dao.UserBalanceDao
 import com.example.brofin.data.repository.BrofinRepositoryImpl
 import com.example.brofin.domain.repository.BrofinRepository
 import dagger.Module
@@ -19,11 +19,11 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBrofinRepository(
-        userDao: UserDao,
+        userBalanceDao: UserBalanceDao,
         budgetingDiaryDao: BudgetingDiaryDao,
         financialGoalsDao: FinancialGoalsDao
     ): BrofinRepository {
-        return BrofinRepositoryImpl(userDao, financialGoalsDao, budgetingDiaryDao)
+        return BrofinRepositoryImpl(userBalanceDao, financialGoalsDao, budgetingDiaryDao)
     }
 
 }

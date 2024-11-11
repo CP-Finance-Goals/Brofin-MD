@@ -1,10 +1,13 @@
 package com.example.brofin.presentation.main
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.brofin.presentation.main.budgeting.diary.BudgetingDiaryScreen
 import com.example.brofin.presentation.main.components.AppBar
 import com.example.brofin.presentation.main.home.HomeScreen
 import com.example.brofin.presentation.main.navigation.home.BottomNavigationBar
@@ -40,7 +44,6 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit) {
 
     val coroutineScope = rememberCoroutineScope()
 
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -60,11 +63,18 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit) {
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            flingBehavior = PagerDefaults.flingBehavior(
+                state = pagerState,
+                snapAnimationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
         ) { page ->
             when (page) {
                 0 -> HomeScreen()
-                1 -> ProfileScreen()
+                1 -> BudgetingDiaryScreen()
                 2 -> SettingsScreen()
             }
         }
@@ -73,18 +83,6 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit) {
 
 
 // Example Screen
-
-@Composable
-fun ProfileScreen() {
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Profile Screen")
-    }
-}
 
 @Composable
 fun SettingsScreen() {

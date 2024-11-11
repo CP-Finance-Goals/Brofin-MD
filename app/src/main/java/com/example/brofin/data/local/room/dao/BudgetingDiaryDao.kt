@@ -17,8 +17,11 @@ interface BudgetingDiaryDao {
     @Update
     suspend fun updateBudgetingDiary(entry: BudgetingDiaryEntity)
 
-    @Query("DELETE FROM budgeting_diary WHERE entryId = :id")
+    @Query("DELETE FROM budgeting_diary WHERE id = :id")
     suspend fun deleteBudgetingDiaryById(id: Int)
+
+    @Query("DELETE FROM budgeting_diary")
+    suspend fun deleteAllBudgetingDiaries()
 
     @Query("SELECT * FROM budgeting_diary ORDER BY date DESC")
     fun getAllBudgetingDiaries(): Flow<List<BudgetingDiaryEntity?>>
@@ -32,7 +35,32 @@ interface BudgetingDiaryDao {
     @Query("SELECT * FROM budgeting_diary WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC")
     fun getBudgetingDiariesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiaryEntity?>>
 
-    @Query("SELECT currentBalance FROM user LIMIT 1")
-    fun getCurrentBalance(): Flow<Double?>
+
+
+    @Query("""
+    SELECT * FROM budgeting_diary 
+    WHERE 
+        (:startDate IS NULL OR date >= :startDate) 
+        AND (:endDate IS NULL OR date <= :endDate) 
+        AND (:isExpense IS NULL OR isExpense = :isExpense) 
+        AND (:minAmount IS NULL OR amount >= :minAmount)
+        AND (:maxAmount IS NULL OR amount <= :maxAmount)
+    ORDER BY 
+        CASE 
+            WHEN :sortBy = 'date' AND :sortOrder = 'asc' THEN date
+            WHEN :sortBy = 'date' AND :sortOrder = 'desc' THEN -date
+            WHEN :sortBy = 'amount' AND :sortOrder = 'asc' THEN amount
+            WHEN :sortBy = 'amount' AND :sortOrder = 'desc' THEN -amount
+        END
+""")
+    fun filterBudgetingDiaries(
+        startDate: Long? = null,
+        endDate: Long? = null,
+        isExpense: Boolean? = null,
+        minAmount: Double? = null,
+        maxAmount: Double? = null,
+        sortBy: String = "date",
+        sortOrder: String = "desc"
+    ): Flow<List<BudgetingDiaryEntity?>>
 
 }

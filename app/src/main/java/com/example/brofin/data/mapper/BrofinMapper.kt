@@ -2,23 +2,21 @@ package com.example.brofin.data.mapper
 
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.data.local.room.entity.FinancialGoalsEntity
-import com.example.brofin.data.local.room.entity.UserEntity
+import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
-import com.example.brofin.domain.models.User
+import com.example.brofin.domain.models.UserBalance
 
 // To Domain
-fun UserEntity.toUser() = User(
+fun UserBalanceEntity.toUser() = UserBalance(
     userId = userId,
-    name = name,
-    email = email,
-    phoneNumber = phoneNumber,
-    createdAt = createdAt,
-    currentBalance = currentBalance
+    currentBalance = currentBalance,
+    lastUpdated = lastUpdated
 )
 
 fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
-    entryId = entryId,
+    id = id,
+    userId = userId,
     date = date,
     description = description,
     amount = amount,
@@ -26,26 +24,25 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
 )
 
 fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
-    goalId = goalId,
+    id = id,
+    userId = userId,
+    photoUri = photoUri,
     goalName = goalName,
     targetAmount = targetAmount,
-    currentAmount = currentAmount,
     deadline = deadline,
     createdAt = createdAt
 )
 
 
 // To Entity
-fun User.toUserEntity() = UserEntity(
+fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
     userId = userId,
-    name = name,
-    email = email,
-    phoneNumber = phoneNumber,
-    createdAt = createdAt,
-    currentBalance = currentBalance
+    currentBalance = currentBalance,
+    lastUpdated = lastUpdated
 )
 
 fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
+    userId = userId,
     date = date,
     description = description,
     amount = amount,
@@ -53,9 +50,10 @@ fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
 )
 
 fun FinancialGoals.toFinancialGoalsEntity() = FinancialGoalsEntity(
+    userId = userId,
+    photoUri = photoUri,
     goalName = goalName,
     targetAmount = targetAmount,
-    currentAmount = currentAmount,
     deadline = deadline,
     createdAt = createdAt
 )

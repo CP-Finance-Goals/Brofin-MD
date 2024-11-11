@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SetupProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val firestoreRepository: FirestoreRepository
+//    private val firestoreRepository: FirestoreRepository
 ): ViewModel() {
 
     private val _firebaseUser = MutableStateFlow<FirebaseUser?>(null)

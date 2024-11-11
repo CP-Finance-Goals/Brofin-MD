@@ -68,6 +68,11 @@ dependencies {
     // Icon Extended
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
 
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m2)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.core)
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
 

@@ -5,10 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "financial_goals")
 data class FinancialGoalsEntity(
-    @PrimaryKey(autoGenerate = true) val goalId: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val photoUri: String = "",
+    val userId: String = "",
     val goalName: String,
     val targetAmount: Double,
-    val currentAmount: Double = 0.0,
-    val deadline: Long?,
+    val deadline: Long,
     val createdAt: Long
 )

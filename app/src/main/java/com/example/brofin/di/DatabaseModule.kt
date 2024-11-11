@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.example.brofin.data.local.room.BrofinDatabase
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
-import com.example.brofin.data.local.room.dao.UserDao
+import com.example.brofin.data.local.room.dao.UserBalanceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +29,7 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideUserDao(storyDatabase: BrofinDatabase): UserDao = storyDatabase.userDao()
+    fun provideUserDao(storyDatabase: BrofinDatabase): UserBalanceDao = storyDatabase.userDao()
 
     @Provides
     fun provideBudgetingDiaryDao(storyDatabase: BrofinDatabase): BudgetingDiaryDao = storyDatabase.budgetingDiaryDao()

@@ -53,8 +53,8 @@ fun CustomTextField(
                 if (isPassword) {
                     Icon(imageVector = Icons.Default.Lock, contentDescription = IdentifierTextField.Password)
                 }
-                if (label == IdentifierTextField.Email) {
-                    Icon(imageVector = Icons.Default.Email, contentDescription = IdentifierTextField.Email)
+                if (label == IdentifierTextField.EMAIL) {
+                    Icon(imageVector = Icons.Default.Email, contentDescription = IdentifierTextField.EMAIL)
                 }
                 if (label == IdentifierTextField.Name) {
                     Icon(imageVector = Icons.Default.Person, contentDescription = IdentifierTextField.Name)

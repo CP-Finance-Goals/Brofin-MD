@@ -5,54 +5,52 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-class AuthRepositoryImpl (
+
+class AuthRepositoryImpl(
     private val firebaseAuth: FirebaseAuth
 ) : AuthRepository {
 
     override fun signInWithEmail(
         email: String,
         password: String
-    ): Flow<Boolean> {
-        return flow {
-            try {
-                val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-                emit(result.user != null)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emit(false)
-            }
-        }
+    ): Flow<Boolean> = flow {
+        val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+        emit(result.user != null)
+    }.catch { e ->
+        e.printStackTrace()
+        emit(false)
     }
 
     override fun registerWithEmail(
+        name: String,
         email: String,
         password: String,
-    ): Flow<Boolean> {
-        return flow {
-            try {
-                firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-                emit(true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emit(false)
-            }
-        }
+    ): Flow<Boolean> = flow {
+        val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+        val profileUpdates = UserProfileChangeRequest.Builder()
+            .setDisplayName(name)
+            .build()
+        result.user?.updateProfile(profileUpdates)?.await()
+        emit(result.user != null)
+    }.catch { e ->
+        e.printStackTrace()
+        emit(false)
     }
 
     override fun getCurrentUser(): FirebaseUser? {
         return firebaseAuth.currentUser
     }
 
-    override fun userExists(): Flow<Boolean> {
-        return flow {
-            emit(firebaseAuth.currentUser != null)
-        }
+    override fun userExists(): Flow<Boolean> = flow {
+        emit(firebaseAuth.currentUser != null)
     }
 
     override suspend fun logout() {
         firebaseAuth.signOut()
     }
 }
+

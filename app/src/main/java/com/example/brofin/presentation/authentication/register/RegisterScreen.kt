@@ -225,7 +225,7 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 CustomTextField(
-                    label = IdentifierTextField.Email,
+                    label = IdentifierTextField.EMAIL,
                     text = email,
                     onTextChange = { email = it },
                     validate = {
@@ -307,7 +307,7 @@ fun RegisterScreen(
                         if (snackbarMessage != null) {
                             showSnackbar = true
                         } else {
-                            viewmodel.registerWithEmail(email, password)
+                            viewmodel.registerWithEmail(name, email, password)
                         }
                     },
                     modifier = Modifier

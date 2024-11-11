@@ -16,7 +16,7 @@ fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit) {
                 label = { Text(screen.title) },
                 selected = currentPage == index,
                 onClick = {
-                    onTabSelected(index) // Call onTabSelected with the index of the selected tab
+                    onTabSelected(index)
                 }
             )
         }

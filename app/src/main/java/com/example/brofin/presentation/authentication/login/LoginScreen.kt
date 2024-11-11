@@ -1,7 +1,6 @@
 package com.example.brofin.presentation.authentication.login
 
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -182,7 +181,7 @@ fun LoginScreen(
 
                 // Field Email
                 CustomTextField(
-                    label = IdentifierTextField.Email,
+                    label = IdentifierTextField.EMAIL,
                     text = email,
                     onTextChange = { email = it },
                     validate = {

@@ -24,7 +24,7 @@ interface AuthRepository {
      * @return Flow<Boolean> yang mengindikasikan status registrasi berhasil atau gagal.
      */
 
-    fun registerWithEmail(email: String, password: String): Flow<Boolean>
+    fun registerWithEmail(name: String, email: String, password: String): Flow<Boolean>
 
 
     fun getCurrentUser(): FirebaseUser?
@@ -32,4 +32,5 @@ interface AuthRepository {
     fun userExists(): Flow<Boolean>
 
     suspend fun logout()
+
 }

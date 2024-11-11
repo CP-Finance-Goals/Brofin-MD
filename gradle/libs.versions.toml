@@ -1,6 +1,6 @@
 [versions]
 
-agp = "8.7.1"
+agp = "8.5.0"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.0.21"
 
@@ -42,6 +42,9 @@ lottieCompose = "6.5.2"
 
 # Material
 material = "1.12.0"
+
+vico = "2.0.0-beta.2"
+
 
 # Google Fonts
 googleFonts = "1.7.5"
@@ -112,6 +115,20 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
+# For Jetpack Compose.
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+
+# For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
+vico-compose-m2 = { group = "com.patrykandpatrick.vico", name = "compose-m2", version.ref = "vico" }
+
+# For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+
+# Houses the core logic for charts and other elements. Included in all other modules.
+vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "vico" }
+#
+## For the view system.
+#vico-views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "vico" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

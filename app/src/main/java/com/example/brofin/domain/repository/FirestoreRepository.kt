@@ -15,7 +15,7 @@ interface FirestoreRepository {
 
     suspend fun updateFinancialGoal(goal: FinancialGoalsDoc)
 
-    suspend fun deleteFinancialGoal(goalId: String)
+    suspend fun deleteFinancialGoal(id: String)
 
     suspend fun deleteAllFinancialGoals(userId: String)
 

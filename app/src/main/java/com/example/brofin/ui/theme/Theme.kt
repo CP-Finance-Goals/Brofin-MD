@@ -10,6 +10,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.brofin.utils.AppFonts
 
 
 private val DarkColorScheme = darkColorScheme(
@@ -56,7 +57,8 @@ fun BrofinTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AppFonts,
         content = content
     )
 }
+
