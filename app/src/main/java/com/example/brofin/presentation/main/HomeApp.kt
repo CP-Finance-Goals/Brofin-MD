@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.brofin.presentation.main.budget.BudgetScreen
 import com.example.brofin.presentation.main.budgeting.diary.BudgetingDiaryScreen
 import com.example.brofin.presentation.main.components.AppBar
 import com.example.brofin.presentation.main.home.HomeScreen
@@ -27,7 +28,7 @@ import com.example.brofin.presentation.main.navigation.home.bottomNavItems
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit) {
+fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit, goCreateBudget: () -> Unit) {
 
     val state = viewmodel.isUserLoggedIn.collectAsState(true)
 
@@ -47,7 +48,7 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            AppBar(title = "Brofin")
+//            AppBar(title = "Brofin")
         },
         bottomBar = {
             BottomNavigationBar(
@@ -74,7 +75,7 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit) {
         ) { page ->
             when (page) {
                 0 -> HomeScreen()
-                1 -> BudgetingDiaryScreen()
+                1 -> BudgetScreen()
                 2 -> SettingsScreen()
             }
         }

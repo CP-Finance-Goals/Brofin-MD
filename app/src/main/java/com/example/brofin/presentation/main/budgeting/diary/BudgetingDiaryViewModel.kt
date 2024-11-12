@@ -18,9 +18,6 @@ class BudgetingDiaryViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ): ViewModel() {
 
-
-    val allBudgetingDiaries: Flow<List<BudgetingDiary?>> = brofinRepository.getAllBudgetingDiaryEntries()
-
     private fun insert(entry: BudgetingDiary) {
         viewModelScope.launch {
             brofinRepository.insertBudgetingDiaryEntry(entry)
@@ -41,18 +38,11 @@ class BudgetingDiaryViewModel @Inject constructor(
     }
 
 
-    fun deleteById(id: Int) {
-        viewModelScope.launch {
-            brofinRepository.deleteBudgetingDiaryEntry(id)
-        }
-    }
-
     fun deleteAll() {
         viewModelScope.launch {
             brofinRepository.deleteAllBudgetingDiaryEntries()
         }
     }
-
 
     fun getFilteredDiaries(
         startDate: Long? = null,

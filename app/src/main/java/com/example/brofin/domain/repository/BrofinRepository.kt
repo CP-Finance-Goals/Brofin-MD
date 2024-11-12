@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface BrofinRepository {
 
     // User Methods
+    suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary)
     suspend fun insertUserBalance(userBalance: UserBalance)
     suspend fun updateUserBalance(userBalance: UserBalance)
     fun getUserBalance(userId: String): Flow<Double?>

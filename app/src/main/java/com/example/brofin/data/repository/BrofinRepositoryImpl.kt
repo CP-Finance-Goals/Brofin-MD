@@ -4,6 +4,7 @@ import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.mapper.toBudgetingDiary
 import com.example.brofin.data.mapper.toBudgetingDiaryEntity
 import com.example.brofin.data.mapper.toFinancialGoals
@@ -15,6 +16,7 @@ import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.UserBalance
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
@@ -23,9 +25,35 @@ class BrofinRepositoryImpl (
     private val financialGoalsDao: FinancialGoalsDao,
     private val budgetingDiaryDao: BudgetingDiaryDao
 ): BrofinRepository {
+
     override suspend fun insertUserBalance(userBalance: UserBalance) {
         userBalanceDao.insertOrUpdateUserBalance(userBalance.toUserBalanceEntity())
     }
+
+    override suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary) {
+        try {
+            val currentBalance = userBalanceDao.getCurrentBalance(entry.userId) ?: 0.0
+            val updatedBalance = if (entry.isExpense) {
+                currentBalance - entry.amount
+            } else {
+                currentBalance + entry.amount
+            }
+
+            val existingBalance = userBalanceDao.getUserBalance(entry.userId).firstOrNull()
+
+            if (existingBalance != null) {
+                userBalanceDao.updateBalance(entry.userId, updatedBalance)
+            } else {
+                userBalanceDao.insertOrUpdateUserBalance(UserBalanceEntity(entry.userId, updatedBalance))
+            }
+
+            budgetingDiaryDao.insertBudgetingDiary(entry.toBudgetingDiaryEntity())
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     override suspend fun updateUserBalance(userBalance: UserBalance) {
         userBalanceDao.insertOrUpdateUserBalance(userBalance.toUserBalanceEntity())
@@ -61,8 +89,15 @@ class BrofinRepositoryImpl (
     }
 
     override suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary) {
-        budgetingDiaryDao.insertBudgetingDiary(entry.toBudgetingDiaryEntity())
+        try {
+            val amount = if (entry.isExpense) -entry.amount else entry.amount
+            userBalanceDao.insertOrUpdateUserBalance(UserBalanceEntity(entry.userId, amount))
+            budgetingDiaryDao.insertBudgetingDiary(entry.toBudgetingDiaryEntity())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
 
     override fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary?>> = budgetingDiaryDao.getAllBudgetingDiaries().map { entries ->
         entries.map { it?.toBudgetingDiary()}

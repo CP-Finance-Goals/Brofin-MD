@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.brofin.presentation.authentication.login.LoginScreen
 import com.example.brofin.presentation.authentication.register.RegisterScreen
 import com.example.brofin.presentation.main.HomeApp
+import com.example.brofin.presentation.main.budget.components.CreateBudgetScreen
 import com.example.brofin.presentation.splash.SplashScreen
 
 @Composable
@@ -45,6 +46,9 @@ fun Navigation() {
                             inclusive = true
                         }
                     }
+                },
+                goCreateBudget = {
+                    navController.navigate(NavScreen.CreateBudgetingDiary.route)
                 }
             )
         }
@@ -83,6 +87,12 @@ fun Navigation() {
                     }
                 }
             )
+        }
+        composable(
+            route = NavScreen.CreateBudgetingDiary.route
+        ){
+            CreateBudgetScreen {
+            }
         }
     }
 }
