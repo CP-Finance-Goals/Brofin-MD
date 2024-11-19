@@ -10,7 +10,7 @@ private const val USER_PREFERENCES = "user_preferences"
 val Context.userPreferences by preferencesDataStore(name = USER_PREFERENCES)
 
 data class UserPreferences(
-    val isDarkMode: Boolean = false,                    // Preferensi tema aplikasi (dark/light mode)
+    val isDarkMode: Boolean? = false,                    // Preferensi tema aplikasi (dark/light mode)
     val preferredLanguage: String = "en",               // Bahasa yang diinginkan pengguna
     val budgetNotificationEnabled: Boolean = true,      // Notifikasi anggaran
     val transactionReminderEnabled: Boolean = true,     // Pengingat untuk transaksi harian/bulanan

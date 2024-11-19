@@ -1,8 +1,11 @@
 package com.example.brofin.presentation.authentication.login
 
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -49,6 +56,9 @@ import com.example.brofin.presentation.authentication.components.LottieAnimation
 import com.example.brofin.presentation.authentication.components.LottieAnimationTwo
 import com.example.brofin.presentation.authentication.state.AuthState
 import com.example.brofin.presentation.components.LoadingDialog
+import com.stevdzasan.onetap.OneTapGoogleButton
+import com.stevdzasan.onetap.OneTapSignInState
+import com.stevdzasan.onetap.OneTapSignInWithGoogle
 import kotlin.text.isBlank
 import kotlin.text.isNotBlank
 
@@ -57,10 +67,11 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     goToRegister: () -> Unit,
     goHome: () -> Unit,
-    viewmodel: AuthViewModel = hiltViewModel()
+    viewmodel: AuthViewModel = hiltViewModel(),
+    goSetupIncome: () -> Unit
 ) {
 
-    val state = viewmodel.authState.collectAsStateWithLifecycle()
+    val state by viewmodel.authState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     var snackbarMessage by remember { mutableStateOf("") }
@@ -79,9 +90,10 @@ fun LoginScreen(
     val dividerAlpha = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
 
+    // stateScroll
+    val stateScroll = rememberScrollState()
+
     var showLoadingDialog by remember { mutableStateOf(false) }
-
-
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -98,8 +110,8 @@ fun LoginScreen(
         dividerAlpha.animateTo(1f, animationSpec = tween(durationMillis = 200, delayMillis = 40))
     }
 
-    LaunchedEffect(state.value) {
-        when (val stateData = state.value) {
+    LaunchedEffect(state) {
+        when (val stateData = state) {
             is AuthState.Loading -> {
                 showLoadingDialog = true
             }
@@ -112,11 +124,28 @@ fun LoginScreen(
                 snackbarMessage = stateData.message.toString()
                 showSnackbar = true
             }
+            is AuthState.SetupIncome -> {
+                showLoadingDialog = false
+                goSetupIncome()
+            }
             else -> {
                 showLoadingDialog = false
             }
         }
     }
+    val stateGoogle = OneTapSignInState()
+
+
+    OneTapSignInWithGoogle(
+        state = stateGoogle,
+        clientId = "911582459244-gelvcg4s6jlemlclpgfjf876ehm9c95t.apps.googleusercontent.com",
+        onTokenIdReceived = {
+            viewmodel.loginWithGoogle(it)
+        },
+        onDialogDismissed = { error ->
+            Toast.makeText(context, "Dialog dismissed: $error", Toast.LENGTH_SHORT).show()
+        }
+    )
 
 
     LoadingDialog(
@@ -133,10 +162,13 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 500.dp)
+
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .height(300.dp)
+                .offset(y = 120.dp)
+
             ) {
                 LottieAnimationTwo()
             }
@@ -145,6 +177,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(y = (-90).dp)
+                    .size(400.dp)
             ) {
                 LottieAnimationOnce()
             }
@@ -152,6 +185,7 @@ fun LoginScreen(
             Column(
                 modifier = modifier
                     .fillMaxSize()
+                    .verticalScroll(stateScroll)
                     .padding(horizontal = 25.dp)
             ) {
                 Spacer(modifier = Modifier.height(220.dp))
@@ -221,7 +255,7 @@ fun LoginScreen(
                         keyboardController?.hide()
                         if (email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
                             password.length >= 8 ) {
-                            viewmodel.signInWithEmail(email, password)
+                            viewmodel.loginWithEmail(email, password)
                         } else {
                             snackbarMessage = when {
                                 email.isBlank() -> "Email tidak boleh kosong"
@@ -249,14 +283,11 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .graphicsLayer(alpha = dividerAlpha.value),
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -286,9 +317,10 @@ fun LoginScreen(
                         .height(50.dp),
                     buttonText = "Masuk dengan Google",
                     onClick = {
-
+                        stateGoogle.open()
                     }
                 )
+
 
 
                 if (showSnackbar) {

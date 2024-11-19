@@ -1,6 +1,7 @@
 [versions]
 
-agp = "8.5.0"
+agp = "8.5.2"
+androidImageCropper = "4.6.0"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.0.21"
 
@@ -8,15 +9,20 @@ kotlin = "2.0.21"
 accompanistPager = "0.36.0"
 accompanistPagerIndicators = "0.36.0"
 
+# Camerax
+cameraxVersion = "1.4.0"
+
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinxCoroutinesPlayServices = "1.9.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.10.01"
 
 # Navigation
+materialIconsExtended = "1.7.5"
 navigation = "2.7.1"
 
 # Coil Image Loader
@@ -30,6 +36,7 @@ moshiKotlin = "1.15.1"
 datastorePreferences = "1.1.1"
 
 # Room Database
+onetapcompose = "1.0.14"
 roomRuntime = "2.6.1"
 
 # Accompanist
@@ -43,6 +50,7 @@ lottieCompose = "6.5.2"
 # Material
 material = "1.12.0"
 
+ucrop = "2.2.9"
 vico = "2.0.0-beta.2"
 
 
@@ -58,8 +66,10 @@ runtime = "1.7.5"
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
+android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -94,6 +104,8 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 
 # Retrofit and Moshi
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
+onetapcompose = { module = "com.github.stevdza-san:OneTapCompose", version.ref = "onetapcompose" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterMoshi" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
@@ -115,20 +127,14 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
-# For Jetpack Compose.
-vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
-
-# For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
-vico-compose-m2 = { group = "com.patrykandpatrick.vico", name = "compose-m2", version.ref = "vico" }
-
-# For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
-vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
-
-# Houses the core logic for charts and other elements. Included in all other modules.
-vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "vico" }
-#
-## For the view system.
-#vico-views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "vico" }
+# CameraX
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraxVersion" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraxVersion" }
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraxVersion" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraxVersion" }
+androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraxVersion" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraxVersion" }
+ucrop = { module = "com.github.yalantis:ucrop", version.ref = "ucrop" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

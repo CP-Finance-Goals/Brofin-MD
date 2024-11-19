@@ -33,4 +33,7 @@ interface AuthRepository {
 
     suspend fun logout()
 
+    fun signInWithGoogle(idToken: String): Flow<Boolean>
+
+
 }

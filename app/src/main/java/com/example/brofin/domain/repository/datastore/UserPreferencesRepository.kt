@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserPreferencesRepository {
     val userPreferencesFlow: Flow<UserPreferences>
 
-    suspend fun updateDarkMode(isDarkMode: Boolean)
+    suspend fun updateDarkMode(isDarkMode: Boolean?)
 
     suspend fun updatePreferredLanguage(language: String)
 

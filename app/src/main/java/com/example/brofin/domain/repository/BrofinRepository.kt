@@ -1,6 +1,8 @@
 package com.example.brofin.domain.repository
 
+import com.example.brofin.data.local.room.entity.BudgetWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.UserBalance
@@ -9,16 +11,24 @@ import kotlinx.coroutines.flow.Flow
 interface BrofinRepository {
 
     // User Methods
-    suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary)
+    suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary,  monthAndYear: Long)
     suspend fun insertUserBalance(userBalance: UserBalance)
     suspend fun updateUserBalance(userBalance: UserBalance)
-    fun getUserBalance(userId: String): Flow<Double?>
+    fun getUserCurrentBalance(userId: String, monthAndYear: Long): Flow<Double?>
+    fun getUserBalance(userId: String, monthAndYear: Long): Flow<Double?>
+    suspend fun userBalanceExists(userId: String, monthAndYear: Long): Boolean
 
     // Financial Goals Methods
     suspend fun insertFinancialGoal(goal: FinancialGoals)
     fun getAllFinancialGoals(): Flow<List<FinancialGoals?>>
     suspend fun updateFinancialGoal(goal: FinancialGoals)
     suspend fun deleteFinancialGoal(goalId: Int)
+
+    // Budgeting Methods
+    suspend fun insertBudget(budget: Budgeting)
+    fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetWithDiaries>
+    fun getAllBudgetsWithDiaries(userId: String): Flow<List<BudgetWithDiaries>>
+
 
     // Budgeting Diary Methods
     suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary)

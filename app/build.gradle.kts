@@ -66,12 +66,16 @@ dependencies {
     implementation(libs.androidx.runtime)
 
     // Icon Extended
-    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation(libs.androidx.material.icons.extended)
 
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m2)
-    implementation(libs.vico.compose.m3)
-    implementation(libs.vico.core)
+    // CameraX
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.video)
+
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
@@ -99,9 +103,11 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
+    // Crop Image
+    implementation(libs.android.image.cropper)
+
     // Google Fonts
     implementation(libs.androidx.ui.text.google.fonts)
-
 
     // Accompanist for permission
     implementation(libs.accompanist.permissions)
@@ -111,9 +117,12 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
+    // Google One Tap
+    implementation(libs.onetapcompose)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+
     // Pager
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
-
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
 }

@@ -1,4 +1,4 @@
-package com.example.brofin.presentation.main.budgeting.diary
+package com.example.brofin.presentation.temp.budget.diary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,6 @@ import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
-import com.example.brofin.utils.generateSampleBudgetingData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -28,14 +27,14 @@ class BudgetingDiaryViewModel @Inject constructor(
         return authRepository.getCurrentUser()?.uid ?: ""
     }
 
-    fun sampleInsert() {
-        viewModelScope.launch {
-            val sample = generateSampleBudgetingData(getUID(), 10)
-            sample.forEach {
-                insert(it)
-            }
-        }
-    }
+//    fun sampleInsert() {
+//        viewModelScope.launch {
+//            val sample = generateSampleBudgetingData(getUID(), 10)
+//            sample.forEach {
+//                insert(it)
+//            }
+//        }
+//    }
 
 
     fun deleteAll() {

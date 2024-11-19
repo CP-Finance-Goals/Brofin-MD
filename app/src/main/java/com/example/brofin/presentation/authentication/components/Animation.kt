@@ -30,10 +30,16 @@ fun LottieAnimationOnce(iterarion: Int = 1) {
 fun LottieAnimationTwo() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottieflow_background))
 
-    LottieAnimation(
-        composition = composition,
-        iterations = LottieConstants.IterateForever,
-        modifier = Modifier.fillMaxWidth()
-    )
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+        )
+    }
+
 
 }

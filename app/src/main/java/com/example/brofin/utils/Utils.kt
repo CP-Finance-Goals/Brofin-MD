@@ -1,39 +1,41 @@
 package com.example.brofin.utils
 
-import com.example.brofin.domain.models.BudgetingDiary
-import kotlin.random.Random
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
-fun generateSampleBudgetingData(userId: String, itemCount: Int): List<BudgetingDiary> {
-    val sampleData = mutableListOf<BudgetingDiary>()
-    val descriptions = listOf("Salary", "Groceries", "Rent", "Transport", "Dining Out", "Utilities", "Entertainment", "Shopping", "Bonus", "Freelance")
-
-    repeat(itemCount) { index ->
-        // Mengacak tanggal dalam 90 hari terakhir dengan variasi unik
-        val currentDate = System.currentTimeMillis()
-        val randomDateOffset = (index + 1) * Random.nextLong(1L, 90L * 24 * 60 * 60 * 1000 / itemCount)
-        val randomDate = currentDate - randomDateOffset // Tanggal acak
-
-        // Mengacak deskripsi dari daftar yang ada
-        val description = descriptions.random()
-
-        // Mengacak jumlah antara 100 dan 5000 untuk variasi nilai transaksi
-        val amount = Random.nextDouble(100.0, 5000.0)
-
-        // Mengacak tipe transaksi (true untuk pengeluaran, false untuk pemasukan)
-        val isExpense = Random.nextBoolean()
-
-        // Menambahkan data ke daftar
-        sampleData.add(
-            BudgetingDiary(
-                id = index,
-                userId = userId,
-                date = randomDate,
-                description = description,
-                amount = amount,
-                isExpense = isExpense
-            )
-        )
-    }
-
-    return sampleData
+fun getCurrentMonthAndYearInIndonesian(): String {
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
+    return dateFormat.format(calendar.time)
 }
+
+fun getCurrentMonthAndYearAsLong(): Long {
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("yyyyMM", Locale("id", "ID")) // Format untuk Long
+    return dateFormat.format(calendar.time).toLong()
+}
+
+fun decodeMonthAndYearFromLong(value: Long): String {
+    val inputFormat = SimpleDateFormat("yyyyMM", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
+
+    val date = inputFormat.parse(value.toString())
+    return outputFormat.format(date!!)
+}
+
+fun formatToIndonesianCurrency(amount: Double): String {
+    val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    return format.format(amount)
+}
+
+fun formatStringToIndonesianCurrency(amount: String): String {
+    return try {
+        val value = amount.toDoubleOrNull() ?: 0.0
+        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        format.format(value)
+    } catch (e: Exception) {
+        "Invalid amount"
+    }
+}
+

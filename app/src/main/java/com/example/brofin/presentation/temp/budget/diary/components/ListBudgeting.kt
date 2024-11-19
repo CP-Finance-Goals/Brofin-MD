@@ -1,4 +1,4 @@
-package com.example.brofin.presentation.main.budgeting.diary.components
+package com.example.brofin.presentation.temp.budget.diary.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
@@ -78,11 +78,13 @@ fun BudgetItem(budgetingDiary: BudgetingDiary) {
                verticalAlignment = Alignment.CenterVertically
            ) {
                Column {
-                   Text(
-                       text = budgetingDiary.description,
-                       style = MaterialTheme.typography.bodyLarge,
-                       fontWeight = FontWeight.Bold
-                   )
+                   if (budgetingDiary.description != null){
+                       Text(
+                           text = budgetingDiary.description,
+                           style = MaterialTheme.typography.bodyLarge,
+                           fontWeight = FontWeight.Bold
+                       )
+                   }
                    Text(
                        text = date,
                        style = MaterialTheme.typography.bodySmall,
@@ -97,11 +99,13 @@ fun BudgetItem(budgetingDiary: BudgetingDiary) {
                    color = amountColor
                )
            }
-           Text(
-               text = budgetingDiary.description,
-               style = MaterialTheme.typography.bodyMedium,
-               textAlign = TextAlign.Start
-           )
+          if (budgetingDiary.description != null){
+              Text(
+                  text = budgetingDiary.description,
+                  style = MaterialTheme.typography.bodyMedium,
+                  textAlign = TextAlign.Start
+              )
+          }
        }
     }
 }

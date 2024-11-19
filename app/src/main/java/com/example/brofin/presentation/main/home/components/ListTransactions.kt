@@ -58,7 +58,7 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = MaterialTheme.colorScheme.primary,
                     ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -109,7 +109,7 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
 }
 
 @Composable
-fun DiaryItem(modifier: Modifier = Modifier, budgetingDiary: BudgetingDiary) {
+fun DiaryItem(budgetingDiary: BudgetingDiary) {
     val date =  budgetingDiary.date.toFormattedDate()
     Row(
         modifier = Modifier
@@ -119,12 +119,14 @@ fun DiaryItem(modifier: Modifier = Modifier, budgetingDiary: BudgetingDiary) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text(
-                text = budgetingDiary.description,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            if (budgetingDiary.description != null){
+                Text(
+                    text = budgetingDiary.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
             Text(
                 text = date,
                 style = MaterialTheme.typography.bodyMedium,
@@ -134,9 +136,9 @@ fun DiaryItem(modifier: Modifier = Modifier, budgetingDiary: BudgetingDiary) {
 
         Text(
             text = if (budgetingDiary.isExpense) "-Rp ${budgetingDiary.amount}" else "+Rp ${budgetingDiary.amount}",
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
-            color = if (budgetingDiary.isExpense) Color.Red else Color.Green
+            color = if (budgetingDiary.isExpense) Color.Red.copy(alpha = 0.7f) else Color.Green.copy(alpha = 0.7f)
         )
     }
 }

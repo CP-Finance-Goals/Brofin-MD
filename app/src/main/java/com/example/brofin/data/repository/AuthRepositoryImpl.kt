@@ -3,8 +3,11 @@ package com.example.brofin.data.repository
 import com.example.brofin.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -45,12 +48,32 @@ class AuthRepositoryImpl(
         return firebaseAuth.currentUser
     }
 
-    override fun userExists(): Flow<Boolean> = flow {
-        emit(firebaseAuth.currentUser != null)
+    override fun userExists(): Flow<Boolean> = callbackFlow {
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser != null)
+        }
+
+        firebaseAuth.addAuthStateListener(authStateListener)
+
+        awaitClose {
+            firebaseAuth.removeAuthStateListener(authStateListener)
+        }
     }
 
     override suspend fun logout() {
         firebaseAuth.signOut()
+    }
+
+    override fun signInWithGoogle(idToken: String): Flow<Boolean> {
+          return flow {
+              try {
+                  val credential = GoogleAuthProvider.getCredential(idToken, null)
+                  firebaseAuth.signInWithCredential(credential).await()
+                  emit(true)
+              } catch (e: Exception) {
+                  emit(false)
+              }
+          }
     }
 }
 

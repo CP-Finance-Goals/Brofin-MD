@@ -1,5 +1,20 @@
 package com.example.brofin.utils
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Commute
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.LocalCafe
+import androidx.compose.material.icons.filled.LocalDrink
+import androidx.compose.material.icons.filled.LocalLaundryService
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+
 data class CategoryExpenses(
     val id: Int, // ID unik untuk kategori
     val namaKategori: String, // Nama kategori pengeluaran, misalnya "Makanan", "Transportasi"
@@ -14,72 +29,132 @@ object Expense {
             id = 1,
             namaKategori = "Makanan",
             deskripsi = "Pengeluaran untuk makanan dan minuman sehari-hari",
-            ikon = "icon_makanan",
+            ikon = "",
             warna = "#FF5733"
         ),
         CategoryExpenses(
             id = 2,
             namaKategori = "Transportasi",
             deskripsi = "Pengeluaran untuk biaya transportasi seperti bensin, tiket, dan parkir",
-            ikon = "icon_transportasi",
+            ikon = "Commute",
             warna = "#33AFFF"
         ),
         CategoryExpenses(
             id = 3,
             namaKategori = "Hiburan",
             deskripsi = "Pengeluaran untuk aktivitas hiburan, seperti nonton, rekreasi, dan hobi",
-            ikon = "icon_hiburan",
+            ikon = "Movie",
             warna = "#FFD700"
         ),
         CategoryExpenses(
             id = 4,
             namaKategori = "Kesehatan",
             deskripsi = "Pengeluaran untuk biaya kesehatan seperti obat, cek kesehatan, dan asuransi",
-            ikon = "icon_kesehatan",
+            ikon = "HealthAndSafety",
             warna = "#4CAF50"
         ),
         CategoryExpenses(
             id = 5,
             namaKategori = "Pendidikan",
             deskripsi = "Pengeluaran untuk biaya pendidikan, buku, dan kursus",
-            ikon = "icon_pendidikan",
+            ikon = "School",
             warna = "#FFA500"
         ),
         CategoryExpenses(
             id = 6,
             namaKategori = "Pakaian",
             deskripsi = "Pengeluaran untuk kebutuhan pakaian dan aksesoris",
-            ikon = "icon_pakaian",
+            ikon = "",
             warna = "#8A2BE2"
         ),
         CategoryExpenses(
             id = 7,
-            namaKategori = "Tagihan dan Utilitas",
+            namaKategori = "Tag ihan dan Utilitas",
             deskripsi = "Pengeluaran untuk tagihan bulanan seperti listrik, air, dan internet",
-            ikon = "icon_tagihan",
+            ikon = "",
             warna = "#FF4500"
         ),
         CategoryExpenses(
             id = 8,
-            namaKategori = "Donasi dan Zakat",
-            deskripsi = "Pengeluaran untuk donasi, zakat, atau sumbangan lainnya",
-            ikon = "icon_donasi",
-            warna = "#B22222"
+            namaKategori = "Belanja",
+            deskripsi = "Pengeluaran untuk belanja kebutuhan pokok",
+            ikon = "ShoppingCart",
+            warna = "#FF4081"
         ),
         CategoryExpenses(
             id = 9,
-            namaKategori = "Investasi",
-            deskripsi = "Pengeluaran untuk investasi seperti reksa dana, saham, atau deposito",
-            ikon = "icon_investasi",
-            warna = "#228B22"
-        ),
-        CategoryExpenses(
-            id = 10,
             namaKategori = "Lain-lain",
             deskripsi = "Pengeluaran untuk hal-hal di luar kategori utama",
-            ikon = "icon_lain_lain",
+            ikon = "",
             warna = "#A9A9A9"
         )
+
     )
 
+
+    // Fungsi untuk memetakan string ikon menjadi ImageVector
+    fun getIconByName(name: String): ImageVector {
+        return when (name) {
+            "ShoppingCart" -> Icons.Default.ShoppingCart
+            "Commute" -> Icons.Default.Commute
+            "HealthAndSafety" -> Icons.Default.HealthAndSafety
+            "Restaurant" -> Icons.Default.Restaurant
+            "LocalDrink" -> Icons.Default.LocalDrink
+            "School" -> Icons.Default.School
+            else -> Icons.Default.Help
+        }
+    }
+
+        val budgetAllocations = listOf(
+            BudgetAllocation(
+                id = 1,
+                namaAlokasi = "Kebutuhan Pokok",
+                deskripsi = "Alokasi 50% untuk kebutuhan dasar",
+                persentase = 50,
+                kategori = listOf(
+                    categoryExpensesLists[0], // Makanan
+                    categoryExpensesLists[1], // Transportasi
+                    categoryExpensesLists[3], // Kesehatan
+                    categoryExpensesLists[4], // Pendidikan
+                    categoryExpensesLists[6], // Tagihan dan Utilitas
+                ),
+                warna = Color(0xFF4CAF50), // Hijau untuk Kebutuhan Pokok
+                budgetUsed = 500000 // Contoh budget yang digunakan
+            ),
+            BudgetAllocation(
+                id = 2,
+                namaAlokasi = "Keinginan",
+                deskripsi = "Alokasi 30% untuk hiburan",
+                persentase = 30,
+                kategori = listOf(
+                    categoryExpensesLists[2], // Hiburan
+                    categoryExpensesLists[5], // Pakaian
+                    categoryExpensesLists[8], // Lain-lain
+                ),
+                warna = Color(0xFFFFC107), // Kuning untuk Keinginan
+                budgetUsed = 1500000 // Contoh budget yang digunakan
+
+            ),
+            BudgetAllocation(
+                id = 3,
+                namaAlokasi = "Tabungan",
+                deskripsi = "Alokasi 20% untuk tabungan atau dana darurat",
+                persentase = 20,
+                kategori = emptyList(),
+                warna = Color(0xFF2196F3), // Biru untuk Tabungan
+                budgetUsed = 500000 // Contoh budget yang digunakan
+
+            )
+        )
+
 }
+
+data class BudgetAllocation(
+    val id: Int, // ID unik untuk kategori utama
+    val namaAlokasi: String, // Nama alokasi, misalnya "Kebutuhan Pokok"
+    val deskripsi: String, // Deskripsi singkat tentang alokasi
+    val persentase: Int, // Persentase dari total anggaran
+    val warna: Color, // Warna unik untuk alokasi
+    val kategori: List<CategoryExpenses>, // Daftar kategori yang termasuk dalam alokasi ini
+    val budgetUsed: Int // Budget yang sudah digunakan (dalam Rupiah)
+)

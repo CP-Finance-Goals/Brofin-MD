@@ -86,7 +86,7 @@ fun CreateBudgetScreen(onBackClick: () -> Unit) {
                 )
 
                 Text(
-                    text = amount.toIndonesianCurrency(),
+                    text = amount.toIndonesianCurrency() ?: "Rp. 0",
                     color = Color.White,
                     fontSize = 48.sp,
                     fontWeight = FontWeight.Bold

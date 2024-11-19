@@ -1,7 +1,8 @@
 package com.example.brofin.domain.models
 
 data class UserBalance (
+    val monthAndYear: Long,
     val userId: String = "",
-    val currentBalance: Double = 0.0,
-    val lastUpdated: Long = System.currentTimeMillis()
+    val balance: Double?,
+    val currentBalance: Double?,
 )

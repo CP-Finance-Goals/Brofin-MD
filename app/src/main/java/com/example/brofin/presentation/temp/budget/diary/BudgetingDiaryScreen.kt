@@ -1,4 +1,4 @@
-package com.example.brofin.presentation.main.budgeting.diary
+package com.example.brofin.presentation.temp.budget.diary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.brofin.data.mapper.toBudgetingDiary
-import com.example.brofin.presentation.main.budgeting.diary.components.DatePickerButton
-import com.example.brofin.presentation.main.budgeting.diary.components.ListBudgeting
+import com.example.brofin.presentation.temp.budget.diary.components.DatePickerButton
+import com.example.brofin.presentation.temp.budget.diary.components.ListBudgeting
 import kotlinx.coroutines.launch
 
 @Composable
@@ -92,9 +92,9 @@ fun BudgetingDiaryScreen(viewModel: BudgetingDiaryViewModel = hiltViewModel()) {
                     isButtonActive = !isButtonActive // Toggle active state
                 }
             )
-            Button(onClick = { viewModel.sampleInsert() }) {
-                Text(text = "Sample Insert")
-            }
+//            Button(onClick = { viewModel.sampleInsert() }) {
+//                Text(text = "Sample Insert")
+//            }
 
             Button(onClick = { viewModel.deleteAll() }) {
                 Text(text = "Delete All")

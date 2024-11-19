@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-fun Double.toIndonesianCurrency(): String {
+fun Double.toIndonesianCurrency(): String? {
     val format = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
     return format.format(this)
 }

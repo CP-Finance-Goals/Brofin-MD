@@ -15,38 +15,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.brofin.domain.models.BudgetingDiary
-
-fun generateDummyTransactions(): List<BudgetingDiary> {
-    return listOf(
-        BudgetingDiary(
-            id = 1,
-            userId = "user_1",
-            date = System.currentTimeMillis(),
-            description = "Makan Siang",
-            amount = 50_000.0,
-            isExpense = true
-        ),
-        BudgetingDiary(
-            id = 2,
-            userId = "user_1",
-            date = System.currentTimeMillis() - 86_400_000, // 1 hari yang lalu
-            description = "Gaji Mingguan",
-            amount = 500_000.0,
-            isExpense = false
-        )
-    )
-}
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.brofin.utils.toIndonesianCurrency
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewmodel: HomeViewModel = hiltViewModel()
+) {
     val backgroundColor = MaterialTheme.colorScheme.background
-    val transactions = generateDummyTransactions()
+    val diaries by viewmodel.budgetingDiaries.collectAsStateWithLifecycle(emptyList())
+
+    val totalIncome by viewmodel.totalIncome.collectAsStateWithLifecycle(0.0)
+    val totalExpenses by viewmodel.totalExpenses.collectAsStateWithLifecycle(0.0)
+
+    val userBalance by viewmodel.userBalance.collectAsStateWithLifecycle(0.0)
+
 
     Column(
         modifier = modifier
@@ -55,15 +47,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             .padding(16.dp)
     ) {
         BudgetHeader(
-            balance = "Rp. 50.000,-",
-            income = "Rp. 100.000",
-            outcome = "Rp. 50.000",
+            balance = userBalance?.toIndonesianCurrency() ?: "Rp. 0",
+            income = totalIncome?.toIndonesianCurrency() ?: "Rp. 0",
+            outcome = totalExpenses?.toIndonesianCurrency() ?: "Rp. 0",
             savings = "Rp. 0"
         )
 
         Spacer(Modifier.height(16.dp))
 
-        ListTransactions(transactions)
+        ListTransactions(budgetList = diaries)
     }
 }
 
@@ -78,7 +70,7 @@ fun BudgetHeader(balance: String, income: String, outcome: String, savings: Stri
             .padding(16.dp)
     ) {
         Text(
-            text = "Budget anda saat ini:",
+            text = "Uang anda saat ini yang tersisa:",
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onPrimary
         )
@@ -94,7 +86,7 @@ fun BudgetHeader(balance: String, income: String, outcome: String, savings: Stri
         ) {
             BudgetItem("Pendapatan", income, Color(0xFF66BB6A))
             BudgetItem("Pengeluaran", outcome, Color(0xFFEF5350))
-            BudgetItem("Tabungan", savings, Color(0xFF455A67))
+            BudgetItem("Tabungan", savings, Color(0xFF455A80))
         }
     }
 }
@@ -117,8 +109,10 @@ fun BudgetItem(label: String, amount: String, color: Color) {
         )
         Text(
             text = amount,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.White
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

@@ -1,17 +1,30 @@
 package com.example.brofin.data.mapper
 
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.data.local.room.entity.BudgetingEntity
 import com.example.brofin.data.local.room.entity.FinancialGoalsEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
+import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.UserBalance
 
 // To Domain
 fun UserBalanceEntity.toUser() = UserBalance(
+    monthAndYear = monthAndYear,
     userId = userId,
+    balance = balance,
     currentBalance = currentBalance,
-    lastUpdated = lastUpdated
+)
+
+fun BudgetingEntity.toBudgetingDiary() = Budgeting(
+    monthAndYear = monthAndYear,
+    userId = userId,
+    total = total,
+    essentialNeedsLimit = essentialNeedsLimit,
+    wantsLimit = wantsLimit,
+    savingsLimit = savingsLimit,
+    isReminder = isReminder
 )
 
 fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
@@ -20,7 +33,10 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
     date = date,
     description = description,
     amount = amount,
-    isExpense = isExpense
+    isExpense = isExpense,
+    photoUri = "",
+    categoryId = 1,
+    monthAndYear = monthAndYear
 )
 
 fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
@@ -38,7 +54,18 @@ fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
 fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
     userId = userId,
     currentBalance = currentBalance,
-    lastUpdated = lastUpdated
+    monthAndYear = monthAndYear,
+    balance = balance
+)
+
+fun Budgeting.toBudgetingEntity() = BudgetingEntity(
+    monthAndYear = monthAndYear,
+    userId = userId,
+    total = total,
+    essentialNeedsLimit = essentialNeedsLimit,
+    wantsLimit = wantsLimit,
+    savingsLimit = savingsLimit,
+    isReminder = isReminder
 )
 
 fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
@@ -46,7 +73,10 @@ fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
     date = date,
     description = description,
     amount = amount,
-    isExpense = isExpense
+    isExpense = isExpense,
+    photoUri = photoUri,
+    categoryId = categoryId,
+    monthAndYear = monthAndYear
 )
 
 fun FinancialGoals.toFinancialGoalsEntity() = FinancialGoalsEntity(

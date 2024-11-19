@@ -3,6 +3,7 @@ package com.example.brofin.di
 import android.content.Context
 import androidx.room.Room
 import com.example.brofin.data.local.room.BrofinDatabase
+import com.example.brofin.data.local.room.dao.BudgetingDao
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
@@ -16,6 +17,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
     @Provides
     @Singleton
     fun provideStoryDatabase(@ApplicationContext context: Context): BrofinDatabase {
@@ -36,6 +38,9 @@ object DatabaseModule {
 
     @Provides
     fun provideFinancialGoalsDao(storyDatabase: BrofinDatabase): FinancialGoalsDao = storyDatabase.financialGoalsDao()
+
+    @Provides
+    fun provideBudgetingDao(storyDatabase: BrofinDatabase): BudgetingDao = storyDatabase.budgetingDao()
 
 
 }

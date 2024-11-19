@@ -1,5 +1,6 @@
 package com.example.brofin.di
 
+import com.example.brofin.data.local.room.dao.BudgetingDao
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
@@ -21,9 +22,10 @@ object AppModule {
     fun provideBrofinRepository(
         userBalanceDao: UserBalanceDao,
         budgetingDiaryDao: BudgetingDiaryDao,
-        financialGoalsDao: FinancialGoalsDao
+        financialGoalsDao: FinancialGoalsDao,
+        budgetingDao: BudgetingDao
     ): BrofinRepository {
-        return BrofinRepositoryImpl(userBalanceDao, financialGoalsDao, budgetingDiaryDao)
+        return BrofinRepositoryImpl(userBalanceDao, financialGoalsDao, budgetingDiaryDao, budgetingDao)
     }
 
 }

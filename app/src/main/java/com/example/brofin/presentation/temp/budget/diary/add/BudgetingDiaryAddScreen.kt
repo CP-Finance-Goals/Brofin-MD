@@ -1,4 +1,4 @@
-package com.example.brofin.presentation.main.budgeting.diary.add
+package com.example.brofin.presentation.temp.budget.diary.add
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Button
@@ -60,7 +62,8 @@ import com.example.brofin.presentation.components.LoadingDialog
 fun RegisterScreen(
     goBack: () -> Unit,
     goHome: () -> Unit,
-    viewmodel: AuthViewModel = hiltViewModel()
+    viewmodel: AuthViewModel = hiltViewModel(),
+    goSetupIncome: () -> Unit
 ) {
 
     val stateRegister = viewmodel.authState.collectAsStateWithLifecycle(initialValue = AuthState.Idle)
@@ -90,6 +93,8 @@ fun RegisterScreen(
     val passwordFocusRequester = remember { FocusRequester() }
     val confirmationFocusRequester = remember { FocusRequester() }
 
+    val scrollState = rememberScrollState()
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
@@ -101,6 +106,7 @@ fun RegisterScreen(
         buttonAlpha.animateTo(1f, animationSpec = tween(durationMillis = 200, delayMillis = 40))
         buttonAlpha3.animateTo(1f, animationSpec = tween(durationMillis = 200, delayMillis = 40))
     }
+
 
     LaunchedEffect(stateRegister.value) {
         when (val state = stateRegister.value) {
@@ -117,6 +123,10 @@ fun RegisterScreen(
                 showLoadingDialog = false
                 snackbarMessage = state.message.toString()
                 showSnackbar = true
+            }
+            is AuthState.SetupIncome -> {
+                showLoadingDialog = false
+                goSetupIncome()
             }
             else -> {
                 showLoadingDialog = false
@@ -138,10 +148,12 @@ fun RegisterScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 500.dp)
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .height(300.dp)
+                .offset(y = 120.dp)
+
             ) {
                 LottieAnimationTwo()
             }
@@ -149,6 +161,7 @@ fun RegisterScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(horizontal = 25.dp)
             ) {
                 Row(
@@ -326,7 +339,9 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth().graphicsLayer {  },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .graphicsLayer { },
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = buttonAlpha.value)
                 )
 
@@ -360,6 +375,8 @@ fun RegisterScreen(
 
                     }
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 if (showSnackbar) {
                     LaunchedEffect(snackbarMessage) {

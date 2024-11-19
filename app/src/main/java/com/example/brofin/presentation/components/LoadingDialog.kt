@@ -9,12 +9,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.brofin.R
 
 @Composable
 fun LoadingDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit
 ) {
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animate))
+
+
     if (showDialog) {
         Box(
             modifier = Modifier
@@ -25,18 +34,22 @@ fun LoadingDialog(
         AlertDialog(
             onDismissRequest = onDismissRequest,
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
-            title = {
-                Text(text = "Loading...", style = MaterialTheme.typography.bodyLarge)
-            },
             text = {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CircularProgressIndicator()
+
+                    LottieAnimation(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever,
+                        speed = 0.8f,
+                        modifier = Modifier.size(100.dp)
+                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Please wait...")
+                    Text(text = "Mohon tunggu...")
                 }
             },
             confirmButton = {}

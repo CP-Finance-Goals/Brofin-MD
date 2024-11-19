@@ -42,9 +42,13 @@ class UserPreferencesRepositoryImpl @Inject constructor(
             )
         }
 
-    override suspend fun updateDarkMode(isDarkMode: Boolean) {
+    override suspend fun updateDarkMode(isDarkMode: Boolean?) {
         dataStore.edit { preferences ->
-            preferences[PreferencesKeys.IS_DARK_MODE] = isDarkMode
+            if (isDarkMode == null) {
+                preferences.remove(PreferencesKeys.IS_DARK_MODE) // Hapus nilai untuk merepresentasikan null
+            } else {
+                preferences[PreferencesKeys.IS_DARK_MODE] = isDarkMode // Simpan nilai true/false
+            }
         }
     }
 

@@ -1,14 +1,30 @@
 package com.example.brofin.data.local.room.entity
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "budgeting_diary")
-data class BudgetingDiaryEntity (
+@Entity(
+    tableName = "budgeting_diary",
+    foreignKeys = [
+        ForeignKey(
+            entity = BudgetingEntity::class,
+            parentColumns = ["monthAndYear"],
+            childColumns = ["monthAndYear"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["monthAndYear"])]
+)
+data class BudgetingDiaryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val userId: String = "",
+    val userId: String,
+    val monthAndYear: Long,
     val date: Long,
-    val description: String,
+    val photoUri: String? = null,
+    val description: String? = null,
     val amount: Double,
-    val isExpense: Boolean
+    val categoryId: Int,
+    val isExpense: Boolean = true
 )
