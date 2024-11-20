@@ -23,7 +23,7 @@ interface BudgetingDiaryDao {
     @Query("DELETE FROM budgeting_diary")
     suspend fun deleteAllBudgetingDiaries()
 
-    // query ini untuk      mengurutkan berdasarkan yang terbaru dan terlama
+    // query ini untuk mengurutkan berdasarkan yang terbaru dan terlama
     @Query("SELECT * FROM budgeting_diary ORDER BY date DESC")
     fun getAllBudgetingDiaries(): Flow<List<BudgetingDiaryEntity?>>
 
@@ -35,29 +35,18 @@ interface BudgetingDiaryDao {
     @Insert
     suspend fun insertAllDiaries(diaries: List<BudgetingDiaryEntity>)
 
-    // query ini digunakan untuk mengambil total income berdasarkan bulan dan tahun sekarang
-    @Query("""
-    SELECT SUM(amount) 
-    FROM budgeting_diary 
-    WHERE isExpense = 0 
-    AND strftime('%Y-%m', date / 1000, 'unixepoch') = strftime('%Y-%m', 'now')
-""")
-    fun getTotalIncomeMonth(): Flow<Double?>
-
-
     // query ini digunakan untuk mengambil total expenses
     @Query("SELECT SUM(amount) FROM budgeting_diary WHERE isExpense = 1")
     fun getTotalExpenses(): Flow<Double?>
 
-
-    // query ini digunakan untuk mengambil total expenses berdasarkan bulan dan tahun sekarang
     @Query("""
-    SELECT SUM(amount) 
-    FROM budgeting_diary 
+    SELECT SUM(amount)
+    FROM budgeting_diary
     WHERE isExpense = 1
-    AND strftime('%Y-%m', date / 1000, 'unixepoch') = strftime('%Y-%m', 'now')
-    """)
-    fun getTotalExpensesMonth(): Flow<Double?>
+    AND userId = :userId
+    AND monthAndYear = :monthAndYear
+""")
+    fun getTotalExpensesMonth(monthAndYear: Long, userId: String): Flow<Double?>
 
 
     // query ini digunakan untuk mengambil data budgeting diary berdasarkan tanggal awal dan akhir
@@ -65,13 +54,15 @@ interface BudgetingDiaryDao {
     fun getBudgetingDiariesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiaryEntity?>>
 
 
-    // query ini digunakan untuk mengambil data budgeting diary berdasarkan tanggal, apakah expense atau income, dan jumlah amount
+    // query ini digunakan untuk mengambil data budgeting diary berdasarkan filter
     @Query("""
-    SELECT * FROM budgeting_diary 
+    SELECT * FROM budgeting_diary
     WHERE 
-        (:startDate IS NULL OR date >= :startDate) 
-        AND (:endDate IS NULL OR date <= :endDate) 
-        AND (:isExpense IS NULL OR isExpense = :isExpense) 
+        (:userId IS NULL OR userId = :userId)
+        AND (:monthAndYear IS NULL OR strftime('%Y-%m', date / 1000, 'unixepoch') = strftime('%Y-%m', :monthAndYear / 1000, 'unixepoch'))
+        AND (:startDate IS NULL OR date >= :startDate)
+        AND (:endDate IS NULL OR date <= :endDate)
+        AND (:isExpense IS NULL OR isExpense = :isExpense)
         AND (:minAmount IS NULL OR amount >= :minAmount)
         AND (:maxAmount IS NULL OR amount <= :maxAmount)
     ORDER BY 
@@ -83,6 +74,8 @@ interface BudgetingDiaryDao {
         END
 """)
     fun filterBudgetingDiaries(
+        userId: String? = null,
+        monthAndYear: Long? = null,
         startDate: Long? = null,
         endDate: Long? = null,
         isExpense: Boolean? = null,
@@ -91,5 +84,6 @@ interface BudgetingDiaryDao {
         sortBy: String = "date",
         sortOrder: String = "desc"
     ): Flow<List<BudgetingDiaryEntity?>>
+
 
 }

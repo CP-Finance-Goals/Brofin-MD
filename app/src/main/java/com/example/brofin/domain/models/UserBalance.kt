@@ -5,4 +5,5 @@ data class UserBalance (
     val userId: String = "",
     val balance: Double?,
     val currentBalance: Double?,
+    val savings: Double?
 )

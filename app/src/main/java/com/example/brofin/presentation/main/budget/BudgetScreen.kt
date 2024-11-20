@@ -1,156 +1,117 @@
-    package com.example.brofin.presentation.main.budget
+package com.example.brofin.presentation.main.budget
 
-import androidx.compose.foundation.BorderStroke
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.brofin.presentation.main.budget.components.BudgetAllocationCard
 import com.example.brofin.presentation.main.budget.components.MonthSelected
-import com.example.brofin.utils.BudgetAllocation
 import com.example.brofin.utils.Expense
+import com.example.brofin.utils.Expense.budgetAllocations
+import com.example.brofin.utils.getCurrentMonthAndYearAsLong
 
+@Composable
+fun BudgetScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BudgetViewModel = hiltViewModel()
+) {
 
-
-
-    @Composable
-    fun BudgetScreen(modifier: Modifier = Modifier) {
-        val allocation = Expense.budgetAllocations
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Header atau Seleksi Bulan
-                MonthSelected()
-                // Menggunakan LazyColumn untuk menampilkan daftar kartu alokasi
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(15.dp)
-                ) {
-                    items(allocation) { budget ->
-                        BudgetAllocationCard(allocation = budget)
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
+    val allocation = budgetAllocations
+    val context = LocalContext.current
+    var monthAndYear by remember {
+        mutableLongStateOf(getCurrentMonthAndYearAsLong())
     }
 
-    @Composable
-    fun BudgetAllocationCard(
-        allocation: BudgetAllocation,
-        modifier: Modifier = Modifier
+    val budgetingWithDiaries by viewModel.getBudgetingDiariesByMonthAndYear(monthAndYear).collectAsStateWithLifecycle(null)
+
+    val budget = budgetingWithDiaries?.budgeting
+    val budgetingDiaries = budgetingWithDiaries?.diaries
+
+    val kebutuhanPokok = budgetingDiaries?.filter { diary ->
+        budgetAllocations[0].kategori.any { it.id == diary.categoryId }
+    }
+
+    val keinginan = budgetingDiaries?.filter { diary ->
+        budgetAllocations[1].kategori.any { it.id == diary.categoryId }
+    }
+
+    val tabungan = budget?.savingsLimit
+
+    val updatedAllocations = allocation.map { allocation ->
+        val filteredDiaries = budgetingDiaries?.filter { diary ->
+            allocation.kategori.any { it.id == diary.categoryId }
+        } ?: emptyList()
+
+        val updatedKategori = allocation.kategori.map { category ->
+            val categoryBudgetUsed = filteredDiaries.filter { it.categoryId == category.id }
+                .sumOf { it.amount } // Total pengeluaran untuk kategori ini
+
+            category.copy(budgetUsed = categoryBudgetUsed) // Perbarui budgetUsed
+        }
+
+        allocation.copy(
+            kategori = updatedKategori // Perbarui kategori dengan budgetUsed
+        )
+    }
+
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Card(
+        Column(
             modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp), // Sesuaikan padding horizontal
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors().copy(
-                containerColor =  MaterialTheme.colorScheme.surface
-            ),
-            border = BorderStroke(2.dp, allocation.warna) // Border dengan warna dari alokasi
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Column(
+            MonthSelected(
+                onSelectedMonthChange = { selectedMonth ->
+                    monthAndYear = getCurrentMonthAndYearAsLong(selectedMonth)
+                    Toast.makeText(context, "Selected month: $monthAndYear", Toast.LENGTH_SHORT).show()
+                }
+            )
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                // Nama Alokasi dan Persentase
-                Text(
-                    text = "${allocation.namaAlokasi} (${allocation.persentase}%)",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                // Deskripsi Alokasi
-                Text(
-                    text = allocation.deskripsi,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-
-                // Daftar Kategori
-                if (allocation.kategori.isNotEmpty()) {
-                    Text(
-                        text = "Kategori:",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        allocation.kategori.forEach { category ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 2.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Expense.getIconByName(category.ikon),
-                                        contentDescription = category.namaKategori,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = category.namaKategori,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                                Text(
-                                    text = "- Rp ${allocation.budgetUsed}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
+                items(updatedAllocations) { budget ->
+                    BudgetAllocationCard(
+                        allocation = budget,
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                Toast.makeText(context, "Clicked ${budget.namaAlokasi}", Toast.LENGTH_SHORT).show()
                             }
-
-                        }
-                    }
-                } else {
-                    Text(
-                        text = "Tidak ada kategori.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        )
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+

@@ -18,7 +18,7 @@ import com.example.brofin.data.local.room.entity.UserBalanceEntity
         FinancialGoalsEntity::class,
         BudgetingDiaryEntity::class,
         BudgetingEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 

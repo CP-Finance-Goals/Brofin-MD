@@ -1,8 +1,6 @@
 package com.example.brofin.presentation.navigation
 
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
@@ -12,33 +10,21 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.brofin.presentation.authentication.login.LoginScreen
 import com.example.brofin.presentation.authentication.register.RegisterScreen
 import com.example.brofin.presentation.camera.CameraScreen
 import com.example.brofin.presentation.expenses.AddExpenses
 import com.example.brofin.presentation.main.HomeApp
-import com.example.brofin.presentation.main.budget.BudgetDetailScreen
-import com.example.brofin.presentation.main.budget.components.CreateBudgetScreen
 import com.example.brofin.presentation.setup.SetupIncome
 import com.example.brofin.presentation.splash.SplashScreen
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun Navigation() {
@@ -54,23 +40,6 @@ fun Navigation() {
         navController = navController,
         startDestination = NavScreen.Splash.route
     ){
-        composable(
-            route = NavScreen.SetupIncome.route,
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { 1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeIn(animationSpec = tween(durationMillis = 500))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeOut(animationSpec = tween(durationMillis = 500))
-            }
-        ){
-            SetupIncome()
-        }
         composable(
             route = NavScreen.Login.route,
             enterTransition = {
@@ -96,26 +65,23 @@ fun Navigation() {
                             inclusive = true
                         }
                     }
-                },
-                goSetupIncome = {
-                    navController.navigate(NavScreen.SetupIncome.route)
                 }
             )
         }
         composable(
             route = NavScreen.Home.route,
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { 1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeIn(animationSpec = tween(durationMillis = 500))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeOut(animationSpec = tween(durationMillis = 500))
-            }
+//            enterTransition = {
+//                slideInHorizontally(
+//                    initialOffsetX = { 1000 },
+//                    animationSpec = tween(durationMillis = 500)
+//                ) + fadeIn(animationSpec = tween(durationMillis = 500))
+//            },
+//            exitTransition = {
+//                slideOutHorizontally(
+//                    targetOffsetX = { -1000 },
+//                    animationSpec = tween(durationMillis = 500)
+//                ) + fadeOut(animationSpec = tween(durationMillis = 500))
+//            }
         ){
             HomeApp(
                 goLogin = {
@@ -124,9 +90,6 @@ fun Navigation() {
                             inclusive = true
                         }
                     }
-                },
-                goCreateBudget = {
-                    navController.navigate(NavScreen.CreateBudgetingDiary.route)
                 },
                 goCreateDiary = {
                     navController.navigate(NavScreen.AddDiaryBudget.route)
@@ -159,9 +122,6 @@ fun Navigation() {
                         }
                     }
                 },
-                goSetupIncome = {
-                        navController.navigate(NavScreen.SetupIncome.route)
-                }
             )
         }
         composable(
@@ -194,13 +154,6 @@ fun Navigation() {
                         }
                     }
                 },
-                goSetupIncome = {
-                    navController.navigate(NavScreen.SetupIncome.route) {
-                        popUpTo(NavScreen.Splash.route) {
-                            inclusive = true
-                        }
-                    }
-                }
             )
         }
         composable(
@@ -226,23 +179,6 @@ fun Navigation() {
                     navController.popBackStack()
                 },
             )
-        }
-        composable(
-            route = NavScreen.CreateBudgetingDiary.route,
-            enterTransition = {
-                slideInVertically(
-                    initialOffsetY = { 1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeIn(animationSpec = tween(durationMillis = 500))
-            },
-            exitTransition = {
-                slideOutVertically(
-                    targetOffsetY = { -1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeOut(animationSpec = tween(durationMillis = 500))
-            }
-        ){
-            CreateBudgetScreen {}
         }
         composable(
             route = NavScreen.AddDiaryBudget.route,
@@ -280,37 +216,5 @@ fun Navigation() {
                 }
             )
         }
-        composable(
-            route = NavScreen.DetailBudget.route,
-            enterTransition = {
-                slideInVertically(
-                    initialOffsetY = { 1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeIn(animationSpec = tween(durationMillis = 500))
-            },
-            exitTransition = {
-                slideOutVertically(
-                    targetOffsetY = { -1000 },
-                    animationSpec = tween(durationMillis = 500)
-                ) + fadeOut(animationSpec = tween(durationMillis = 500))
-            },
-            arguments = listOf(navArgument(NavArgument.ID) { type = NavType.StringType })
-        ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString(NavArgument.ID)
-
-            BudgetDetailScreen(
-                onBackClick = { /* TODO: Navigasi kembali */ },
-                onDeleteClick = { /* TODO: Aksi hapus */ },
-                onEditClick = { /* TODO: Aksi edit */ },
-                categoryName = "Shopping", // Ganti dengan data sesuai `id` jika tersedia
-                remainingAmount = "$0",    // Sesuaikan data berdasarkan `id`
-                color = Color.Gray.toArgb().toString(),        // Warna default atau sesuaikan
-                icon = Icons.Default.ShoppingCart, // Ikon atau gambar sesuai kategori
-                isOverLimit = true,        // Flag jika melebihi anggaran
-                progressColor = Color.Red, // Warna progress
-                progress = 1f              // Nilai progress
-            )
-        }
-
     }
 }

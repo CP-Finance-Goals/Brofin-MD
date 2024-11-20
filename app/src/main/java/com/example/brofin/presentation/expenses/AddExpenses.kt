@@ -3,22 +3,17 @@ package com.example.brofin.presentation.expenses
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -26,28 +21,25 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -65,7 +57,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -77,9 +68,11 @@ import com.example.brofin.domain.StateApp
 import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.expenses.components.AttachmentBottomSheet
 import com.example.brofin.presentation.expenses.components.CategoryModalBottomSheet
-import com.example.brofin.utils.PaymentMethode
+import com.example.brofin.presentation.main.home.components.CustomTextFieldTwo
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,14 +105,18 @@ fun AddExpenses(
     var idCategory by remember { mutableIntStateOf(0) }
     var description by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-    val date by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var photoUriData by remember { mutableStateOf<Uri?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var isDatePickerVisible by remember { mutableStateOf(false) }
+    var date by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
 
     LaunchedEffect(state) {
         when(state){
             is StateApp.Error -> {
                 isLoading = false
                 Toast.makeText(context, (state as StateApp.Error).exception, Toast.LENGTH_SHORT).show()
+                addExpensesViewModel.resetState()
             }
             StateApp.Idle -> {
                 isLoading = false
@@ -130,6 +127,7 @@ fun AddExpenses(
             is StateApp.Success ->{
                 isLoading = false
                 goback()
+                addExpensesViewModel.resetState()
             }
         }
     }
@@ -151,17 +149,20 @@ fun AddExpenses(
             )
         }
     ) { paddingValues ->
+
         Box(
             modifier = modifier
                 .padding(paddingValues)
-                .padding(16.dp)
-        ) {
 
+        ) {
+            LoadingDialog(showDialog = isLoading) {
+                isLoading = false
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.verticalScroll(scrollState)
+                modifier = Modifier.verticalScroll(scrollState).padding(16.dp)
             ) {
 
                 Row(
@@ -170,14 +171,19 @@ fun AddExpenses(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Tanggal: ${SimpleDateFormat("dd MMM yyyy").format(date)}",
+                        text = "Tanggal: ${SimpleDateFormat("dd MMMM yyyy", Locale("id")).format(Date(date))}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Pilih Tanggal"
+                        contentDescription = "Pilih Tanggal",
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                showDatePicker = true
+                            }
+                        )
                     )
                 }
 
@@ -209,44 +215,37 @@ fun AddExpenses(
                     }
                 }
 
-                // Amount Input
-                OutlinedTextField(
-                    value = amount,
-                    onValueChange = { amount = it },
-                    label = { Text("Jumlah") },
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                CustomTextFieldTwo(
+                    label = "Jumlah",
+                    text = amount,
+                    onTextChange = {
+                        amount = it
+                    },
+                    validate = {
+                        when {
+                            it.isEmpty() -> "Jumlah tidak boleh kosong"
+                            it.toDoubleOrNull() == null -> "Jumlah harus berupa angka"
+                            it.toDouble() < 0 -> "Jumlah tidak boleh kurang dari 0"
+                            else -> ""
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
                     ),
+                    singleLine = true,
+                    maxLines = 1,
                 )
 
-                // Description Input
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    shape = RoundedCornerShape(16.dp),
-                    label = { Text("Deskripsi (Opsional)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
+                CustomTextFieldTwo(
+                    label = "Catatan (Opsional)",
+                    text = description,
+                    onTextChange = {
+                        description = it
+                    },
                     maxLines = 4,
-                    colors = OutlinedTextFieldDefaults.colors(
-
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.primary
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-
-                    )
-
-
+                    height = 120.dp,
+                    singleLine = false
+                )
 
                 DashedBorderCard(onClick = {
                     attachmentVisible = true
@@ -261,27 +260,21 @@ fun AddExpenses(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = {
-                        val parsedAmount = if (amount.isNotEmpty()) {
-                            try {
-                                amount.toDouble()
-                            } catch (e: NumberFormatException) {
-                                Toast.makeText(context, "Jumlah tidak valid", Toast.LENGTH_SHORT).show()
-                                return@Button
+                        when{
+                            amount.isEmpty() -> Toast.makeText(context, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                            amount.toDoubleOrNull() == null -> Toast.makeText(context, "Jumlah harus berupa angka", Toast.LENGTH_SHORT).show()
+                            amount.toDouble() < 0 -> Toast.makeText(context, "Jumlah tidak boleh kurang dari 0", Toast.LENGTH_SHORT).show()
+                            selectedCategory == "Pilih Kategori" -> Toast.makeText(context, "Kategori tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                            else -> {
+                                addExpensesViewModel.insert(
+                                    date = date,
+                                    amount = amount.toDouble(),
+                                    description = description,
+                                    photoUri = photoUriData.toString(),
+                                    categoryId = idCategory,
+                                )
                             }
-
-                        } else {
-                            Toast.makeText(context, "Jumlah harus diisi", Toast.LENGTH_SHORT).show()
-                            return@Button
                         }
-
-                        addExpensesViewModel.insert(
-                            date = date,
-                            photoUri = photoUriData.toString(),
-                            description = description,
-                            amount = parsedAmount,
-                            categoryId = idCategory,
-                            isExpense = true,
-                        )
                     }
                 ) {
                     Text("Tambahkan Pengeluaran")
@@ -304,8 +297,6 @@ fun AddExpenses(
                     )
                 }
 
-
-
                 if (isVisible) {
                     CategoryModalBottomSheet(
                         bottomSheetState = bottomSheetState,
@@ -316,7 +307,7 @@ fun AddExpenses(
                         onClick = { category ->
                             Toast.makeText(
                                 context,
-                                "Kategori ${category.namaKategori} dipilih",
+                                "Kategori ${category.id} dipilih",
                                 Toast.LENGTH_SHORT
                             ).show()
                             scope.launch { bottomSheetState.hide() }
@@ -337,7 +328,7 @@ fun AddExpenses(
                         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                     ) {
                         AttachmentBottomSheet(onClick = { id ->
-                            val selectedAttachment = when (id) {
+                            when (id) {
                                 1 -> {
                                     goCamera()
                                     "Kamera"
@@ -357,12 +348,47 @@ fun AddExpenses(
                 }
             }
 
-            LoadingDialog(showDialog = isLoading) {
-                isLoading = false
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                datePickerState.selectedDateMillis?.let {
+                                    date = it
+                                }
+                                showDatePicker = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text("Pilih")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            isDatePickerVisible = false
+                            showDatePicker = false
+                        }) {
+                            Text("Batal")
+                        }
+                    },
+                    content = {
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = true
+                        )
+                    }
+                )
+
             }
         }
     }
 }
+
+
 
 @Composable
 fun DashedBorderCard(onClick: () -> Unit) {
@@ -426,49 +452,3 @@ fun DashedBorderCard(onClick: () -> Unit) {
         }
     }
 }
-
-@Composable
-fun PaymentMethodSelector(
-    selectedPaymentMethod: PaymentMethode?,
-    onPaymentMethodSelected: (PaymentMethode) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val paymentMethods = PaymentMethode.entries
-
-    Column {
-        Text(
-            text = "Pilih Metode Pembayaran",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        // Dropdown Button
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Button(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = selectedPaymentMethod?.name ?: "Pilih Metode")
-            }
-
-            // Dropdown Menu
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                paymentMethods.forEach { method ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onPaymentMethodSelected(method)
-                            expanded = false
-                        },
-                        text = {
-                            Text(text = method.name)
-                        }
-
-                    )
-                }
-            }
-        }
-    }
-}
-

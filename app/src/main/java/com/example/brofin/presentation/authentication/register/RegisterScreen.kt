@@ -62,8 +62,7 @@ import com.example.brofin.presentation.components.LoadingDialog
 fun RegisterScreen(
     goBack: () -> Unit,
     goHome: () -> Unit,
-    viewmodel: AuthViewModel = hiltViewModel(),
-    goSetupIncome: () -> Unit
+    viewmodel: AuthViewModel = hiltViewModel()
 ) {
 
     val stateRegister = viewmodel.authState.collectAsStateWithLifecycle(initialValue = AuthState.Idle)
@@ -74,7 +73,6 @@ fun RegisterScreen(
     var name by remember { mutableStateOf("") }
 
     var confirmPassword by remember { mutableStateOf("") }
-
     val animationAlpha = remember { Animatable(0f) }
     val nameAlpha = remember { Animatable(0f) }
     val emailAlpha = remember { Animatable(0f) }
@@ -82,7 +80,6 @@ fun RegisterScreen(
     val passwordAlpha2 = remember { Animatable(0f) }
     val buttonAlpha = remember { Animatable(0f) }
     val buttonAlpha3 = remember { Animatable(0f) }
-
 
     var snackbarMessage by remember { mutableStateOf<String?>("") }
     var showSnackbar by remember { mutableStateOf(false) }
@@ -123,10 +120,6 @@ fun RegisterScreen(
                 showLoadingDialog = false
                 snackbarMessage = state.message.toString()
                 showSnackbar = true
-            }
-            is AuthState.SetupIncome -> {
-                showLoadingDialog = false
-                goSetupIncome()
             }
             else -> {
                 showLoadingDialog = false

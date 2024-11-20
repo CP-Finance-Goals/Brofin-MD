@@ -68,7 +68,6 @@ fun LoginScreen(
     goToRegister: () -> Unit,
     goHome: () -> Unit,
     viewmodel: AuthViewModel = hiltViewModel(),
-    goSetupIncome: () -> Unit
 ) {
 
     val state by viewmodel.authState.collectAsStateWithLifecycle()
@@ -123,10 +122,6 @@ fun LoginScreen(
                 showLoadingDialog = false
                 snackbarMessage = stateData.message.toString()
                 showSnackbar = true
-            }
-            is AuthState.SetupIncome -> {
-                showLoadingDialog = false
-                goSetupIncome()
             }
             else -> {
                 showLoadingDialog = false

@@ -17,6 +17,7 @@ interface BrofinRepository {
     fun getUserCurrentBalance(userId: String, monthAndYear: Long): Flow<Double?>
     fun getUserBalance(userId: String, monthAndYear: Long): Flow<Double?>
     suspend fun userBalanceExists(userId: String, monthAndYear: Long): Boolean
+    fun getTotalSavings(userId: String): Flow<Double?>
 
     // Financial Goals Methods
     suspend fun insertFinancialGoal(goal: FinancialGoals)
@@ -27,8 +28,7 @@ interface BrofinRepository {
     // Budgeting Methods
     suspend fun insertBudget(budget: Budgeting)
     fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetWithDiaries>
-    fun getAllBudgetsWithDiaries(userId: String): Flow<List<BudgetWithDiaries>>
-
+    fun isUserBudgetingExist(monthAndYear: Long, userId: String): Flow<Boolean>
 
     // Budgeting Diary Methods
     suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary)
@@ -37,15 +37,22 @@ interface BrofinRepository {
     suspend fun deleteBudgetingDiaryEntry(entryId: Int)
     suspend fun deleteAllBudgetingDiaryEntries()
     fun filterBudgetingDiaries(
-        startDate: Long? = null,
-        endDate: Long? = null,
-        isExpense: Boolean? = null,
-        minAmount: Double? = null,
-        maxAmount: Double? = null
+        userId: String,
+        monthAndYear: Long?,
+        startDate: Long?,
+        endDate: Long?,
+        isExpense: Boolean?,
+        minAmount: Double?,
+        maxAmount: Double?,
+        sortBy: String,
+        sortOrder: String
     ): Flow<List<BudgetingDiaryEntity?>>
 
-    fun getTotalIncome(): Flow<Double?>
-    fun getTotalExpenses(): Flow<Double?>
+    fun getTotalExpenses(
+        monthAndYear: Long,
+        userId: String
+    ): Flow<Double?>
+
     fun getBudgetingDiaryEntriesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiary?>> // Flow to get entries by date range
 
 }

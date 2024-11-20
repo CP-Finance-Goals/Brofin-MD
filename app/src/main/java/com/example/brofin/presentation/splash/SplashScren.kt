@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,23 +29,31 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.example.brofin.presentation.authentication.components.LottieAnimationOnce
 import com.example.brofin.utils.AppFonts
 import kotlinx.coroutines.delay
+
 @Composable
 fun SplashScreen(
     goHome: () -> Unit,
     goLogin: () -> Unit,
-    goSetupIncome: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
-    // Mengobservasi state dari ViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState) {
         delay(2000) // Menunggu splash animasi selesai
 
-        when {
-            uiState.isUserLoggedIn == true && uiState.userBalanceExist == true -> goHome()
-            uiState.isUserLoggedIn == true && uiState.userBalanceExist == false -> goSetupIncome()
-            uiState.isUserLoggedIn == false -> goLogin()
+        when (uiState.isUserLoggedIn) {
+            true -> {
+                // Jika user login, arahkan ke Home
+                goHome()
+            }
+            false -> {
+                // Jika user belum login, arahkan ke Login
+                goLogin()
+            }
+            null -> {
+                // Log jika state tidak valid
+                Log.e("SplashScreen", "User logged in state is null")
+            }
         }
     }
 
@@ -56,6 +63,7 @@ fun SplashScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
+            // Tampilan utama SplashScreen
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -63,7 +71,6 @@ fun SplashScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Animasi Lottie
                 LottieAnimationOnce(iterarion = LottieConstants.IterateForever)
             }
 
@@ -98,6 +105,7 @@ fun SplashScreen(
         }
     }
 }
+
 
 @Composable
 fun SlidingText(text: String) {

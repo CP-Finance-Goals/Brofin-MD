@@ -15,6 +15,7 @@ fun UserBalanceEntity.toUser() = UserBalance(
     userId = userId,
     balance = balance,
     currentBalance = currentBalance,
+    savings = savings
 )
 
 fun BudgetingEntity.toBudgetingDiary() = Budgeting(
@@ -35,7 +36,7 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
     amount = amount,
     isExpense = isExpense,
     photoUri = "",
-    categoryId = 1,
+    categoryId = categoryId,
     monthAndYear = monthAndYear
 )
 
@@ -55,7 +56,8 @@ fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
     userId = userId,
     currentBalance = currentBalance,
     monthAndYear = monthAndYear,
-    balance = balance
+    balance = balance,
+    savings = savings
 )
 
 fun Budgeting.toBudgetingEntity() = BudgetingEntity(

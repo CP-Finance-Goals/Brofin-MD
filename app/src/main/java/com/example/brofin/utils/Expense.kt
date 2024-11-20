@@ -20,7 +20,8 @@ data class CategoryExpenses(
     val namaKategori: String, // Nama kategori pengeluaran, misalnya "Makanan", "Transportasi"
     val deskripsi: String, // Deskripsi singkat tentang kategori
     val ikon: String, // Nama ikon atau URL ikon untuk mewakili kategori (opsional)
-    val warna: String // Kode warna untuk tampilan kategori (misalnya, "#FF5733" untuk warna merah)
+    val warna: String, // Kode warna untuk tampilan kategori (misalnya, "#FF5733" untuk warna merah)
+    val budgetUsed: Double = 0.0 // Budget yang sudah digunakan (dalam Rupiah)
 )
 
 object Expense {
@@ -30,6 +31,7 @@ object Expense {
             namaKategori = "Makanan",
             deskripsi = "Pengeluaran untuk makanan dan minuman sehari-hari",
             ikon = "",
+            budgetUsed = 0.0,
             warna = "#FF5733"
         ),
         CategoryExpenses(
@@ -37,6 +39,7 @@ object Expense {
             namaKategori = "Transportasi",
             deskripsi = "Pengeluaran untuk biaya transportasi seperti bensin, tiket, dan parkir",
             ikon = "Commute",
+            budgetUsed = 0.0,
             warna = "#33AFFF"
         ),
         CategoryExpenses(
@@ -44,6 +47,7 @@ object Expense {
             namaKategori = "Hiburan",
             deskripsi = "Pengeluaran untuk aktivitas hiburan, seperti nonton, rekreasi, dan hobi",
             ikon = "Movie",
+            budgetUsed = 0.0,
             warna = "#FFD700"
         ),
         CategoryExpenses(
@@ -51,6 +55,7 @@ object Expense {
             namaKategori = "Kesehatan",
             deskripsi = "Pengeluaran untuk biaya kesehatan seperti obat, cek kesehatan, dan asuransi",
             ikon = "HealthAndSafety",
+            budgetUsed = 0.0,
             warna = "#4CAF50"
         ),
         CategoryExpenses(
@@ -58,6 +63,7 @@ object Expense {
             namaKategori = "Pendidikan",
             deskripsi = "Pengeluaran untuk biaya pendidikan, buku, dan kursus",
             ikon = "School",
+            budgetUsed = 0.0,
             warna = "#FFA500"
         ),
         CategoryExpenses(
@@ -65,6 +71,7 @@ object Expense {
             namaKategori = "Pakaian",
             deskripsi = "Pengeluaran untuk kebutuhan pakaian dan aksesoris",
             ikon = "",
+            budgetUsed = 0.0,
             warna = "#8A2BE2"
         ),
         CategoryExpenses(
@@ -72,6 +79,7 @@ object Expense {
             namaKategori = "Tag ihan dan Utilitas",
             deskripsi = "Pengeluaran untuk tagihan bulanan seperti listrik, air, dan internet",
             ikon = "",
+            budgetUsed = 0.0,
             warna = "#FF4500"
         ),
         CategoryExpenses(
@@ -79,6 +87,7 @@ object Expense {
             namaKategori = "Belanja",
             deskripsi = "Pengeluaran untuk belanja kebutuhan pokok",
             ikon = "ShoppingCart",
+            budgetUsed = 0.0,
             warna = "#FF4081"
         ),
         CategoryExpenses(
@@ -86,10 +95,17 @@ object Expense {
             namaKategori = "Lain-lain",
             deskripsi = "Pengeluaran untuk hal-hal di luar kategori utama",
             ikon = "",
+            budgetUsed = 0.0,
             warna = "#A9A9A9"
         )
 
     )
+
+    fun getNameById(id: Int): String? {
+        return categoryExpensesLists.find{
+            it.id == id
+        }?.namaKategori
+    }
 
 
     // Fungsi untuk memetakan string ikon menjadi ImageVector
@@ -119,7 +135,6 @@ object Expense {
                     categoryExpensesLists[6], // Tagihan dan Utilitas
                 ),
                 warna = Color(0xFF4CAF50), // Hijau untuk Kebutuhan Pokok
-                budgetUsed = 500000 // Contoh budget yang digunakan
             ),
             BudgetAllocation(
                 id = 2,
@@ -132,7 +147,6 @@ object Expense {
                     categoryExpensesLists[8], // Lain-lain
                 ),
                 warna = Color(0xFFFFC107), // Kuning untuk Keinginan
-                budgetUsed = 1500000 // Contoh budget yang digunakan
 
             ),
             BudgetAllocation(
@@ -142,8 +156,6 @@ object Expense {
                 persentase = 20,
                 kategori = emptyList(),
                 warna = Color(0xFF2196F3), // Biru untuk Tabungan
-                budgetUsed = 500000 // Contoh budget yang digunakan
-
             )
         )
 
@@ -156,5 +168,4 @@ data class BudgetAllocation(
     val persentase: Int, // Persentase dari total anggaran
     val warna: Color, // Warna unik untuk alokasi
     val kategori: List<CategoryExpenses>, // Daftar kategori yang termasuk dalam alokasi ini
-    val budgetUsed: Int // Budget yang sudah digunakan (dalam Rupiah)
 )

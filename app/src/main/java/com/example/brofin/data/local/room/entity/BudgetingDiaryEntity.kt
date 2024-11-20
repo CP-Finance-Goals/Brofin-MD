@@ -17,6 +17,7 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index(value = ["monthAndYear"])]
 )
+
 data class BudgetingDiaryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val userId: String,

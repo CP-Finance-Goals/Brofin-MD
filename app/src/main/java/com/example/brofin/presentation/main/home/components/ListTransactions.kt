@@ -6,22 +6,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.utils.Expense
 import com.example.brofin.utils.toFormattedDate
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.brofin.utils.toIndonesianCurrency
 
 @Composable
 fun ListTransactions(budgetList: List<BudgetingDiary?>) {
@@ -92,7 +90,7 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
 
            }
            LazyColumn {
-                items(budgetList) { budgetingDiary ->
+                items(budgetList.take(3)) { budgetingDiary ->
                      if (budgetingDiary != null) {
                           DiaryItem(budgetingDiary = budgetingDiary)
                           if (budgetList.indexOf(budgetingDiary) != budgetList.size - 1) {
@@ -111,6 +109,14 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
 @Composable
 fun DiaryItem(budgetingDiary: BudgetingDiary) {
     val date =  budgetingDiary.date.toFormattedDate()
+    fun trimToMaxWords(text: String, maxWords: Int): String {
+        val words = text.split(" ")
+        return if (words.size > maxWords) {
+            words.take(maxWords).joinToString(" ") + "..."
+        } else {
+            text
+        }
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,27 +125,36 @@ fun DiaryItem(budgetingDiary: BudgetingDiary) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
+            Text(
+                text = Expense.getNameById(budgetingDiary.categoryId) ?: "Tidak diketahui",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             if (budgetingDiary.description != null){
                 Text(
-                    text = budgetingDiary.description,
+                    text = trimToMaxWords(budgetingDiary.description, 5),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Text(
                 text = date,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
 
         Text(
-            text = if (budgetingDiary.isExpense) "-Rp ${budgetingDiary.amount}" else "+Rp ${budgetingDiary.amount}",
-            style = MaterialTheme.typography.bodySmall,
+            text = if (budgetingDiary.isExpense)"-${budgetingDiary.amount.toIndonesianCurrency()}" else "+${budgetingDiary.amount.toIndonesianCurrency()}",
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = if (budgetingDiary.isExpense) Color.Red.copy(alpha = 0.7f) else Color.Green.copy(alpha = 0.7f)
         )
     }
+
+
 }
 

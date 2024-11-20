@@ -22,7 +22,7 @@ import com.example.brofin.presentation.settings.SettingScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit, goCreateBudget: () -> Unit, goCreateDiary: () -> Unit) {
+fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit, goCreateDiary: () -> Unit) {
 
     val state = viewmodel.isUserLoggedIn.collectAsState(true)
 

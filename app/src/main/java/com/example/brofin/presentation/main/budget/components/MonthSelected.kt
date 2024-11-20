@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -26,19 +27,22 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun MonthSelected(modifier: Modifier = Modifier) {
-
+fun MonthSelected(
+    onSelectedMonthChange: (Long) -> Unit
+) {
     var currentMonthIndex by remember { mutableIntStateOf(Calendar.getInstance().get(Calendar.MONTH)) }
     var currentYear by remember { mutableIntStateOf(Calendar.getInstance().get(Calendar.YEAR)) }
-
-    val formattedMonthAndYear: String
 
     val calendar = Calendar.getInstance().apply {
         set(Calendar.MONTH, currentMonthIndex)
         set(Calendar.YEAR, currentYear)
     }
-    val dateFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
-    formattedMonthAndYear = dateFormat.format(calendar.time)
+
+    val formattedMonthAndYear = SimpleDateFormat("MMMM yyyy", Locale("id", "ID")).format(calendar.time)
+
+    LaunchedEffect(calendar.timeInMillis) {
+        onSelectedMonthChange(calendar.timeInMillis)
+    }
 
     Row(
         modifier = Modifier

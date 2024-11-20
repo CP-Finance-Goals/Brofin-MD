@@ -121,6 +121,8 @@ dependencies {
     implementation(libs.onetapcompose)
     implementation(libs.kotlinx.coroutines.play.services)
 
+    // Material
+    implementation("com.google.android.material:material:1.9.0")
 
     // Pager
     implementation(libs.accompanist.pager)
