@@ -27,6 +27,16 @@ interface BudgetingDiaryDao {
     @Query("SELECT * FROM budgeting_diary ORDER BY date DESC")
     fun getAllBudgetingDiaries(): Flow<List<BudgetingDiaryEntity?>>
 
+    @Query("""
+        SELECT * 
+        FROM budgeting_diary
+        WHERE userId = :userId
+        ORDER BY date DESC
+        LIMIT 3
+    """)
+    fun getLatestBudgetingDiaries(userId: String): Flow<List<BudgetingDiaryEntity>>
+
+
     // query ini digunakan untuk mengambil total income
     @Query("SELECT SUM(amount) FROM budgeting_diary WHERE isExpense = 0")
     fun getTotalIncome(): Flow<Double?>

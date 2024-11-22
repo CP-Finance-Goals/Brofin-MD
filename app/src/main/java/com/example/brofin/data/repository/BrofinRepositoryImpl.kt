@@ -157,9 +157,13 @@ class BrofinRepositoryImpl (
     }
 
     // fungsi ini untuk mendapatkan semua data budgeting diary yang ada
-    override fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary?>> = budgetingDiaryDao.getAllBudgetingDiaries().map { entries ->
-        entries.map { it?.toBudgetingDiary()}
+    override fun getAllBudgetingDiaryEntries(userId: String): Flow<List<BudgetingDiary?>> {
+        return budgetingDiaryDao.getLatestBudgetingDiaries(userId = userId).map { entries ->
+            entries.map { it.toBudgetingDiary() }
+        }
     }
+
+
 
     // fungsi ini untuk mengupdate data budgeting diary
     override suspend fun updateBudgetingDiaryEntry(entry: BudgetingDiary) {

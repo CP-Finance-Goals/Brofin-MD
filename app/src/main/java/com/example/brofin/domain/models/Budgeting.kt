@@ -1,5 +1,8 @@
 package com.example.brofin.domain.models
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Budgeting (
     val monthAndYear: Long,
     val userId: String,

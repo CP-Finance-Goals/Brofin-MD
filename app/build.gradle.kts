@@ -122,7 +122,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
 
     // Material
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.material)
+
+    // Moshi
+    implementation (libs.moshi)
+    implementation (libs.moshi.kotlin)
+    implementation (libs.moshi.adapters)
+
 
     // Pager
     implementation(libs.accompanist.pager)

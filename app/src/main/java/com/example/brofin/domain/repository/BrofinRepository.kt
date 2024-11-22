@@ -32,7 +32,7 @@ interface BrofinRepository {
 
     // Budgeting Diary Methods
     suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary)
-    fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary?>>
+    fun getAllBudgetingDiaryEntries(userId: String): Flow<List<BudgetingDiary?>>
     suspend fun updateBudgetingDiaryEntry(entry: BudgetingDiary)
     suspend fun deleteBudgetingDiaryEntry(entryId: Int)
     suspend fun deleteAllBudgetingDiaryEntries()

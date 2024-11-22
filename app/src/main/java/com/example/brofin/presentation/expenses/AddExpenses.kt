@@ -109,7 +109,7 @@ fun AddExpenses(
     var showDatePicker by remember { mutableStateOf(false) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
     var date by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date)
 
     LaunchedEffect(state) {
         when(state){

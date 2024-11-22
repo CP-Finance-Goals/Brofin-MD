@@ -15,9 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.brofin.domain.models.Budgeting
+import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.presentation.authentication.login.LoginScreen
 import com.example.brofin.presentation.authentication.register.RegisterScreen
 import com.example.brofin.presentation.camera.CameraScreen
@@ -40,6 +44,18 @@ fun Navigation() {
         navController = navController,
         startDestination = NavScreen.Splash.route
     ){
+        composable(
+            route = "detail_budgeting",
+            arguments = listOf(
+                navArgument("budgeting") { type = NavType.ParcelableType(Budgeting::class.java) },
+                navArgument("diaries") { type = NavType.ParcelableArrayType(BudgetingDiary::class.java) }
+            )
+        ) { backStackEntry ->
+            val budgeting = backStackEntry.arguments?.getParcelable<Budgeting>("budgeting")
+            val diaries = backStackEntry.arguments?.getParcelableArray("diaries")?.toList() as? List<BudgetingDiary>
+            DetailAllocationScreen(budgeting, diaries)
+        }
+
         composable(
             route = NavScreen.Login.route,
             enterTransition = {

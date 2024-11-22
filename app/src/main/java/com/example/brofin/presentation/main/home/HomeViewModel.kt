@@ -56,9 +56,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    val budgetingDiaries = brofinRepository.getAllBudgetingDiaryEntries()
-        .onStart { emit(emptyList()) }
-        .catch { emit(emptyList()) }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val budgetingDiaries = userIdFlow.flatMapLatest { userId ->
+        if (userId != null) {
+            brofinRepository.getAllBudgetingDiaryEntries(userId)
+                .onStart { emit(emptyList()) }
+                .catch { emit(emptyList()) }
+        } else {
+            flowOf(emptyList())
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val totalIncome = userIdFlow.flatMapLatest { userId ->
