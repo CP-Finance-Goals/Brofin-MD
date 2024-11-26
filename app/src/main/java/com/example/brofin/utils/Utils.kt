@@ -9,6 +9,14 @@ fun getCurrentMonthAndYearInIndonesian(): String {
     return formatter.format(Date(System.currentTimeMillis()))
 }
 
+
+fun Double.toIndonesianCurrency2(): String {
+    val numberFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    val formattedAmount = numberFormat.format(this)
+
+    return formattedAmount.replace("Rp", "Rp ").replace("IDR", "").replace(",00", ",-")
+}
+
 fun getCurrentMonthAndYearAsLong(): Long {
     val calendar = Calendar.getInstance()
     val dateFormat = SimpleDateFormat("yyyyMM", Locale("id", "ID")) // Format untuk Long

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,12 +27,50 @@ class AddExpensesViewModel @Inject constructor(
     private val _addState = MutableStateFlow<StateApp<Boolean>>(StateApp.Idle)
     val addState = _addState.asStateFlow()
 
+    private val _amount = MutableStateFlow("")
+    val amount = _amount.asStateFlow()
+    private val _description = MutableStateFlow("")
+    val description = _description.asStateFlow()
+    private val _selectedCategory = MutableStateFlow("Pilih Kategori")
+    val selectedCategory = _selectedCategory.asStateFlow()
+    private val _date = MutableStateFlow(System.currentTimeMillis())
+    val date = _date.asStateFlow()
+    private val _idCategory = MutableStateFlow(0)
+    val idCategory = _idCategory.asStateFlow()
+
+    fun setCategoryId(id: Int) {
+        _idCategory.value = id
+    }
+
+    fun setAmount(amount: String) {
+        _amount.value = amount
+    }
+
+    fun setDescription(description: String) {
+        _description.value = description
+    }
+
+    fun setCategory(category: String) {
+        _selectedCategory.value = category
+    }
+
+
+    fun setDate(date: Long) {
+        _date.value = date
+    }
+
+    fun reset() {
+        _amount.value = ""
+        _description.value = ""
+        _selectedCategory.value = "Pilih Kategori"
+        _date.value = System.currentTimeMillis()
+    }
+
     fun resetState() {
         _addState.value = StateApp.Idle
     }
 
     private fun isDateValid(date: Long): Boolean {
-        // Awal hari ini
         val todayStart = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -39,7 +78,6 @@ class AddExpensesViewModel @Inject constructor(
             set(Calendar.MILLISECOND, 0)
         }.timeInMillis
 
-        // Akhir hari ini
         val todayEnd = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 23)
             set(Calendar.MINUTE, 59)
@@ -47,13 +85,11 @@ class AddExpensesViewModel @Inject constructor(
             set(Calendar.MILLISECOND, 999)
         }.timeInMillis
 
-        // Awal hari sebelumnya
         val yesterdayStart = Calendar.getInstance().apply {
             timeInMillis = todayStart
             add(Calendar.DAY_OF_YEAR, -1)
         }.timeInMillis
 
-        // Valid jika tanggal berada di antara hari sebelumnya dan akhir hari ini
         return date in yesterdayStart..todayEnd
     }
 
@@ -63,8 +99,7 @@ class AddExpensesViewModel @Inject constructor(
         photoUri: String? = null,
         description: String? = null,
         amount: Double,
-        categoryId: Int,
-        isExpense: Boolean = true,
+        categoryId: Int
     ) {
         viewModelScope.launch {
             _addState.value = StateApp.Loading
@@ -74,17 +109,16 @@ class AddExpensesViewModel @Inject constructor(
                 _addState.value = StateApp.Error("Kamu Belum Login")
                 return@launch
             }
+
             Log.d("AddExpensesViewModel", "insert: $date")
 
-//            hanya di bulan yang sama yang bisa menambahkan
             val validation = decodeMonthAndYearFromLong(date)
-            if (validation != getCurrentMonthAndYearInIndonesian()){
+            if (validation != getCurrentMonthAndYearInIndonesian()) {
                 Log.d("AddExpensesViewModel", "insert: $validation ${getCurrentMonthAndYearInIndonesian()}")
                 _addState.value = StateApp.Error("Tanggal tidak sesuai")
                 return@launch
             }
 
-            // hanya bisa menambahkan data pada hari ini atau hari sebelumnya
             if (!isDateValid(date)) {
                 _addState.value = StateApp.Error("Tanggal tidak valid")
                 return@launch
@@ -99,19 +133,22 @@ class AddExpensesViewModel @Inject constructor(
                         description = description,
                         amount = amount,
                         categoryId = categoryId,
-                        isExpense = isExpense,
                         monthAndYear = getCurrentMonthAndYearAsLong(),
                     ),
                 )
 
                 _addState.value = StateApp.Success(true)
             } catch (e: IllegalArgumentException) {
-                // Jika terjadi kesalahan seperti saldo kurang
+                Log.e("AddExpensesViewModel", "Insert Error: IllegalArgumentException", e)
                 _addState.value = StateApp.Error(e.message ?: "Saldo tidak mencukupi")
+            } catch (e: TimeoutException) {
+                Log.e("AddExpensesViewModel", "Insert Error: TimeoutException", e)
+                _addState.value = StateApp.Error("Waktu habis, silakan coba lagi")
             } catch (e: Exception) {
-                // Jika ada error lain
+                Log.e("AddExpensesViewModel", "Insert Error: General Exception", e)
                 _addState.value = StateApp.Error("Gagal menambahkan data: ${e.message}")
             }
         }
     }
+
 }

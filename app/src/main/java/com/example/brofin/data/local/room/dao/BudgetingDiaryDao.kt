@@ -38,7 +38,7 @@ interface BudgetingDiaryDao {
 
 
     // query ini digunakan untuk mengambil total income
-    @Query("SELECT SUM(amount) FROM budgeting_diary WHERE isExpense = 0")
+    @Query("SELECT SUM(amount) FROM budgeting_diary ")
     fun getTotalIncome(): Flow<Double?>
 
     // query ini digunakan untuk mengambil total income berdasarkan bulan dan tahun sekarang
@@ -46,14 +46,13 @@ interface BudgetingDiaryDao {
     suspend fun insertAllDiaries(diaries: List<BudgetingDiaryEntity>)
 
     // query ini digunakan untuk mengambil total expenses
-    @Query("SELECT SUM(amount) FROM budgeting_diary WHERE isExpense = 1")
+    @Query("SELECT SUM(amount) FROM budgeting_diary")
     fun getTotalExpenses(): Flow<Double?>
 
     @Query("""
     SELECT SUM(amount)
     FROM budgeting_diary
-    WHERE isExpense = 1
-    AND userId = :userId
+    WHERE userId = :userId
     AND monthAndYear = :monthAndYear
 """)
     fun getTotalExpensesMonth(monthAndYear: Long, userId: String): Flow<Double?>
@@ -72,7 +71,6 @@ interface BudgetingDiaryDao {
         AND (:monthAndYear IS NULL OR strftime('%Y-%m', date / 1000, 'unixepoch') = strftime('%Y-%m', :monthAndYear / 1000, 'unixepoch'))
         AND (:startDate IS NULL OR date >= :startDate)
         AND (:endDate IS NULL OR date <= :endDate)
-        AND (:isExpense IS NULL OR isExpense = :isExpense)
         AND (:minAmount IS NULL OR amount >= :minAmount)
         AND (:maxAmount IS NULL OR amount <= :maxAmount)
     ORDER BY 
@@ -88,12 +86,9 @@ interface BudgetingDiaryDao {
         monthAndYear: Long? = null,
         startDate: Long? = null,
         endDate: Long? = null,
-        isExpense: Boolean? = null,
         minAmount: Double? = null,
         maxAmount: Double? = null,
         sortBy: String = "date",
         sortOrder: String = "desc"
     ): Flow<List<BudgetingDiaryEntity?>>
-
-
 }

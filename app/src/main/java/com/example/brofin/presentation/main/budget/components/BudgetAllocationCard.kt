@@ -27,13 +27,14 @@ import com.example.brofin.utils.toIndonesianCurrency
 @Composable
 fun BudgetAllocationCard(
     allocation: BudgetAllocation,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    limit: Double
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp), // Sesuaikan padding horizontal
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors().copy(
             containerColor =  MaterialTheme.colorScheme.surface
@@ -46,11 +47,24 @@ fun BudgetAllocationCard(
                 .padding(16.dp)
         ) {
             // Nama Alokasi dan Persentase
-            Text(
-                text = "${allocation.namaAlokasi} (${allocation.persentase}%)",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = allocation.namaAlokasi,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text  = "limit ${limit.toIndonesianCurrency()}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
             // Deskripsi Alokasi
             Text(
                 text = allocation.deskripsi,

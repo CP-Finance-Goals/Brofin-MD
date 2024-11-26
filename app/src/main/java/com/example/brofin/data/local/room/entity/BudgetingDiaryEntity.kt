@@ -17,15 +17,14 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index(value = ["monthAndYear"])]
 )
-
 data class BudgetingDiaryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val userId: String,
     val monthAndYear: Long,
     val date: Long,
     val photoUri: String? = null,
+    val photoUrl: String? = null,
     val description: String? = null,
     val amount: Double,
     val categoryId: Int,
-    val isExpense: Boolean = true
 )

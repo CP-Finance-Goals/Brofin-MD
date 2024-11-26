@@ -19,6 +19,9 @@ interface BudgetingDao {
 //    @Query("SELECT * FROM budgeting WHERE userId = :userId")
 //    fun getAllBudgetsWithDiaries(userId: String): Flow<BudgetWithDiaries>
 
+    @Query("SELECT * FROM budgeting WHERE monthAndYear = :monthAndYear LIMIT 1")
+    suspend fun getBudgetingByMonth(monthAndYear: Long): BudgetingEntity?
+
     @Query("""
         SELECT SUM(savingsLimit)
         FROM budgeting

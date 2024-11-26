@@ -2,12 +2,12 @@ package com.example.brofin.data.mapper
 
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.data.local.room.entity.BudgetingEntity
-import com.example.brofin.data.local.room.entity.FinancialGoalsEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
+import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
-import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.UserBalance
+import com.example.brofin.domain.models.UserProfile
 
 // To Domain
 fun UserBalanceEntity.toUser() = UserBalance(
@@ -15,6 +15,14 @@ fun UserBalanceEntity.toUser() = UserBalance(
     userId = userId,
     balance = balance,
     currentBalance = currentBalance,
+)
+
+fun UserProfileEntity.toUserProfile() = UserProfile(
+    id = id,
+    userId = userId,
+    name = name,
+    email = email,
+    photoUrl = photoUrl,
     savings = savings
 )
 
@@ -34,21 +42,20 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
     date = date,
     description = description,
     amount = amount,
-    isExpense = isExpense,
-    photoUri = "",
+    photoUri = photoUri,
     categoryId = categoryId,
     monthAndYear = monthAndYear
 )
 
-fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
-    id = id,
-    userId = userId,
-    photoUri = photoUri,
-    goalName = goalName,
-    targetAmount = targetAmount,
-    deadline = deadline,
-    createdAt = createdAt
-)
+//fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
+//    id = id,
+//    userId = userId,
+//    photoUri = photoUri,
+//    goalName = goalName,
+//    targetAmount = targetAmount,
+//    deadline = deadline,
+//    createdAt = createdAt
+//)
 
 
 // To Entity
@@ -57,6 +64,14 @@ fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
     currentBalance = currentBalance,
     monthAndYear = monthAndYear,
     balance = balance,
+)
+
+fun UserProfile.toUserProfileEntity() = UserProfileEntity(
+    id = id,
+    userId = userId,
+    name = name,
+    email = email,
+    photoUrl = photoUrl,
     savings = savings
 )
 
@@ -75,17 +90,16 @@ fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
     date = date,
     description = description,
     amount = amount,
-    isExpense = isExpense,
     photoUri = photoUri,
     categoryId = categoryId,
     monthAndYear = monthAndYear
 )
 
-fun FinancialGoals.toFinancialGoalsEntity() = FinancialGoalsEntity(
-    userId = userId,
-    photoUri = photoUri,
-    goalName = goalName,
-    targetAmount = targetAmount,
-    deadline = deadline,
-    createdAt = createdAt
-)
+//fun FinancialGoals.toFinancialGoalsEntity() = FinancialGoalsEntity(
+//    userId = userId,
+//    photoUri = photoUri,
+//    goalName = goalName,
+//    targetAmount = targetAmount,
+//    deadline = deadline,
+//    createdAt = createdAt
+//)

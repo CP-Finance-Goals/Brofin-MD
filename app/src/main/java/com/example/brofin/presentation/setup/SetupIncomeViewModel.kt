@@ -50,7 +50,6 @@ class SetupIncomeViewModel @Inject constructor(
                         monthAndYear = getCurrentMonthAndYearAsLong(),
                         currentBalance = income,
                         balance = income,
-                        savings = 0.0
                     )
                 )
 

@@ -20,9 +20,9 @@ interface BrofinRepository {
     fun getTotalSavings(userId: String): Flow<Double?>
 
     // Financial Goals Methods
-    suspend fun insertFinancialGoal(goal: FinancialGoals)
-    fun getAllFinancialGoals(): Flow<List<FinancialGoals?>>
-    suspend fun updateFinancialGoal(goal: FinancialGoals)
+//    suspend fun insertFinancialGoal(goal: FinancialGoals)
+//    fun getAllFinancialGoals(): Flow<List<FinancialGoals?>>
+//    suspend fun updateFinancialGoal(goal: FinancialGoals)
     suspend fun deleteFinancialGoal(goalId: Int)
 
     // Budgeting Methods
@@ -41,7 +41,6 @@ interface BrofinRepository {
         monthAndYear: Long?,
         startDate: Long?,
         endDate: Long?,
-        isExpense: Boolean?,
         minAmount: Double?,
         maxAmount: Double?,
         sortBy: String,

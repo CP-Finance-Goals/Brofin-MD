@@ -24,9 +24,6 @@ interface UserBalanceDao {
         return getUserBalanceByMonthAndYear(monthAndYear, userId) != null
     }
 
-    @Query("SELECT SUM(savings) FROM user_balance WHERE userId = :userId")
-    fun getTotalSavings(userId: String): Flow<Double?>
-
     @Query("SELECT currentBalance FROM user_balance WHERE userId = :userId AND monthAndYear = :monthAndYear")
     suspend fun getCurrentBalance(userId: String, monthAndYear: Long): Double?
 

@@ -13,16 +13,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.presentation.main.budget.BudgetScreen
 import com.example.brofin.presentation.main.financials.FinancialScreen
 import com.example.brofin.presentation.main.home.HomeScreen
 import com.example.brofin.presentation.main.navigation.home.BottomNavigationBar
 import com.example.brofin.presentation.main.navigation.home.bottomNavItems
 import com.example.brofin.presentation.settings.SettingScreen
+import com.example.brofin.utils.BudgetAllocation
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit, goCreateDiary: () -> Unit) {
+fun HomeApp(
+    viewmodel: HomeAppViewModel= hiltViewModel(),
+    goLogin: () -> Unit,
+    goCreateDiary: () -> Unit,
+    goAddFinancialPlan: () -> Unit,
+    goDetail: (List<BudgetingDiary>, BudgetAllocation, Double) -> Unit
+) {
 
     val state = viewmodel.isUserLoggedIn.collectAsState(true)
 
@@ -44,9 +52,6 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit, g
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-//            AppBar(title = "Brofin")
-        },
         bottomBar = {
             BottomNavigationBar(
                 currentPage = pagerState.currentPage,
@@ -73,11 +78,13 @@ fun HomeApp(viewmodel: HomeAppViewModel= hiltViewModel(), goLogin: () -> Unit, g
         ) { page ->
             when (page) {
                 0 -> HomeScreen()
-                1 -> BudgetScreen()
-                2 -> FinancialScreen()
-                3 ->  SettingScreen(
-                    goLogin = goLogin
+                1 -> BudgetScreen(
+                    goDetail = goDetail
                 )
+                2 -> FinancialScreen(
+                    goAddFinancialPlan = goAddFinancialPlan
+                )
+                3 ->  SettingScreen()
             }
         }
     }

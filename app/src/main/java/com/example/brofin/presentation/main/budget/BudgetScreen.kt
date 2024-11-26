@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,15 +23,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.brofin.data.mapper.toBudgetingDiary
+import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.presentation.main.budget.components.BudgetAllocationCard
 import com.example.brofin.presentation.main.budget.components.MonthSelected
+import com.example.brofin.utils.BudgetAllocation
 import com.example.brofin.utils.Expense.budgetAllocations
 import com.example.brofin.utils.getCurrentMonthAndYearAsLong
 
 @Composable
 fun BudgetScreen(
     modifier: Modifier = Modifier,
-    viewModel: BudgetViewModel = hiltViewModel()
+    viewModel: BudgetViewModel = hiltViewModel(),
+    goDetail: (List<BudgetingDiary>, BudgetAllocation, Double) -> Unit
 ) {
 
     val allocation = budgetAllocations
@@ -42,8 +46,26 @@ fun BudgetScreen(
 
     val budgetingWithDiaries by viewModel.getBudgetingDiariesByMonthAndYear(monthAndYear).collectAsStateWithLifecycle(null)
 
-//    val budget = budgetingWithDiaries?.budgeting
-    val budgetingDiaries = budgetingWithDiaries?.diaries
+    val budgetingDiaries = budgetingWithDiaries?.diaries?.map {
+        it .toBudgetingDiary()
+    }
+
+    val limitKeinginan = budgetingWithDiaries?.budgeting?.wantsLimit
+    val limitKebutuhan = budgetingWithDiaries?.budgeting?.essentialNeedsLimit
+    val limitTabungan = budgetingWithDiaries?.budgeting?.savingsLimit
+
+    val diariesPokok = budgetingDiaries?.filter {
+        it.categoryId == 1 || it.categoryId == 2 || it.categoryId == 4 || it.categoryId == 5 || it.categoryId == 7
+    }
+
+    val diariesKeinginan = budgetingDiaries?.filter {
+        it.categoryId == 3 || it.categoryId == 6  || it.categoryId == 9
+    }
+
+    val listDiaries = listOf(diariesPokok, diariesKeinginan)
+
+
+    val listBudget = listOf(limitKebutuhan, limitKeinginan, limitTabungan)
 
     val updatedAllocations = allocation.map { allocation ->
         val filteredDiaries = budgetingDiaries?.filter { diary ->
@@ -86,14 +108,29 @@ fun BudgetScreen(
                     .padding(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                items(updatedAllocations) { budget ->
+                itemsIndexed(updatedAllocations) { index, budget ->
                     BudgetAllocationCard(
                         allocation = budget,
                         modifier = Modifier.clickable(
                             onClick = {
-                                Toast.makeText(context, "Clicked ${budget.namaAlokasi}", Toast.LENGTH_SHORT).show()
+                               if(diariesPokok != null && diariesKeinginan != null){
+                                   if (budget.namaAlokasi == "Tabungan" ){
+                                       Toast.makeText(
+                                           context,
+                                           "Tidak ada data untuk tabungan",
+                                           Toast.LENGTH_SHORT
+                                       ).show()
+                                   } else {
+                                       goDetail(listDiaries[index] ?: emptyList(), budget, listBudget[index] ?: 0.0)
+                                   }
+                               }
+
+                               else{
+                                   Toast.makeText(context, "Tidak ada data", Toast.LENGTH_SHORT).show()
+                               }
                             }
-                        )
+                        ),
+                        limit = listBudget[index] ?: 0.0
                     )
                 }
             }

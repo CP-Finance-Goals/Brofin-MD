@@ -57,7 +57,7 @@ fun ListBudgeting(
 fun BudgetItem(budgetingDiary: BudgetingDiary) {
     val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
     val date = dateFormat.format(Date(budgetingDiary.date))
-    val amountColor = if (budgetingDiary.isExpense) Color.Red else Color(0xff006400)
+    val amountColor = Color.Red.copy(alpha = 0.7f)
 
     Card(
         modifier = Modifier
@@ -93,11 +93,12 @@ fun BudgetItem(budgetingDiary: BudgetingDiary) {
                }
 
                Text(
-                   text = if (budgetingDiary.isExpense) "- ${budgetingDiary.amount.toIndonesianCurrency()}" else "+ ${budgetingDiary.amount.toIndonesianCurrency()}",
-                   style = MaterialTheme.typography.bodyLarge,
+                   text = "-${budgetingDiary.amount.toIndonesianCurrency()}",
+                   style = MaterialTheme.typography.bodyMedium,
                    fontWeight = FontWeight.Bold,
                    color = amountColor
                )
+
            }
           if (budgetingDiary.description != null){
               Text(

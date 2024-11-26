@@ -1,3 +1,5 @@
+package com.example.brofin.presentation.main.home.components
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -6,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,7 +53,10 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
            modifier = Modifier
                .fillMaxWidth()
                .padding(vertical = 4.dp),
-           shape = MaterialTheme.shapes.medium,
+           shape = MaterialTheme.shapes.large,
+           elevation = CardDefaults.cardElevation(
+               defaultElevation = 6.dp
+           )
        ) {
            Row(
                 modifier = Modifier
@@ -76,7 +82,6 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
                        .align(Alignment.CenterVertically),
                    colors = ButtonDefaults.buttonColors(
                        containerColor = MaterialTheme.colorScheme.primary,
-                       contentColor = MaterialTheme.colorScheme.onPrimary
                    ),
                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary)
                ) {
@@ -84,12 +89,17 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
                        text = "Lihat semua",
                        style = MaterialTheme.typography.bodySmall,
                        fontWeight = FontWeight.Bold,
+                          color = MaterialTheme.colorScheme.onPrimary
                    )
                }
-
-
            }
-           LazyColumn {
+           LazyColumn(
+                modifier = Modifier
+                     .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                    )
+           ) {
                 items(budgetList.take(3)) { budgetingDiary ->
                      if (budgetingDiary != null) {
                           DiaryItem(budgetingDiary = budgetingDiary)
@@ -148,11 +158,12 @@ fun DiaryItem(budgetingDiary: BudgetingDiary) {
         }
 
         Text(
-            text = if (budgetingDiary.isExpense)"-${budgetingDiary.amount.toIndonesianCurrency()}" else "+${budgetingDiary.amount.toIndonesianCurrency()}",
+            text = "-${budgetingDiary.amount.toIndonesianCurrency()}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            color = if (budgetingDiary.isExpense) Color.Red.copy(alpha = 0.7f) else Color.Green.copy(alpha = 0.7f)
+            color = Color.Red.copy(alpha = 0.7f)
         )
+
     }
 
 

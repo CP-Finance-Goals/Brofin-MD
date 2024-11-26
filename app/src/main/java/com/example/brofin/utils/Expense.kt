@@ -1,20 +1,39 @@
 package com.example.brofin.utils
 
+
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Commute
-import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.LocalDrink
-import androidx.compose.material.icons.filled.LocalLaundryService
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
+object ColorSerializer : KSerializer<Color> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("Color", PrimitiveKind.LONG)
+
+    override fun serialize(encoder: Encoder, value: Color) {
+        encoder.encodeLong(value.value.toLong())
+    }
+
+    override fun deserialize(decoder: Decoder): Color {
+        return Color(decoder.decodeLong())
+    }
+}
+
+
+@Serializable
 data class CategoryExpenses(
     val id: Int, // ID unik untuk kategori
     val namaKategori: String, // Nama kategori pengeluaran, misalnya "Makanan", "Transportasi"
@@ -48,7 +67,7 @@ object Expense {
             deskripsi = "Pengeluaran untuk aktivitas hiburan, seperti nonton, rekreasi, dan hobi",
             ikon = "Movie",
             budgetUsed = 0.0,
-            warna = "#FFD700"
+            warna = "#4CAF50"
         ),
         CategoryExpenses(
             id = 4,
@@ -76,7 +95,7 @@ object Expense {
         ),
         CategoryExpenses(
             id = 7,
-            namaKategori = "Tag ihan dan Utilitas",
+            namaKategori = "Tagihan dan Utilitas",
             deskripsi = "Pengeluaran untuk tagihan bulanan seperti listrik, air, dan internet",
             ikon = "",
             budgetUsed = 0.0,
@@ -161,11 +180,14 @@ object Expense {
 
 }
 
+
+@Serializable
 data class BudgetAllocation(
     val id: Int, // ID unik untuk kategori utama
     val namaAlokasi: String, // Nama alokasi, misalnya "Kebutuhan Pokok"
     val deskripsi: String, // Deskripsi singkat tentang alokasi
     val persentase: Int, // Persentase dari total anggaran
+    @Serializable(with = ColorSerializer::class)
     val warna: Color, // Warna unik untuk alokasi
     val kategori: List<CategoryExpenses>, // Daftar kategori yang termasuk dalam alokasi ini
 )

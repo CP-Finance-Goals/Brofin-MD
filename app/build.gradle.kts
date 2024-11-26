@@ -6,6 +6,8 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.kotlin.serialization)
+
 }
 
 android {
@@ -129,6 +131,13 @@ dependencies {
     implementation (libs.moshi.kotlin)
     implementation (libs.moshi.adapters)
 
+    // Worker
+    implementation("androidx.startup:startup-runtime:1.2.0")
+
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     // Pager
     implementation(libs.accompanist.pager)

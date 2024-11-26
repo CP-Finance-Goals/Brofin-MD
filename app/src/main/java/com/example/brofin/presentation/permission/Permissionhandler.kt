@@ -15,6 +15,7 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionHandler(
+    message: String? = null,
     multiplePermissionsState: MultiplePermissionsState,
     onPermissionGranted: () -> Unit,
     onPermissionDenied: (text: String) -> Unit,
@@ -47,7 +48,12 @@ fun PermissionHandler(
             onDismissRequest = { },
             title = { Text("Izin Diperlukan") },
             text = {
-                Text("Aplikasi memerlukan izin untuk mengakses fitur ini. Jika ditolak, aplikasi tidak dapat bekerja dengan optimal.")
+
+                if (message != null) {
+                    Text(message)
+                } else {
+                    Text("Aplikasi memerlukan izin untuk mengakses fitur ini. Jika ditolak, aplikasi tidak dapat bekerja dengan optimal.")
+                }
             },
             confirmButton = {
                 Button(

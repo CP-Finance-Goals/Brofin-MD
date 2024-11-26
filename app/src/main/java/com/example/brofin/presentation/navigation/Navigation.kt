@@ -1,6 +1,7 @@
 package com.example.brofin.presentation.navigation
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
@@ -20,15 +21,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.presentation.authentication.login.LoginScreen
 import com.example.brofin.presentation.authentication.register.RegisterScreen
 import com.example.brofin.presentation.camera.CameraScreen
+import com.example.brofin.presentation.detail.DetailBudgetAllocation
 import com.example.brofin.presentation.expenses.AddExpenses
 import com.example.brofin.presentation.main.HomeApp
-import com.example.brofin.presentation.setup.SetupIncome
+import com.example.brofin.presentation.main.financials.CreateFinancialGoal
 import com.example.brofin.presentation.splash.SplashScreen
+import com.example.brofin.utils.BudgetAllocation
+import kotlinx.serialization.json.Json
 
 @Composable
 fun Navigation() {
@@ -45,16 +48,67 @@ fun Navigation() {
         startDestination = NavScreen.Splash.route
     ){
         composable(
-            route = "detail_budgeting",
-            arguments = listOf(
-                navArgument("budgeting") { type = NavType.ParcelableType(Budgeting::class.java) },
-                navArgument("diaries") { type = NavType.ParcelableArrayType(BudgetingDiary::class.java) }
-            )
-        ) { backStackEntry ->
-            val budgeting = backStackEntry.arguments?.getParcelable<Budgeting>("budgeting")
-            val diaries = backStackEntry.arguments?.getParcelableArray("diaries")?.toList() as? List<BudgetingDiary>
-            DetailAllocationScreen(budgeting, diaries)
+            route = NavScreen.AddFinancialPlan.route,
+        ){
+            CreateFinancialGoal()
         }
+        composable(
+            route = NavScreen.DetailBudget.route,
+            arguments = listOf(
+                navArgument(NavArgument.BUDGETDIARY) { type = NavType.StringType },
+                navArgument(NavArgument.ALLOCATION) { type = NavType.StringType },
+                navArgument(NavArgument.LIMIT) { type = NavType.StringType }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { 1000 },
+                    animationSpec = tween(durationMillis = 500)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -1000 },
+                    animationSpec = tween(durationMillis = 500)
+                ) + fadeOut(animationSpec = tween(durationMillis = 500))
+            }
+        ) { backStackEntry ->
+
+            val budgetingDiaryJson = backStackEntry.arguments?.getString(NavArgument.BUDGETDIARY)
+            val budgetingJson = backStackEntry.arguments?.getString(NavArgument.ALLOCATION)
+            val limit = backStackEntry.arguments?.getString(NavArgument.LIMIT)
+
+            val budgetingDiary = try {
+                budgetingDiaryJson?.let { Json.decodeFromString<List<BudgetingDiary>>(it) } ?: emptyList()
+            } catch (e: Exception) {
+                Log.e("Navigation", "Error decoding JSON: ${e.message}")
+                emptyList()
+            }
+
+            val budgeting = try {
+                budgetingJson?.let { Json.decodeFromString<BudgetAllocation>(it) }
+            } catch (e: Exception) {
+                Log.e("Navigation", "Error decoding JSON: ${e.message}")
+                null
+            }
+
+            if (budgetingDiary.isEmpty() || budgeting == null || budgeting.kategori.isEmpty()) {
+                navController.navigate(NavScreen.Home.route) {
+                    popUpTo(NavScreen.Home.route) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                DetailBudgetAllocation(
+                    limit = limit?.toDouble() ?: 0.0,
+                    allocation = budgeting,
+                    diaries = budgetingDiary,
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+
 
         composable(
             route = NavScreen.Login.route,
@@ -109,6 +163,12 @@ fun Navigation() {
                 },
                 goCreateDiary = {
                     navController.navigate(NavScreen.AddDiaryBudget.route)
+                },
+                goAddFinancialPlan = {
+                    navController.navigate(NavScreen.AddFinancialPlan.route)
+                },
+                goDetail = { diaries, allocation, limit ->
+                    navController.navigate(NavScreen.DetailBudget.createRoute(diaries, allocation, limit))
                 }
             )
         }
@@ -194,6 +254,7 @@ fun Navigation() {
                 goBack = {
                     navController.popBackStack()
                 },
+
             )
         }
         composable(
@@ -228,7 +289,11 @@ fun Navigation() {
                     navController.navigate(NavScreen.Camera.route)
                 },
                 goback = {
+                    photoUri = null
                     navController.popBackStack()
+                },
+                backHandler = {
+                    photoUri = null
                 }
             )
         }

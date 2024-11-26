@@ -2,6 +2,7 @@ package com.example.brofin.presentation.expenses
 
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,8 +42,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,6 +64,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.brofin.R
 import com.example.brofin.domain.StateApp
+import com.example.brofin.presentation.components.ErrorDialog
 import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.expenses.components.AttachmentBottomSheet
 import com.example.brofin.presentation.expenses.components.CategoryModalBottomSheet
@@ -84,10 +84,17 @@ fun AddExpenses(
     goCamera: () -> Unit,
     goGallery: () -> Unit,
     goback: () -> Unit,
+    backHandler: () -> Unit,
     addExpensesViewModel: AddExpensesViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
         currentBackStack()
+    }
+
+    BackHandler(enabled = true) {
+        backHandler()
+        goback()
+        addExpensesViewModel.reset()
     }
 
     val state by addExpensesViewModel.addState.collectAsStateWithLifecycle()
@@ -97,35 +104,41 @@ fun AddExpenses(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
-
+    val errorDialog = remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
     var attachmentVisible by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf("Pilih Kategori") }
-    var idCategory by remember { mutableIntStateOf(0) }
-    var description by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
+    var idCategory = addExpensesViewModel.idCategory.collectAsStateWithLifecycle().value
+    val amount = addExpensesViewModel.amount.collectAsStateWithLifecycle().value
+    val description = addExpensesViewModel.description.collectAsStateWithLifecycle().value
+    val selectedCategory = addExpensesViewModel.selectedCategory.collectAsStateWithLifecycle().value
+    var date = addExpensesViewModel.date.collectAsStateWithLifecycle().value
     var photoUriData by remember { mutableStateOf<Uri?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
-    var date by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date)
+
+
 
     LaunchedEffect(state) {
         when(state){
             is StateApp.Error -> {
                 isLoading = false
+                errorDialog.value = true
                 Toast.makeText(context, (state as StateApp.Error).exception, Toast.LENGTH_SHORT).show()
                 addExpensesViewModel.resetState()
             }
             StateApp.Idle -> {
+                errorDialog.value = false
                 isLoading = false
             }
             StateApp.Loading -> {
+                errorDialog.value = false
                 isLoading = true
             }
             is StateApp.Success ->{
                 isLoading = false
+                Toast.makeText(context, "Pengeluaran berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                 goback()
                 addExpensesViewModel.resetState()
             }
@@ -157,6 +170,18 @@ fun AddExpenses(
         ) {
             LoadingDialog(showDialog = isLoading) {
                 isLoading = false
+            }
+
+            when (state) {
+                is StateApp.Error -> {
+                    ErrorDialog(
+                        showDialog = errorDialog.value,
+                        message = (state as StateApp.Error).exception
+                    ) {
+                        errorDialog.value = false
+                    }
+                }
+                else -> {}
             }
 
             Column(
@@ -219,7 +244,7 @@ fun AddExpenses(
                     label = "Jumlah",
                     text = amount,
                     onTextChange = {
-                        amount = it
+                        addExpensesViewModel.setAmount(it)
                     },
                     validate = {
                         when {
@@ -240,7 +265,7 @@ fun AddExpenses(
                     label = "Catatan (Opsional)",
                     text = description,
                     onTextChange = {
-                        description = it
+                        addExpensesViewModel.setDescription(it)
                     },
                     maxLines = 4,
                     height = 120.dp,
@@ -273,6 +298,7 @@ fun AddExpenses(
                                     photoUri = photoUriData.toString(),
                                     categoryId = idCategory,
                                 )
+                                addExpensesViewModel.reset()
                             }
                         }
                     }
@@ -312,8 +338,8 @@ fun AddExpenses(
                             ).show()
                             scope.launch { bottomSheetState.hide() }
                             isVisible = false
-                            selectedCategory = category.namaKategori
-                            idCategory = category.id
+                            addExpensesViewModel.setCategory(category.namaKategori)
+                            addExpensesViewModel.setCategoryId(category.id)
                         }
                     )
                 }
@@ -355,7 +381,7 @@ fun AddExpenses(
                         Button(
                             onClick = {
                                 datePickerState.selectedDateMillis?.let {
-                                    date = it
+                                    addExpensesViewModel.setDate(it)
                                 }
                                 showDatePicker = false
                             },

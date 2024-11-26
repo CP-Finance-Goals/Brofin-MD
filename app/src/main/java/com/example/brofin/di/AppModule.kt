@@ -4,6 +4,7 @@ import com.example.brofin.data.local.room.dao.BudgetingDao
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
+import com.example.brofin.data.local.room.dao.UserProfileDao
 import com.example.brofin.data.repository.BrofinRepositoryImpl
 import com.example.brofin.domain.repository.BrofinRepository
 import dagger.Module
@@ -23,9 +24,10 @@ object AppModule {
         userBalanceDao: UserBalanceDao,
         budgetingDiaryDao: BudgetingDiaryDao,
         financialGoalsDao: FinancialGoalsDao,
-        budgetingDao: BudgetingDao
+        budgetingDao: BudgetingDao,
+        userProfileDao: UserProfileDao
     ): BrofinRepository {
-        return BrofinRepositoryImpl(userBalanceDao, financialGoalsDao, budgetingDiaryDao, budgetingDao)
+        return BrofinRepositoryImpl(userBalanceDao, financialGoalsDao, budgetingDiaryDao, budgetingDao, userProfileDao)
     }
 
 }

@@ -11,5 +11,4 @@ data class UserBalanceEntity(
     val userId: String,
     val balance: Double? = null,
     val currentBalance: Double? = null,
-    val savings: Double? = null
 )

@@ -7,6 +7,7 @@ import com.example.brofin.data.local.room.dao.BudgetingDao
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
+import com.example.brofin.data.local.room.dao.UserProfileDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +42,9 @@ object DatabaseModule {
 
     @Provides
     fun provideBudgetingDao(storyDatabase: BrofinDatabase): BudgetingDao = storyDatabase.budgetingDao()
+
+    @Provides
+    fun provideUserProfileDao(storyDatabase: BrofinDatabase): UserProfileDao = storyDatabase.userProfileDao()
 
 
 }
