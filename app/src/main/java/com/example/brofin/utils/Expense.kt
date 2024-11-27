@@ -190,4 +190,5 @@ data class BudgetAllocation(
     @Serializable(with = ColorSerializer::class)
     val warna: Color, // Warna unik untuk alokasi
     val kategori: List<CategoryExpenses>, // Daftar kategori yang termasuk dalam alokasi ini
+    var budgetUsed: Double = 0.0 // Total pengeluaran yang sudah digunakan dalam alokasi ini
 )

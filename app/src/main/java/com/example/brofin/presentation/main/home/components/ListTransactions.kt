@@ -25,7 +25,7 @@ import com.example.brofin.utils.toFormattedDate
 import com.example.brofin.utils.toIndonesianCurrency
 
 @Composable
-fun ListTransactions(budgetList: List<BudgetingDiary?>) {
+fun ListTransactions(budgetList: List<BudgetingDiary?>, goList: () -> Unit) {
     if (budgetList.isEmpty()) {
         Card(
             modifier = Modifier
@@ -76,7 +76,9 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>) {
                )
 
                Button(
-                   onClick = { /*TODO*/ },
+                   onClick = {
+                          goList()
+                   },
                    modifier = Modifier
                        .padding(16.dp)
                        .align(Alignment.CenterVertically),

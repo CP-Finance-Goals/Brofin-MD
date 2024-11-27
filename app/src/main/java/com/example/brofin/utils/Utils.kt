@@ -1,14 +1,30 @@
 package com.example.brofin.utils
 
+import android.os.Build
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 
 fun getCurrentMonthAndYearInIndonesian(): String {
     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     return formatter.format(Date(System.currentTimeMillis()))
 }
-
+fun getFormattedTimeInMillis(currentTimeMillis: Long): Long {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val zonedDateTime = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(currentTimeMillis),
+            ZoneId.of("Asia/Jakarta") // Waktu Indonesia Barat (WIB)
+        )
+        zonedDateTime.toInstant().toEpochMilli()
+    } else {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jakarta"))
+        calendar.timeInMillis = currentTimeMillis
+        calendar.timeInMillis
+    }
+}
 
 fun Double.toIndonesianCurrency2(): String {
     val numberFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))

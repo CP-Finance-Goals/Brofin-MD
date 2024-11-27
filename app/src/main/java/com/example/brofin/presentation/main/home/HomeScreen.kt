@@ -45,6 +45,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    goList: () -> Unit,
     viewmodel: HomeViewModel = hiltViewModel()
 ) {
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -89,7 +90,7 @@ fun HomeScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        ListTransactions(budgetList = diaries)
+        ListTransactions(budgetList = diaries, goList = goList)
 
         if (isSheetOpen) {
             ModalBottomSheet(

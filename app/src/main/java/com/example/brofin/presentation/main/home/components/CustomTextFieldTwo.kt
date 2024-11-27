@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
@@ -39,7 +40,8 @@ fun CustomTextFieldTwo(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
     height: Dp? = null,
-    maxLines: Int = 1
+    maxLines: Int = 1,
+    color: Color? = null
 ) {
     var isError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -53,7 +55,11 @@ fun CustomTextFieldTwo(
             errorMessage = validate(newValue)
             isError = errorMessage.isNotEmpty()
         },
-        label = { Text(label) },
+        label = { Text(
+            label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (color != null) color.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+        ) },
         leadingIcon = leadingIcon,
         trailingIcon = {
             if (isPassword) {

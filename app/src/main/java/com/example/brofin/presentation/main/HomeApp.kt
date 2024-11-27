@@ -28,8 +28,8 @@ fun HomeApp(
     viewmodel: HomeAppViewModel= hiltViewModel(),
     goLogin: () -> Unit,
     goCreateDiary: () -> Unit,
-    goAddFinancialPlan: () -> Unit,
-    goDetail: (List<BudgetingDiary>, BudgetAllocation, Double) -> Unit
+    goDetail: (List<BudgetingDiary>, BudgetAllocation, Double) -> Unit,
+    goList: () -> Unit,
 ) {
 
     val state = viewmodel.isUserLoggedIn.collectAsState(true)
@@ -41,7 +41,6 @@ fun HomeApp(
             }
         }
     }
-
 
     val pagerState = rememberPagerState(
         pageCount = { bottomNavItems.size },
@@ -70,21 +69,13 @@ fun HomeApp(
             modifier = Modifier.padding(innerPadding),
             flingBehavior = PagerDefaults.flingBehavior(
                 state = pagerState,
-//                snapAnimationSpec = spring(
-//                    dampingRatio = Spring.DampingRatioMediumBouncy,
-//                    stiffness = Spring.StiffnessLow
-//                )
             )
         ) { page ->
             when (page) {
-                0 -> HomeScreen()
-                1 -> BudgetScreen(
-                    goDetail = goDetail
-                )
-                2 -> FinancialScreen(
-                    goAddFinancialPlan = goAddFinancialPlan
-                )
-                3 ->  SettingScreen()
+                0 -> HomeScreen(goList = goList)
+                1 -> BudgetScreen(goDetail = goDetail)
+                2 -> FinancialScreen()
+                3 -> SettingScreen()
             }
         }
     }

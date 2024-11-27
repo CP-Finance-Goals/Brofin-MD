@@ -12,5 +12,5 @@ data class UserProfileEntity (
     val name: String?,
     val email: String?,
     val photoUrl: String?,
-    val savings: Double?,
+    val savings: Double = 0.0,
 )

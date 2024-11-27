@@ -2,13 +2,23 @@ package com.example.brofin.domain.repository
 
 import com.example.brofin.data.local.room.entity.BudgetWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
-import com.example.brofin.domain.models.FinancialGoals
 import com.example.brofin.domain.models.UserBalance
+import com.example.brofin.utils.BudgetAllocation
 import kotlinx.coroutines.flow.Flow
 
 interface BrofinRepository {
+    // Mengambil total amount berdasarkan list categoryId dan monthAndYear
+    fun getTotalAmountByCategoryAndMonth(
+        userId: String,
+        categoryIds: List<Int>,
+        monthAndYear: Long
+    ): Flow<Double>
+
+    suspend fun getBudgetingByMonth(monthAndYear: Long): Budgeting?
+
 
     // User Methods
     suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary,  monthAndYear: Long)
@@ -18,6 +28,9 @@ interface BrofinRepository {
     fun getUserBalance(userId: String, monthAndYear: Long): Flow<Double?>
     suspend fun userBalanceExists(userId: String, monthAndYear: Long): Boolean
     fun getTotalSavings(userId: String): Flow<Double?>
+
+    suspend fun getUserProfile(userId: String): UserProfileEntity?
+    suspend fun insertOrUpdateUserProfile(user: UserProfileEntity)
 
     // Financial Goals Methods
 //    suspend fun insertFinancialGoal(goal: FinancialGoals)
@@ -52,6 +65,6 @@ interface BrofinRepository {
         userId: String
     ): Flow<Double?>
 
-    fun getBudgetingDiaryEntriesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiary?>> // Flow to get entries by date range
+    fun getBudgetingDiaryEntriesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiary?>>
 
 }

@@ -26,6 +26,7 @@ import com.example.brofin.presentation.authentication.login.LoginScreen
 import com.example.brofin.presentation.authentication.register.RegisterScreen
 import com.example.brofin.presentation.camera.CameraScreen
 import com.example.brofin.presentation.detail.DetailBudgetAllocation
+import com.example.brofin.presentation.diaries.DiariesList
 import com.example.brofin.presentation.expenses.AddExpenses
 import com.example.brofin.presentation.main.HomeApp
 import com.example.brofin.presentation.main.financials.CreateFinancialGoal
@@ -48,9 +49,9 @@ fun Navigation() {
         startDestination = NavScreen.Splash.route
     ){
         composable(
-            route = NavScreen.AddFinancialPlan.route,
+            route = NavScreen.ListBudgetingDiary.route
         ){
-            CreateFinancialGoal()
+            DiariesList()
         }
         composable(
             route = NavScreen.DetailBudget.route,
@@ -140,18 +141,6 @@ fun Navigation() {
         }
         composable(
             route = NavScreen.Home.route,
-//            enterTransition = {
-//                slideInHorizontally(
-//                    initialOffsetX = { 1000 },
-//                    animationSpec = tween(durationMillis = 500)
-//                ) + fadeIn(animationSpec = tween(durationMillis = 500))
-//            },
-//            exitTransition = {
-//                slideOutHorizontally(
-//                    targetOffsetX = { -1000 },
-//                    animationSpec = tween(durationMillis = 500)
-//                ) + fadeOut(animationSpec = tween(durationMillis = 500))
-//            }
         ){
             HomeApp(
                 goLogin = {
@@ -164,12 +153,12 @@ fun Navigation() {
                 goCreateDiary = {
                     navController.navigate(NavScreen.AddDiaryBudget.route)
                 },
-                goAddFinancialPlan = {
-                    navController.navigate(NavScreen.AddFinancialPlan.route)
-                },
                 goDetail = { diaries, allocation, limit ->
                     navController.navigate(NavScreen.DetailBudget.createRoute(diaries, allocation, limit))
-                }
+                },
+                goList = {
+                    navController.navigate(NavScreen.ListBudgetingDiary.route)
+                },
             )
         }
         composable(

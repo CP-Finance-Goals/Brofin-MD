@@ -19,7 +19,7 @@ import com.example.brofin.data.local.room.entity.UserProfileEntity
         FinancialGoalsEntity::class,
         BudgetingDiaryEntity::class,
         BudgetingEntity::class,
-        UserProfileEntity::class],
+        UserProfileEntity::class,],
     version = 2,
     exportSchema = false
 )

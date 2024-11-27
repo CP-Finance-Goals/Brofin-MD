@@ -38,7 +38,7 @@ import com.example.brofin.utils.toIndonesianCurrency2
 fun DiariesItem(
     diary: BudgetingDiary,
     modifier: Modifier = Modifier,
-    color: Color
+    color: Color? = null
 ) {
     Card(
         modifier = modifier
@@ -48,7 +48,7 @@ fun DiariesItem(
         colors = CardDefaults.cardColors().copy(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, color)
+        border = BorderStroke(1.dp, color ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
     ) {
         Row(
             modifier = Modifier

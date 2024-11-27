@@ -7,12 +7,19 @@ import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
+import com.example.brofin.utils.BudgetAllocation
+import com.example.brofin.utils.Expense
 import com.example.brofin.utils.decodeMonthAndYearFromLong
 import com.example.brofin.utils.getCurrentMonthAndYearAsLong
 import com.example.brofin.utils.getCurrentMonthAndYearInIndonesian
+import com.example.brofin.utils.toIndonesianCurrency2
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeoutException
@@ -38,6 +45,22 @@ class AddExpensesViewModel @Inject constructor(
     private val _idCategory = MutableStateFlow(0)
     val idCategory = _idCategory.asStateFlow()
 
+    private val lisIdKebutuhan = Expense.budgetAllocations[0].kategori.map {
+        it.id
+    }
+
+    private val _limitKebutuhan = MutableStateFlow(0.0)
+    private val _limitKeinginan = MutableStateFlow(0.0)
+
+    private val lisIdKeinginan = Expense.budgetAllocations[1].kategori.map {
+        it.id
+    }
+
+    init {
+        _date.value = System.currentTimeMillis()
+        fetchTotalAmount(lisIdKebutuhan, getCurrentMonthAndYearAsLong())
+        fetchTotalAmount(lisIdKeinginan, getCurrentMonthAndYearAsLong())
+    }
     fun setCategoryId(id: Int) {
         _idCategory.value = id
     }
@@ -93,6 +116,29 @@ class AddExpensesViewModel @Inject constructor(
         return date in yesterdayStart..todayEnd
     }
 
+    suspend fun getBudgetingByMonth(monthAndYear: Long) = brofinRepository.getBudgetingByMonth(monthAndYear)
+
+    private val _totalAmountKebutuhan = MutableStateFlow<Double>(0.0)
+    private val _totalAmountKeinginan = MutableStateFlow<Double>(0.0)
+
+
+    private fun fetchTotalAmount(categoryIds: List<Int>, monthAndYear: Long) {
+        viewModelScope.launch {
+            val userId = authRepository.getCurrentUser()?.uid
+            if (userId != null) {
+                brofinRepository.getTotalAmountByCategoryAndMonth(userId, categoryIds, monthAndYear)
+                    .collect { amount ->
+                        if (categoryIds == lisIdKebutuhan) {
+                            _totalAmountKebutuhan.value = amount
+                        } else {
+                            _totalAmountKeinginan.value = amount
+                        }
+                    }
+            }
+        }
+
+    }
+
 
     fun insert(
         date: Long,
@@ -114,7 +160,10 @@ class AddExpensesViewModel @Inject constructor(
 
             val validation = decodeMonthAndYearFromLong(date)
             if (validation != getCurrentMonthAndYearInIndonesian()) {
-                Log.d("AddExpensesViewModel", "insert: $validation ${getCurrentMonthAndYearInIndonesian()}")
+                Log.d(
+                    "AddExpensesViewModel",
+                    "insert: $validation ${getCurrentMonthAndYearInIndonesian()}"
+                )
                 _addState.value = StateApp.Error("Tanggal tidak sesuai")
                 return@launch
             }
@@ -123,6 +172,26 @@ class AddExpensesViewModel @Inject constructor(
                 _addState.value = StateApp.Error("Tanggal tidak valid")
                 return@launch
             }
+            val budgeting = getBudgetingByMonth(getCurrentMonthAndYearAsLong())
+
+            _limitKebutuhan.value = budgeting?.essentialNeedsLimit ?: 0.0
+
+            _limitKeinginan.value = budgeting?.wantsLimit ?: 0.0
+
+            if (categoryId in lisIdKebutuhan) {
+                if (amount > _limitKebutuhan.value - _totalAmountKebutuhan.value) {
+                    _addState.value = StateApp.Error("Uang Alokasi Kebutuhan tidak mencukupi" +
+                            " sisa uang kamu untuk kebutuhan = ${(_limitKebutuhan.value - _totalAmountKebutuhan.value).toIndonesianCurrency2()}")
+                    return@launch
+                }
+            } else {
+                if (amount > _limitKeinginan.value - _totalAmountKeinginan.value) {
+                    _addState.value = StateApp.Error("Uang Alokasi Keinginan tidak mencukupi" +
+                            "sisa uang kamu untuk keinginan = ${(_limitKeinginan.value - _totalAmountKeinginan.value).toIndonesianCurrency2()}")
+                    return@launch
+                }
+            }
+
 
             try {
                 brofinRepository.insertBudgetingDiaryEntry(
@@ -150,5 +219,5 @@ class AddExpensesViewModel @Inject constructor(
             }
         }
     }
-
 }
+

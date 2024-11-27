@@ -36,22 +36,22 @@ class CameraRepositoryImpl @Inject constructor(
             controller.takePicture(
                 ContextCompat.getMainExecutor(application),
                 object : ImageCapture.OnImageCapturedCallback() {
-                    override fun onCaptureSuccess(image: ImageProxy) {
-                        // Lakukan proses pengambilan dan penyimpanan foto di Dispatchers.IO
-                        val scope = CoroutineScope(Dispatchers.IO)
-                        scope.launch {
-                            try {
-                                val uri = processAndSavePhoto(image)
-                                continuation.resume(uri) {
+                        override fun onCaptureSuccess(image: ImageProxy) {
+                            val scope = CoroutineScope(Dispatchers.IO)
+                            scope.launch {
+                                try {
+                                    val uri = processAndSavePhoto(image)
+
+                                    continuation.resume(uri) { cause, _, _ ->
+                                        onCancellation(cause)
+                                    }
+                                } catch (e: Exception) {
+                                    continuation.resumeWithException(e)
+                                } finally {
                                     image.close()
                                 }
-                            } catch (e: Exception) {
-                                continuation.resumeWithException(e)
-                            } finally {
-                                image.close()
                             }
                         }
-                    }
 
                     override fun onError(exception: ImageCaptureException) {
                         continuation.resumeWithException(exception)
@@ -59,13 +59,17 @@ class CameraRepositoryImpl @Inject constructor(
                 }
             )
 
+
             continuation.invokeOnCancellation {
                 Log.d("CameraRepositoryImpl", "takePhoto: Cancelled")
             }
         }
     }
 
-    // Proses dan Simpan Gambar ke MediaStore, kembalikan URI
+    private fun onCancellation(cause: Throwable) {
+        Log.d("CameraRepositoryImpl", "Camera capture was cancelled: ${cause.message}")
+    }
+
     private suspend fun processAndSavePhoto(image: ImageProxy): Uri {
         // Konversi ImageProxy ke Bitmap dan lakukan rotasi
         val bitmap = withContext(Dispatchers.IO) {
@@ -80,11 +84,9 @@ class CameraRepositoryImpl @Inject constructor(
             )
         }
 
-        // Panggil fungsi untuk menyimpan foto dan dapatkan URI
         return savePhoto(bitmap) ?: throw Exception("Failed to save photo")
     }
 
-    // Fungsi untuk menyimpan gambar ke MediaStore dan mengembalikan URI
     private suspend fun savePhoto(bitmap: Bitmap): Uri? {
         return withContext(Dispatchers.IO) {
             val resolver: ContentResolver = application.contentResolver
@@ -116,6 +118,7 @@ class CameraRepositoryImpl @Inject constructor(
                     uri
                 } catch (e: Exception) {
                     resolver.delete(uri, null, null)
+                    Log.e("CameraRepositoryImpl", "Error when save photo")
                     null
                 }
             }

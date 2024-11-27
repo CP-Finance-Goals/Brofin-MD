@@ -16,6 +16,7 @@ sealed class NavScreen(val route: String) {
     data object CreateBudgetingDiary: NavScreen("create_budgeting_diary")
     data object FinancialPlan: NavScreen("financial_plan")
     data object AddDiaryBudget: NavScreen("add_diary")
+    data object ListBudgetingDiary: NavScreen("list_budgeting_diary")
     data object AddFinancialPlan: NavScreen("add_financial_plan")
 
 //

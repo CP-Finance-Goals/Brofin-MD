@@ -69,6 +69,7 @@ import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.expenses.components.AttachmentBottomSheet
 import com.example.brofin.presentation.expenses.components.CategoryModalBottomSheet
 import com.example.brofin.presentation.main.home.components.CustomTextFieldTwo
+import com.example.brofin.utils.getFormattedTimeInMillis
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -112,11 +113,14 @@ fun AddExpenses(
     val amount = addExpensesViewModel.amount.collectAsStateWithLifecycle().value
     val description = addExpensesViewModel.description.collectAsStateWithLifecycle().value
     val selectedCategory = addExpensesViewModel.selectedCategory.collectAsStateWithLifecycle().value
-    var date = addExpensesViewModel.date.collectAsStateWithLifecycle().value
+    var date = getFormattedTimeInMillis(addExpensesViewModel.date.collectAsStateWithLifecycle().value)
     var photoUriData by remember { mutableStateOf<Uri?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date)
+    var message by remember {
+        mutableStateOf("")
+    }
 
 
 
@@ -125,8 +129,7 @@ fun AddExpenses(
             is StateApp.Error -> {
                 isLoading = false
                 errorDialog.value = true
-                Toast.makeText(context, (state as StateApp.Error).exception, Toast.LENGTH_SHORT).show()
-                addExpensesViewModel.resetState()
+                message = (state as StateApp.Error).exception
             }
             StateApp.Idle -> {
                 errorDialog.value = false
@@ -172,16 +175,16 @@ fun AddExpenses(
                 isLoading = false
             }
 
-            when (state) {
-                is StateApp.Error -> {
-                    ErrorDialog(
-                        showDialog = errorDialog.value,
-                        message = (state as StateApp.Error).exception
-                    ) {
+            if (errorDialog.value) {
+                ErrorDialog(
+                    showDialog = errorDialog.value,
+                    message = message,
+                    onDismissRequest = {
                         errorDialog.value = false
+                        addExpensesViewModel.resetState()
+
                     }
-                }
-                else -> {}
+                )
             }
 
             Column(

@@ -1,5 +1,6 @@
 package com.example.brofin.data.local.room.dao
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -91,4 +92,18 @@ interface BudgetingDiaryDao {
         sortBy: String = "date",
         sortOrder: String = "desc"
     ): Flow<List<BudgetingDiaryEntity?>>
+
+
+    @Query("""
+        SELECT SUM(amount) FROM budgeting_diary 
+        WHERE userId = :userId 
+        AND categoryId IN (:categoryIds)
+        AND monthAndYear = :monthAndYear
+    """)
+    fun getTotalAmountByCategoryAndMonth(
+        userId: String,
+        categoryIds: List<Int>,
+        monthAndYear: Long
+    ): Flow<Double>
 }
+

@@ -3,8 +3,10 @@ package com.example.brofin.presentation.main.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.brofin.data.mapper.toUserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.UserBalance
+import com.example.brofin.domain.models.UserProfile
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
 import com.example.brofin.utils.getCurrentMonthAndYearAsLong
@@ -24,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val userIdFlow = flow {
@@ -109,6 +111,41 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun updateProfileSavings(newSavings: Double) {
+        viewModelScope.launch {
+            try {
+                val userNow = brofinRepository.getUserProfile(authRepository.getCurrentUser()?.uid ?: "")
+
+                if (userNow != null) {
+                    val currentSavings = userNow.savings
+                    val updatedSavings = currentSavings + newSavings
+                    val updatedUser = userNow.copy(savings = updatedSavings)
+                    brofinRepository.insertOrUpdateUserProfile(updatedUser)
+                } else {
+                    Log.e("Profile Update", "User profile not found")
+                    val id = authRepository.getCurrentUser()?.uid ?: throw Exception("User not found")
+                    val name = authRepository.getCurrentUser()?.displayName ?: ""
+                    val email = authRepository.getCurrentUser()?.email ?: ""
+                    val photo = authRepository.getCurrentUser()?.photoUrl?.toString() ?: ""
+
+                    val userNew = UserProfile(
+                        userId = id,
+                        name = name,
+                        email = email,
+                        photoUrl = photo,
+                        savings = newSavings
+                    )
+                    brofinRepository.insertOrUpdateUserProfile(
+                       userNew.toUserProfileEntity()
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("Profile Update", "Error updating profile: ${e.message}")
+            }
+        }
+    }
+
+
     private fun insertBudgeting(income: Double) {
         viewModelScope.launch {
             try {
@@ -123,6 +160,8 @@ class HomeViewModel @Inject constructor(
                         isReminder = false
                     )
                 )
+
+                updateProfileSavings(income * 0.2)
             } catch (e: IllegalArgumentException){
                 Log.e(TAG, e.message ?: "Error on input data")
             } catch (e: Exception) {

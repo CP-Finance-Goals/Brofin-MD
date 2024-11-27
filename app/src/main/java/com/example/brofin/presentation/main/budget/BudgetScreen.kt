@@ -99,7 +99,6 @@ fun BudgetScreen(
             MonthSelected(
                 onSelectedMonthChange = { selectedMonth ->
                     monthAndYear = getCurrentMonthAndYearAsLong(selectedMonth)
-                    Toast.makeText(context, "Selected month: $monthAndYear", Toast.LENGTH_SHORT).show()
                 }
             )
             LazyColumn(
@@ -121,11 +120,14 @@ fun BudgetScreen(
                                            Toast.LENGTH_SHORT
                                        ).show()
                                    } else {
-                                       goDetail(listDiaries[index] ?: emptyList(), budget, listBudget[index] ?: 0.0)
+                                       val diaries = listDiaries[index] ?: emptyList()
+                                       if (diaries.isNotEmpty()) {
+                                           goDetail(diaries, budget, listBudget[index] ?: 0.0)
+                                       } else {
+                                           Toast.makeText(context, "Tidak ada data", Toast.LENGTH_SHORT).show()
+                                       }
                                    }
-                               }
-
-                               else{
+                               } else{
                                    Toast.makeText(context, "Tidak ada data", Toast.LENGTH_SHORT).show()
                                }
                             }

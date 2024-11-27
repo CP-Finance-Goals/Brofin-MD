@@ -33,20 +33,19 @@ fun BudgetAllocationCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp), // Sesuaikan padding horizontal
+            .padding(horizontal = 8.dp),
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors().copy(
             containerColor =  MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(2.dp, allocation.warna) // Border dengan warna dari alokasi
+        border = BorderStroke(2.dp, allocation.warna.copy(alpha = 0.6f))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Nama Alokasi dan Persentase
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -65,14 +64,12 @@ fun BudgetAllocationCard(
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
-            // Deskripsi Alokasi
             Text(
                 text = allocation.deskripsi,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-            // Daftar Kategori
             if (allocation.kategori.isNotEmpty()) {
                 Text(
                     text = "Kategori:",
@@ -97,7 +94,7 @@ fun BudgetAllocationCard(
                                 Icon(
                                     imageVector = Expense.getIconByName(category.ikon),
                                     contentDescription = category.namaKategori,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))

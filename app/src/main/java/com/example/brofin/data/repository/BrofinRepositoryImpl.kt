@@ -9,6 +9,7 @@ import com.example.brofin.data.local.room.dao.UserProfileDao
 import com.example.brofin.data.local.room.entity.BudgetWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
+import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.data.mapper.toBudgetingDiary
 import com.example.brofin.data.mapper.toBudgetingDiaryEntity
 import com.example.brofin.data.mapper.toBudgetingEntity
@@ -17,8 +18,10 @@ import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.repository.BrofinRepository
+import com.example.brofin.utils.BudgetAllocation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class BrofinRepositoryImpl (
@@ -32,6 +35,10 @@ class BrofinRepositoryImpl (
     // fungsi ini untuk menyimpan data user balance ke dalam database
     override suspend fun insertUserBalance(userBalance: UserBalance) {
         userBalanceDao.insertOrUpdateUserBalance(userBalance.toUserBalanceEntity())
+    }
+
+    override suspend fun getBudgetingByMonth(monthAndYear: Long): Budgeting? {
+        return budgetingDao.getBudgetingByMonth(monthAndYear)?.toBudgetingDiary()
     }
 
     // fungsi ini untuk menyimpan data budgeting diary ke dalam database
@@ -67,6 +74,15 @@ class BrofinRepositoryImpl (
         return userBalanceDao.getUserBalance(userId, monthAndYear).map { it?.currentBalance }
     }
 
+    // Mengambil total amount berdasarkan list categoryId dan monthAndYear
+    override fun getTotalAmountByCategoryAndMonth(
+        userId: String,
+        categoryIds: List<Int>,
+        monthAndYear: Long
+    ): Flow<Double> {
+        return budgetingDiaryDao.getTotalAmountByCategoryAndMonth(userId, categoryIds, monthAndYear)
+    }
+
     // fungsi ini untuk mendapatkan data user balance berdasarkan userId dan monthAndYear
     override fun getUserBalance(userId: String, monthAndYear: Long): Flow<Double?> {
         return userBalanceDao.getUserBalance(userId, monthAndYear).map { it?.balance }
@@ -80,6 +96,14 @@ class BrofinRepositoryImpl (
     // fungsi ini untuk mendapatkan total tabungan dari user berdasarkan userId
     override fun getTotalSavings(userId: String): Flow<Double?> {
         return userProfileDao.getTotalSavings(userId)
+    }
+
+    override suspend fun getUserProfile(userId: String): UserProfileEntity? {
+        return userProfileDao.getUserProfile2(userId)
+    }
+
+    override suspend fun insertOrUpdateUserProfile(user: UserProfileEntity) {
+        userProfileDao.insertOrUpdateUserProfile(user)
     }
 
     // fungsi ini dipakai untuk menyimpan data financial goal ke dalam database
