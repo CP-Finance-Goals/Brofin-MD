@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
+import com.example.brofin.domain.repository.datastore.UserPreferencesRepository
 import com.example.brofin.utils.getCurrentMonthAndYearAsLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,10 +19,14 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val brofinRepository: BrofinRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SplashUiState())
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
+
+    val userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
+
 
     init {
         checkUserStatus()

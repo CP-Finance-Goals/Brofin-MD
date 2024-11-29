@@ -1,12 +1,11 @@
 package com.example.brofin.domain.repository
 
-import com.example.brofin.data.local.room.entity.BudgetWithDiaries
+import com.example.brofin.data.local.room.entity.BudgetingWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.UserBalance
-import com.example.brofin.utils.BudgetAllocation
 import kotlinx.coroutines.flow.Flow
 
 interface BrofinRepository {
@@ -40,7 +39,7 @@ interface BrofinRepository {
 
     // Budgeting Methods
     suspend fun insertBudget(budget: Budgeting)
-    fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetWithDiaries>
+    fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetingWithDiaries>
     fun isUserBudgetingExist(monthAndYear: Long, userId: String): Flow<Boolean>
 
     // Budgeting Diary Methods
@@ -50,7 +49,6 @@ interface BrofinRepository {
     suspend fun deleteBudgetingDiaryEntry(entryId: Int)
     suspend fun deleteAllBudgetingDiaryEntries()
     fun filterBudgetingDiaries(
-        userId: String,
         monthAndYear: Long?,
         startDate: Long?,
         endDate: Long?,
@@ -62,7 +60,6 @@ interface BrofinRepository {
 
     fun getTotalExpenses(
         monthAndYear: Long,
-        userId: String
     ): Flow<Double?>
 
     fun getBudgetingDiaryEntriesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiary?>>

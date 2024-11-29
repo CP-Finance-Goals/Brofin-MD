@@ -13,6 +13,11 @@ fun getCurrentMonthAndYearInIndonesian(): String {
     return formatter.format(Date(System.currentTimeMillis()))
 }
 fun getFormattedTimeInMillis(currentTimeMillis: Long): Long {
+
+    if (currentTimeMillis == 0L) {
+        return 0L
+    }
+
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val zonedDateTime = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(currentTimeMillis),

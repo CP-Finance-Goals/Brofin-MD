@@ -2,7 +2,7 @@ package com.example.brofin.presentation.main.budget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.brofin.data.local.room.entity.BudgetWithDiaries
+import com.example.brofin.data.local.room.entity.BudgetingWithDiaries
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +27,7 @@ class BudgetViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getBudgetingDiariesByMonthAndYear(monthAndYear: Long): Flow<BudgetWithDiaries?> {
+    fun getBudgetingDiariesByMonthAndYear(monthAndYear: Long): Flow<BudgetingWithDiaries?> {
         return userIdFlow.flatMapLatest { userId ->
             if (userId != null) {
                 brofinRepository.getBudgetWithDiaries(monthAndYear, userId)

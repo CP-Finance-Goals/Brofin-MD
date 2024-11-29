@@ -1,6 +1,7 @@
 package com.example.brofin.presentation.authentication.register
 
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -61,7 +62,6 @@ import com.example.brofin.presentation.components.LoadingDialog
 @Composable
 fun RegisterScreen(
     goBack: () -> Unit,
-    goHome: () -> Unit,
     viewmodel: AuthViewModel = hiltViewModel()
 ) {
 
@@ -114,7 +114,7 @@ fun RegisterScreen(
                 showLoadingDialog = false
                 snackbarMessage = "Registrasi berhasil"
                 showSnackbar = true
-                goHome()
+//                goHome()
             }
             is AuthState.Error -> {
                 showLoadingDialog = false
@@ -353,21 +353,6 @@ fun RegisterScreen(
                 ) {
                     Text(text = "Sudah punya akun? Masuk")
                 }
-
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-
-                GoogleAuthButton(
-                    modifier = Modifier
-                        .graphicsLayer(alpha = buttonAlpha3.value)
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    buttonText = "Daftar dengan Google",
-                    onClick = {
-
-                    }
-                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 

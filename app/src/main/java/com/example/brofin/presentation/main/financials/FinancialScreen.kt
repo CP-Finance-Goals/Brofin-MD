@@ -33,110 +33,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.brofin.presentation.main.financials.components.MyDropDownCustom
 
 @Composable
-fun FinancialScreen(
-) {
-    val categories = listOf( "Financial Goals", "House Goals")
+fun FinancialScreen() {
+    val categories = listOf("Financial Goals", "House Goals")
     var selectedCategory by remember { mutableStateOf("Pilih Kategori Goals") }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            DynamicSelectTextField(
+
+            MyDropDownCustom(
                 selectedValue = selectedCategory,
                 options = categories,
+                color = MaterialTheme.colorScheme.primary,
                 onValueChangedEvent = { selectedCategory = it },
             )
-            FinancialSelected()
-        }
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DynamicSelectTextField(
-    selectedValue: String,
-    options: List<String>,
-    onValueChangedEvent: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    color : Color? = null
-) {
-    var expanded by remember { mutableStateOf(false) }
+            Spacer(Modifier.height(16.dp))
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {  }
-                .menuAnchor(enabled = true, type = MenuAnchorType.PrimaryEditable)
-                .fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 15.dp),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(containerColor = if (color != null) color else Color(0xffE6F8D7))
-        ) {
-            Box(
-                Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = selectedValue,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (color == null) Color.Black else MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f)
-                    )
+            when (selectedCategory) {
+                "Financial Goals" -> FinancialSelected()
+                "House Goals" -> HouseSelected()
+                else -> {
+                    Text("Pilih kategori terlebih dahulu")
                 }
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Dropdown Icon",
-                    tint =  if (color == null) Color.Black else MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 16.dp)
-                )
-            }
-        }
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.exposedDropdownSize()
-                .background(MaterialTheme.colorScheme.surface),
-            tonalElevation = 6.dp,
-            shape = RoundedCornerShape(15.dp)
-        ) {
-            options.forEach { option: String ->
-                DropdownMenuItem(
-                    text = { Text(
-                        text = option,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    ) },
-                    onClick = {
-                        expanded = false
-                        onValueChangedEvent(option)
-                    }
-                )
             }
         }
     }
 }
+

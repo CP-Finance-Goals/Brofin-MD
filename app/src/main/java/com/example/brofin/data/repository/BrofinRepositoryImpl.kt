@@ -6,7 +6,7 @@ import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
 import com.example.brofin.data.local.room.dao.FinancialGoalsDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
 import com.example.brofin.data.local.room.dao.UserProfileDao
-import com.example.brofin.data.local.room.entity.BudgetWithDiaries
+import com.example.brofin.data.local.room.entity.BudgetingWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
@@ -18,10 +18,8 @@ import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.repository.BrofinRepository
-import com.example.brofin.utils.BudgetAllocation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class BrofinRepositoryImpl (
@@ -132,7 +130,7 @@ class BrofinRepositoryImpl (
     }
 
     // fungsi ini untuk mendapatkan data budgeting dengan diaries berdasarkan monthAndYear dan userId
-    override fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetWithDiaries> {
+    override fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetingWithDiaries> {
         return budgetingDao.getBudgetWithDiaries(monthAndYear, userId)
     }
 

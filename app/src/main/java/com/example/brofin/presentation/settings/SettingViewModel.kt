@@ -32,41 +32,10 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    // Fungsi untuk mengaktifkan atau menonaktifkan reminder
-    fun updateNotification(isEnabled: Boolean) {
-        viewModelScope.launch {
-            userPreferencesRepository.updateBudgetNotificationEnabled(isEnabled)
-            if (isEnabled) {
-                scheduleWorker() // Jadwalkan Worker
-            } else {
-                cancelWorker() // Hentikan Worker
-            }
-        }
-    }
-
-    // Jadwalkan Worker
-    private fun scheduleWorker() {
-        val workRequest = OneTimeWorkRequestBuilder<BudgetingReminderWorker>()
-            .setInitialDelay(1, TimeUnit.MINUTES) // Jalankan setiap 1 menit
-            .build()
-
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            "BudgetingReminderWorker",
-            ExistingWorkPolicy.REPLACE,
-            workRequest
-        )
-    }
-
-    // Hentikan Worker
-    private fun cancelWorker() {
-        WorkManager.getInstance(context).cancelUniqueWork("BudgetingReminderWorker")
-    }
-
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
         }
     }
-
 
 }

@@ -89,9 +89,7 @@ fun LoginScreen(
     val dividerAlpha = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
 
-    // stateScroll
     val stateScroll = rememberScrollState()
-
     var showLoadingDialog by remember { mutableStateOf(false) }
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
@@ -116,6 +114,7 @@ fun LoginScreen(
             }
             is AuthState.Success -> {
                 showLoadingDialog = false
+                Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
                 goHome()
             }
             is AuthState.Error -> {
@@ -128,19 +127,6 @@ fun LoginScreen(
             }
         }
     }
-    val stateGoogle = OneTapSignInState()
-
-
-    OneTapSignInWithGoogle(
-        state = stateGoogle,
-        clientId = "911582459244-gelvcg4s6jlemlclpgfjf876ehm9c95t.apps.googleusercontent.com",
-        onTokenIdReceived = {
-            viewmodel.loginWithGoogle(it)
-        },
-        onDialogDismissed = { error ->
-            Toast.makeText(context, "Dialog dismissed: $error", Toast.LENGTH_SHORT).show()
-        }
-    )
 
 
     LoadingDialog(
@@ -304,19 +290,6 @@ fun LoginScreen(
                     Text(text = "Daftar Akun", color = MaterialTheme.colorScheme.onSecondary)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-
-                GoogleAuthButton(
-                    modifier = Modifier
-                        .graphicsLayer(alpha = buttonAlpha3.value)
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    buttonText = "Masuk dengan Google",
-                    onClick = {
-                        stateGoogle.open()
-                    }
-                )
-
-
 
                 if (showSnackbar) {
                     LaunchedEffect(snackbarMessage) {

@@ -11,6 +11,9 @@ fun Double.toIndonesianCurrency(): String? {
 }
 
 fun Long.toFormattedDate(pattern: String = "dd-MM-yyyy"): String {
+    if (this == 0L) {
+        return "-"
+    }
     val date = Date(this)
     val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
     return dateFormat.format(date)

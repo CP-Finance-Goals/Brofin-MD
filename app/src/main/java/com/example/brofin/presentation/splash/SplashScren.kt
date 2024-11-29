@@ -1,6 +1,5 @@
 package com.example.brofin.presentation.splash
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -38,21 +37,18 @@ fun SplashScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState) {
-        delay(2000) // Menunggu splash animasi selesai
+    val isLogin  = viewModel.userPreferencesFlow.collectAsStateWithLifecycle(
+        initialValue = null
+    )
 
-        when (uiState.isUserLoggedIn) {
-            true -> {
-                // Jika user login, arahkan ke Home
-                goHome()
-            }
-            false -> {
-                // Jika user belum login, arahkan ke Login
+    LaunchedEffect(isLogin.value) {
+        delay(2000)
+        when (isLogin.value?.token) {
+            null -> {
                 goLogin()
             }
-            null -> {
-                // Log jika state tidak valid
-                Log.e("SplashScreen", "User logged in state is null")
+            else -> {
+                goHome()
             }
         }
     }

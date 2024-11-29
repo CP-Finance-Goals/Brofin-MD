@@ -9,6 +9,7 @@ import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
+import com.example.brofin.domain.repository.datastore.UserPreferencesRepository
 import com.example.brofin.utils.getCurrentMonthAndYearAsLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,18 +29,21 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
     private val authRepository: AuthRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val userIdFlow = flow {
         val currentUser = authRepository.getCurrentUser()
-        emit(currentUser?.uid) // Emit userId jika ada
+        emit(currentUser?.uid)
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    private val userToken = userPreferencesRepository.userPreferencesFlow.map { it.token }
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val budgetingUserIsExist = userIdFlow.flatMapLatest { userId ->
-        if (userId != null) {
-            brofinRepository.isUserBudgetingExist(getCurrentMonthAndYearAsLong(), userId)
+    val budgetingUserIsExist = userToken.flatMapLatest { token ->
+        if (token != null) {
+            brofinRepository.isUserBudgetingExist(getCurrentMonthAndYearAsLong(), token)
                 .onStart { emit(false) }
                 .catch { emit(false) }
         } else {
@@ -46,11 +51,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+//    serIdFlow.flatMapLatest { userId ->
+//        if (userId != null) {
+//            brofinRepository.isUserBudgetingExist(getCurrentMonthAndYearAsLong(), userId)
+//                .onStart { emit(false) }
+//                .catch { emit(false) }
+//        } else {
+//            flowOf(false)
+//        }
+//    }
+
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val userBalance: Flow<Double?> = userIdFlow.flatMapLatest { userId ->
-        if (userId != null) {
-            brofinRepository.getUserCurrentBalance(userId, getCurrentMonthAndYearAsLong())
+    val userBalance: Flow<Double?> = userToken.flatMapLatest { token ->
+        if (token != null) {
+            brofinRepository.getUserCurrentBalance(token, getCurrentMonthAndYearAsLong())
                 .onStart { emit(0.0) }
                 .catch { emit(0.0) }
         } else {
@@ -59,9 +75,9 @@ class HomeViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val budgetingDiaries = userIdFlow.flatMapLatest { userId ->
-        if (userId != null) {
-            brofinRepository.getAllBudgetingDiaryEntries(userId)
+    val budgetingDiaries = userToken.flatMapLatest { token ->
+        if (token != null) {
+            brofinRepository.getAllBudgetingDiaryEntries(token)
                 .onStart { emit(emptyList()) }
                 .catch { emit(emptyList()) }
         } else {
@@ -70,9 +86,9 @@ class HomeViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val totalIncome = userIdFlow.flatMapLatest { userId ->
-        if (userId != null) {
-            brofinRepository.getUserBalance(userId, getCurrentMonthAndYearAsLong())
+    val totalIncome = userToken.flatMapLatest { token ->
+        if (token != null) {
+            brofinRepository.getUserBalance(token, getCurrentMonthAndYearAsLong())
                 .onStart { emit(0.0) }
                 .catch { emit(0.0) }
         } else {
