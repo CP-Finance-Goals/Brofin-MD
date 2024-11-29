@@ -14,19 +14,16 @@ import javax.inject.Inject
 @HiltViewModel
 class SetupIncomeViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
-    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private fun setupBudgetingMonth(income: Double) {
         viewModelScope.launch {
             try {
-                val userId = authRepository.getCurrentUser()?.uid ?: throw IllegalStateException("User ID tidak ditemukan.")
                 val currentMonthAndYear = getCurrentMonthAndYearAsLong()
 
                 brofinRepository.insertBudget(
                     Budgeting(
                         monthAndYear = currentMonthAndYear,
-                        userId = userId,
                         total = income,
                         essentialNeedsLimit = income * 0.5,
                         wantsLimit = income * 0.3,
@@ -43,17 +40,15 @@ class SetupIncomeViewModel @Inject constructor(
     fun insertIncome(income: Double) {
         viewModelScope.launch {
             try {
-                val userId = authRepository.getCurrentUser()?.uid ?: throw IllegalStateException("User ID tidak ditemukan.")
                 brofinRepository.insertUserBalance(
                     userBalance = UserBalance(
-                        userId = userId,
                         monthAndYear = getCurrentMonthAndYearAsLong(),
                         currentBalance = income,
                         balance = income,
                     )
                 )
 
-//                setupBudgetingMonth(income)
+                setupBudgetingMonth(income)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

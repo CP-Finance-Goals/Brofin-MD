@@ -4,10 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "budgeting")
-data class BudgetingEntity ( // insert
+data class BudgetingEntity (
     @PrimaryKey
     val monthAndYear: Long,
-    val userId: String,
     val total: Double,
     val essentialNeedsLimit: Double, // limit 50%
     val wantsLimit: Double, // limit 30%

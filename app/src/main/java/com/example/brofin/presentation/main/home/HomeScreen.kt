@@ -109,7 +109,6 @@ fun HomeScreen(
                                 balance = budget,
                                 currentBalance = budget * 0.8,
                                 monthAndYear = getCurrentMonthAndYearAsLong(),
-                                userId = "",
                             )
                         )
                     },

@@ -12,10 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DiariesListViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
-    private val authRepository: AuthRepository
 ): ViewModel() {
-
-
 
     fun getFilteredDiaries(
         startDate: Long? = null,
@@ -26,7 +23,6 @@ class DiariesListViewModel @Inject constructor(
         sortOrder: String = "asc"
     ): Flow<List<BudgetingDiaryEntity?>> {
         return brofinRepository.filterBudgetingDiaries(
-            userId = authRepository.getCurrentUser()?.uid ?: "",
             monthAndYear = null,
             startDate = startDate,
             endDate = endDate,

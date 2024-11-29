@@ -13,20 +13,21 @@ interface UserBalanceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateUserBalance(user: UserBalanceEntity)
 
-    @Query("SELECT * FROM user_balance WHERE userId = :userId AND monthAndYear = :monthAndYear")
-    fun getUserBalance(userId: String, monthAndYear: Long): Flow<UserBalanceEntity?>
+    @Query("SELECT * FROM user_balance WHERE monthAndYear = :monthAndYear")
+    fun getUserBalanceByMonthAndYear(monthAndYear: Long): Flow<UserBalanceEntity?>
 
-    @Query("SELECT * FROM user_balance WHERE monthAndYear = :monthAndYear AND userId = :userId")
-    suspend fun getUserBalanceByMonthAndYear(monthAndYear: Long, userId: String): UserBalanceEntity?
+    @Query("SELECT * FROM user_balance WHERE monthAndYear = :monthAndYear")
+    suspend fun getUserBalanceByMonthAndYearOnce(monthAndYear: Long): UserBalanceEntity?
 
-    @Query("SELECT EXISTS(SELECT 1 FROM user_balance WHERE userId = :userId AND monthAndYear = :monthAndYear)")
-    suspend fun userBalanceExists(userId: String, monthAndYear: Long): Boolean {
-        return getUserBalanceByMonthAndYear(monthAndYear, userId) != null
+    @Query("SELECT EXISTS(SELECT 1 FROM user_balance WHERE monthAndYear = :monthAndYear)")
+    suspend fun userBalanceExists(monthAndYear: Long): Boolean {
+        return getUserBalanceByMonthAndYearOnce(monthAndYear) != null
     }
 
-    @Query("SELECT currentBalance FROM user_balance WHERE userId = :userId AND monthAndYear = :monthAndYear")
-    suspend fun getCurrentBalance(userId: String, monthAndYear: Long): Double?
+    @Query("SELECT currentBalance FROM user_balance WHERE monthAndYear = :monthAndYear")
+    suspend fun getCurrentBalance(monthAndYear: Long): Double?
 
-    @Query("UPDATE user_balance SET currentBalance = :newBalance WHERE userId = :userId AND monthAndYear = :monthAndYear")
-    suspend fun updateBalance(userId: String, monthAndYear: Long, newBalance: Double)
+    @Query("UPDATE user_balance SET currentBalance = :newBalance WHERE monthAndYear = :monthAndYear")
+    suspend fun updateBalance(monthAndYear: Long, newBalance: Double)
 }
+

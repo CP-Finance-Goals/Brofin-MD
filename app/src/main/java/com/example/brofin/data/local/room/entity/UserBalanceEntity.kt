@@ -4,11 +4,10 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "user_balance",
-    primaryKeys = ["monthAndYear", "userId"]
+    primaryKeys = ["monthAndYear"]
 )
 data class UserBalanceEntity(
     val monthAndYear: Long,
-    val userId: String,
     val balance: Double? = null,
     val currentBalance: Double? = null,
 )

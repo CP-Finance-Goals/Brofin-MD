@@ -17,9 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
     private val brofinRepository: BrofinRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SplashUiState())
@@ -35,15 +34,17 @@ class SplashViewModel @Inject constructor(
     private fun checkUserStatus() {
         viewModelScope.launch {
             try {
-                val isLoggedIn = authRepository.userExists().firstOrNull() == true
-
-                if (isLoggedIn) {
-                    val userId = authRepository.getCurrentUser()?.uid ?: throw IllegalStateException("User ID tidak ditemukan")
-                    val balanceExists = userBalanceIsExist(userId)
-
-                    _uiState.value = SplashUiState(isUserLoggedIn = true, userBalanceExist = balanceExists)
+                val balanceExists = userBalanceIsExist()
+                if (balanceExists) {
+                    _uiState.value = SplashUiState(
+                        isUserLoggedIn = true,
+                        userBalanceExist = true
+                    )
                 } else {
-                    _uiState.value = SplashUiState(isUserLoggedIn = false, userBalanceExist = false)
+                    _uiState.value = SplashUiState(
+                        isUserLoggedIn = true,
+                        userBalanceExist = false
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("SplashViewModel", "Error in checkUserStatus", e)
@@ -56,8 +57,8 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private suspend fun userBalanceIsExist(userId: String): Boolean {
-        return brofinRepository.userBalanceExists(userId, getCurrentMonthAndYearAsLong())
+    private suspend fun userBalanceIsExist(): Boolean {
+        return brofinRepository.userBalanceExists(getCurrentMonthAndYearAsLong())
     }
 }
 

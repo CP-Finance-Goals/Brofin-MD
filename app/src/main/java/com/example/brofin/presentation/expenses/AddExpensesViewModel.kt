@@ -23,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AddExpensesViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
-    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _addState = MutableStateFlow<StateApp<Boolean>>(StateApp.Idle)
@@ -119,19 +118,15 @@ class AddExpensesViewModel @Inject constructor(
 
     private fun fetchTotalAmount(categoryIds: List<Int>, monthAndYear: Long) {
         viewModelScope.launch {
-            val userId = authRepository.getCurrentUser()?.uid
-            if (userId != null) {
-                brofinRepository.getTotalAmountByCategoryAndMonth(userId, categoryIds, monthAndYear)
-                    .collect { amount ->
-                        if (categoryIds == lisIdKebutuhan) {
-                            _totalAmountKebutuhan.value = amount
-                        } else {
-                            _totalAmountKeinginan.value = amount
-                        }
+            brofinRepository.getTotalAmountByCategoryAndMonth(categoryIds, monthAndYear)
+                .collect { amount ->
+                    if (categoryIds == lisIdKebutuhan) {
+                        _totalAmountKebutuhan.value = amount
+                    } else {
+                        _totalAmountKeinginan.value = amount
                     }
-            }
+                }
         }
-
     }
 
 
@@ -145,11 +140,6 @@ class AddExpensesViewModel @Inject constructor(
         viewModelScope.launch {
             _addState.value = StateApp.Loading
 
-            val userId = authRepository.getCurrentUser()?.uid
-            if (userId == null) {
-                _addState.value = StateApp.Error("Kamu Belum Login")
-                return@launch
-            }
 
             Log.d("AddExpensesViewModel", "insert: $date")
 
@@ -191,7 +181,6 @@ class AddExpensesViewModel @Inject constructor(
             try {
                 brofinRepository.insertBudgetingDiaryEntry(
                     BudgetingDiary(
-                        userId = userId,
                         date = date,
                         photoUri = photoUri,
                         description = description,

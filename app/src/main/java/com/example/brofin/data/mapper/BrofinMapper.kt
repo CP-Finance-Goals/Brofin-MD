@@ -12,14 +12,12 @@ import com.example.brofin.domain.models.UserProfile
 // To Domain
 fun UserBalanceEntity.toUser() = UserBalance(
     monthAndYear = monthAndYear,
-    userId = userId,
     balance = balance,
     currentBalance = currentBalance,
 )
 
 fun UserProfileEntity.toUserProfile() = UserProfile(
     id = id,
-    userId = userId,
     name = name,
     email = email,
     photoUrl = photoUrl,
@@ -28,7 +26,6 @@ fun UserProfileEntity.toUserProfile() = UserProfile(
 
 fun BudgetingEntity.toBudgetingDiary() = Budgeting(
     monthAndYear = monthAndYear,
-    userId = userId,
     total = total,
     essentialNeedsLimit = essentialNeedsLimit,
     wantsLimit = wantsLimit,
@@ -38,7 +35,6 @@ fun BudgetingEntity.toBudgetingDiary() = Budgeting(
 
 fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
     id = id,
-    userId = userId,
     date = date,
     description = description,
     amount = amount,
@@ -60,7 +56,6 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
 
 // To Entity
 fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
-    userId = userId,
     currentBalance = currentBalance,
     monthAndYear = monthAndYear,
     balance = balance,
@@ -68,7 +63,6 @@ fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
 
 fun UserProfile.toUserProfileEntity() = UserProfileEntity(
     id = id,
-    userId = userId,
     name = name,
     email = email,
     photoUrl = photoUrl,
@@ -77,7 +71,6 @@ fun UserProfile.toUserProfileEntity() = UserProfileEntity(
 
 fun Budgeting.toBudgetingEntity() = BudgetingEntity(
     monthAndYear = monthAndYear,
-    userId = userId,
     total = total,
     essentialNeedsLimit = essentialNeedsLimit,
     wantsLimit = wantsLimit,
@@ -86,7 +79,6 @@ fun Budgeting.toBudgetingEntity() = BudgetingEntity(
 )
 
 fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
-    userId = userId,
     date = date,
     description = description,
     amount = amount,

@@ -9,59 +9,61 @@ import com.example.brofin.domain.models.UserBalance
 import kotlinx.coroutines.flow.Flow
 
 interface BrofinRepository {
-    // Mengambil total amount berdasarkan list categoryId dan monthAndYear
+
     fun getTotalAmountByCategoryAndMonth(
-        userId: String,
         categoryIds: List<Int>,
         monthAndYear: Long
     ): Flow<Double>
 
     suspend fun getBudgetingByMonth(monthAndYear: Long): Budgeting?
 
+    fun getTotalSavings(): Flow<Double?>
 
-    // User Methods
-    suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary,  monthAndYear: Long)
-    suspend fun insertUserBalance(userBalance: UserBalance)
-    suspend fun updateUserBalance(userBalance: UserBalance)
-    fun getUserCurrentBalance(userId: String, monthAndYear: Long): Flow<Double?>
-    fun getUserBalance(userId: String, monthAndYear: Long): Flow<Double?>
-    suspend fun userBalanceExists(userId: String, monthAndYear: Long): Boolean
-    fun getTotalSavings(userId: String): Flow<Double?>
-
-    suspend fun getUserProfile(userId: String): UserProfileEntity?
-    suspend fun insertOrUpdateUserProfile(user: UserProfileEntity)
-
-    // Financial Goals Methods
-//    suspend fun insertFinancialGoal(goal: FinancialGoals)
-//    fun getAllFinancialGoals(): Flow<List<FinancialGoals?>>
-//    suspend fun updateFinancialGoal(goal: FinancialGoals)
-    suspend fun deleteFinancialGoal(goalId: Int)
-
-    // Budgeting Methods
     suspend fun insertBudget(budget: Budgeting)
-    fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetingWithDiaries>
-    fun isUserBudgetingExist(monthAndYear: Long, userId: String): Flow<Boolean>
 
-    // Budgeting Diary Methods
+    fun getBudgetWithDiaries(monthAndYear: Long): Flow<BudgetingWithDiaries>
+
+    fun isUserBudgetingExist(monthAndYear: Long): Flow<Boolean>
+
     suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary)
-    fun getAllBudgetingDiaryEntries(userId: String): Flow<List<BudgetingDiary?>>
+
+    fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary?>>
+
     suspend fun updateBudgetingDiaryEntry(entry: BudgetingDiary)
+
     suspend fun deleteBudgetingDiaryEntry(entryId: Int)
+
     suspend fun deleteAllBudgetingDiaryEntries()
+
     fun filterBudgetingDiaries(
-        monthAndYear: Long?,
-        startDate: Long?,
-        endDate: Long?,
-        minAmount: Double?,
-        maxAmount: Double?,
-        sortBy: String,
-        sortOrder: String
+        monthAndYear: Long? = null,
+        startDate: Long? = null,
+        endDate: Long? = null,
+        minAmount: Double? = null,
+        maxAmount: Double? = null,
+        sortBy: String = "date",
+        sortOrder: String = "desc"
     ): Flow<List<BudgetingDiaryEntity?>>
 
-    fun getTotalExpenses(
-        monthAndYear: Long,
-    ): Flow<Double?>
+    fun getTotalExpenses(monthAndYear: Long): Flow<Double?>
 
     fun getBudgetingDiaryEntriesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiary?>>
 
+    suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary, monthAndYear: Long)
+
+    suspend fun insertUserBalance(userBalance: UserBalance)
+
+    suspend fun updateUserBalance(userBalance: UserBalance)
+
+    fun getUserCurrentBalance(monthAndYear: Long): Flow<Double?>
+
+    fun getUserBalance(monthAndYear: Long): Flow<Double?>
+
+    suspend fun userBalanceExists(monthAndYear: Long): Boolean
+
+    suspend fun getUserProfile(): UserProfileEntity?
+
+    suspend fun insertOrUpdateUserProfile(user: UserProfileEntity)
+
+    suspend fun deleteFinancialGoal(goalId: Int)
 }

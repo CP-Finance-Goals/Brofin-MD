@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import kotlinx.coroutines.flow.Flow
-
 @Dao
 interface BudgetingDiaryDao {
 
@@ -24,66 +23,53 @@ interface BudgetingDiaryDao {
     @Query("DELETE FROM budgeting_diary")
     suspend fun deleteAllBudgetingDiaries()
 
-    // query ini untuk mengurutkan berdasarkan yang terbaru dan terlama
     @Query("SELECT * FROM budgeting_diary ORDER BY date DESC")
     fun getAllBudgetingDiaries(): Flow<List<BudgetingDiaryEntity?>>
 
     @Query("""
         SELECT * 
         FROM budgeting_diary
-        WHERE userId = :userId
         ORDER BY date DESC
         LIMIT 3
     """)
-    fun getLatestBudgetingDiaries(userId: String): Flow<List<BudgetingDiaryEntity>>
+    fun getLatestBudgetingDiaries(): Flow<List<BudgetingDiaryEntity>>
 
-
-    // query ini digunakan untuk mengambil total income
     @Query("SELECT SUM(amount) FROM budgeting_diary ")
     fun getTotalIncome(): Flow<Double?>
 
-    // query ini digunakan untuk mengambil total income berdasarkan bulan dan tahun sekarang
     @Insert
     suspend fun insertAllDiaries(diaries: List<BudgetingDiaryEntity>)
 
-    // query ini digunakan untuk mengambil total expenses
     @Query("SELECT SUM(amount) FROM budgeting_diary")
     fun getTotalExpenses(): Flow<Double?>
 
     @Query("""
-    SELECT SUM(amount)
-    FROM budgeting_diary
-    WHERE userId = :userId
-    AND monthAndYear = :monthAndYear
-""")
-    fun getTotalExpensesMonth(monthAndYear: Long, userId: String): Flow<Double?>
+        SELECT SUM(amount)
+        FROM budgeting_diary
+        WHERE monthAndYear = :monthAndYear
+    """)
+    fun getTotalExpensesMonth(monthAndYear: Long): Flow<Double?>
 
-
-    // query ini digunakan untuk mengambil data budgeting diary berdasarkan tanggal awal dan akhir
     @Query("SELECT * FROM budgeting_diary WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC")
     fun getBudgetingDiariesByDateRange(startDate: Long, endDate: Long): Flow<List<BudgetingDiaryEntity?>>
 
-
-    // query ini digunakan untuk mengambil data budgeting diary berdasarkan filter
     @Query("""
-    SELECT * FROM budgeting_diary
-    WHERE 
-        (:userId IS NULL OR userId = :userId)
-        AND (:monthAndYear IS NULL OR strftime('%Y-%m', date / 1000, 'unixepoch') = strftime('%Y-%m', :monthAndYear / 1000, 'unixepoch'))
-        AND (:startDate IS NULL OR date >= :startDate)
-        AND (:endDate IS NULL OR date <= :endDate)
-        AND (:minAmount IS NULL OR amount >= :minAmount)
-        AND (:maxAmount IS NULL OR amount <= :maxAmount)
-    ORDER BY 
-        CASE 
-            WHEN :sortBy = 'date' AND :sortOrder = 'asc' THEN date
-            WHEN :sortBy = 'date' AND :sortOrder = 'desc' THEN -date
-            WHEN :sortBy = 'amount' AND :sortOrder = 'asc' THEN amount
-            WHEN :sortBy = 'amount' AND :sortOrder = 'desc' THEN -amount
-        END
-""")
+        SELECT * FROM budgeting_diary
+        WHERE 
+            (:monthAndYear IS NULL OR strftime('%Y-%m', date / 1000, 'unixepoch') = strftime('%Y-%m', :monthAndYear / 1000, 'unixepoch'))
+            AND (:startDate IS NULL OR date >= :startDate)
+            AND (:endDate IS NULL OR date <= :endDate)
+            AND (:minAmount IS NULL OR amount >= :minAmount)
+            AND (:maxAmount IS NULL OR amount <= :maxAmount)
+        ORDER BY 
+            CASE 
+                WHEN :sortBy = 'date' AND :sortOrder = 'asc' THEN date
+                WHEN :sortBy = 'date' AND :sortOrder = 'desc' THEN -date
+                WHEN :sortBy = 'amount' AND :sortOrder = 'asc' THEN amount
+                WHEN :sortBy = 'amount' AND :sortOrder = 'desc' THEN -amount
+            END
+    """)
     fun filterBudgetingDiaries(
-        userId: String? = null,
         monthAndYear: Long? = null,
         startDate: Long? = null,
         endDate: Long? = null,
@@ -93,17 +79,15 @@ interface BudgetingDiaryDao {
         sortOrder: String = "desc"
     ): Flow<List<BudgetingDiaryEntity?>>
 
-
     @Query("""
         SELECT SUM(amount) FROM budgeting_diary 
-        WHERE userId = :userId 
-        AND categoryId IN (:categoryIds)
+        WHERE categoryId IN (:categoryIds)
         AND monthAndYear = :monthAndYear
     """)
     fun getTotalAmountByCategoryAndMonth(
-        userId: String,
         categoryIds: List<Int>,
         monthAndYear: Long
     ): Flow<Double>
 }
+
 

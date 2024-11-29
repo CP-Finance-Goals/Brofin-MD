@@ -180,13 +180,6 @@ fun Navigation() {
                 goBack = {
                     navController.popBackStack()
                 },
-                goHome = {
-                    navController.navigate(NavScreen.Home.route) {
-                        popUpTo(NavScreen.Login.route) {
-                            inclusive = true
-                        }
-                    }
-                },
             )
         }
         composable(

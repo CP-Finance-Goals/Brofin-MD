@@ -6,7 +6,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Budgeting (
     val monthAndYear: Long,
-    val userId: String,
     val total: Double,
     val essentialNeedsLimit: Double, // Limit for essential needs (50%)
     val wantsLimit: Double, // Limit for wants (30%)

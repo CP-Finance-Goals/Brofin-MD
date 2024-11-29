@@ -28,99 +28,47 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
-    private val authRepository: AuthRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    private val userIdFlow = flow {
-        val currentUser = authRepository.getCurrentUser()
-        emit(currentUser?.uid)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
-
-    private val userToken = userPreferencesRepository.userPreferencesFlow.map { it.token }
-
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val budgetingUserIsExist =  brofinRepository.isUserBudgetingExist(getCurrentMonthAndYearAsLong())
+        .onStart { emit(false) }
+        .catch { emit(false) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val budgetingUserIsExist = userToken.flatMapLatest { token ->
-        if (token != null) {
-            brofinRepository.isUserBudgetingExist(getCurrentMonthAndYearAsLong(), token)
-                .onStart { emit(false) }
-                .catch { emit(false) }
-        } else {
-            flowOf(false)
-        }
-    }
-
-//    serIdFlow.flatMapLatest { userId ->
-//        if (userId != null) {
-//            brofinRepository.isUserBudgetingExist(getCurrentMonthAndYearAsLong(), userId)
-//                .onStart { emit(false) }
-//                .catch { emit(false) }
-//        } else {
-//            flowOf(false)
-//        }
-//    }
-
-
+    val userBalance: Flow<Double?> =  brofinRepository.getUserCurrentBalance(getCurrentMonthAndYearAsLong())
+        .onStart { emit(0.0) }
+        .catch { emit(0.0) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val userBalance: Flow<Double?> = userToken.flatMapLatest { token ->
-        if (token != null) {
-            brofinRepository.getUserCurrentBalance(token, getCurrentMonthAndYearAsLong())
-                .onStart { emit(0.0) }
-                .catch { emit(0.0) }
-        } else {
-            flowOf(0.0)
-        }
-    }
+    val budgetingDiaries =  brofinRepository.getAllBudgetingDiaryEntries()
+        .onStart { emit(emptyList()) }
+        .catch { emit(emptyList()) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val budgetingDiaries = userToken.flatMapLatest { token ->
-        if (token != null) {
-            brofinRepository.getAllBudgetingDiaryEntries(token)
-                .onStart { emit(emptyList()) }
-                .catch { emit(emptyList()) }
-        } else {
-            flowOf(emptyList())
+    val totalIncome = brofinRepository.getUserBalance(getCurrentMonthAndYearAsLong())
+        .onStart {emit(0.0)}
+        .catch {
+            Log.e(TAG, "Error fetching total income", it)
+            emit(0.0)
         }
-    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val totalIncome = userToken.flatMapLatest { token ->
-        if (token != null) {
-            brofinRepository.getUserBalance(token, getCurrentMonthAndYearAsLong())
-                .onStart { emit(0.0) }
-                .catch { emit(0.0) }
-        } else {
-            flowOf(0.0)
-        }
-    }
 
-    val totalExpenses = brofinRepository.getTotalExpenses(
-        monthAndYear = getCurrentMonthAndYearAsLong(),
-        userId = authRepository.getCurrentUser()?.uid ?: ""
-    )
+    val totalExpenses = brofinRepository.getTotalExpenses(getCurrentMonthAndYearAsLong())
         .onStart { emit(0.0) }
         .catch {
             Log.e(TAG, "Error fetching total expenses", it)
             emit(0.0)
         }
 
-    val totalSavings = brofinRepository.getTotalSavings(
-        userId = authRepository.getCurrentUser()?.uid ?: ""
-    )
+    val totalSavings = brofinRepository.getTotalSavings()
 
     fun insertUserBalance(userBalance: UserBalance) {
         viewModelScope.launch {
             Log.d(TAG, "Insert User Balance: $userBalance")
-            val data = userBalance.copy(
-                userId = authRepository.getCurrentUser()?.uid ?: throw IllegalArgumentException("User not found"),
-            )
             try {
-                brofinRepository.insertUserBalance(
-                    userBalance = data,
-                )
-                insertBudgeting(data.balance!!)
+                brofinRepository.insertUserBalance(userBalance)
+                insertBudgeting(userBalance.balance!!)
             }catch (e: Exception) {
                 Log.e(TAG, "Error on saving user balance data", e)
             }
@@ -130,30 +78,15 @@ class HomeViewModel @Inject constructor(
     private fun updateProfileSavings(newSavings: Double) {
         viewModelScope.launch {
             try {
-                val userNow = brofinRepository.getUserProfile(authRepository.getCurrentUser()?.uid ?: "")
+                val userNow = brofinRepository.getUserProfile()
 
                 if (userNow != null) {
                     val currentSavings = userNow.savings
-                    val updatedSavings = currentSavings + newSavings
+                    val updatedSavings = currentSavings?.plus(newSavings)
                     val updatedUser = userNow.copy(savings = updatedSavings)
                     brofinRepository.insertOrUpdateUserProfile(updatedUser)
                 } else {
-                    Log.e("Profile Update", "User profile not found")
-                    val id = authRepository.getCurrentUser()?.uid ?: throw Exception("User not found")
-                    val name = authRepository.getCurrentUser()?.displayName ?: ""
-                    val email = authRepository.getCurrentUser()?.email ?: ""
-                    val photo = authRepository.getCurrentUser()?.photoUrl?.toString() ?: ""
-
-                    val userNew = UserProfile(
-                        userId = id,
-                        name = name,
-                        email = email,
-                        photoUrl = photo,
-                        savings = newSavings
-                    )
-                    brofinRepository.insertOrUpdateUserProfile(
-                       userNew.toUserProfileEntity()
-                    )
+                    Log.e(TAG, "User profile not found")
                 }
             } catch (e: Exception) {
                 Log.e("Profile Update", "Error updating profile: ${e.message}")
@@ -161,14 +94,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
     private fun insertBudgeting(income: Double) {
         viewModelScope.launch {
             try {
                 brofinRepository.insertBudget(
                     budget = Budgeting(
                         monthAndYear = getCurrentMonthAndYearAsLong(),
-                        userId = authRepository.getCurrentUser()?.uid ?: throw IllegalArgumentException("User not found"),
                         total = income,
                         essentialNeedsLimit = income * 0.5,
                         wantsLimit = income * 0.3,

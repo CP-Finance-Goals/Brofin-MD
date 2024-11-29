@@ -19,7 +19,6 @@ import androidx.room.PrimaryKey
 )
 data class BudgetingDiaryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val userId: String,
     val monthAndYear: Long,
     val date: Long,
     val photoUri: String? = null,

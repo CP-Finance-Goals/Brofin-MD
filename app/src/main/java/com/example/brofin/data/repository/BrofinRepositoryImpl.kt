@@ -21,8 +21,7 @@ import com.example.brofin.domain.repository.BrofinRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-
-class BrofinRepositoryImpl (
+class BrofinRepositoryImpl(
     private val userBalanceDao: UserBalanceDao,
     private val financialGoalsDao: FinancialGoalsDao,
     private val budgetingDiaryDao: BudgetingDiaryDao,
@@ -30,7 +29,6 @@ class BrofinRepositoryImpl (
     private val userProfileDao: UserProfileDao
 ): BrofinRepository {
 
-    // fungsi ini untuk menyimpan data user balance ke dalam database
     override suspend fun insertUserBalance(userBalance: UserBalance) {
         userBalanceDao.insertOrUpdateUserBalance(userBalance.toUserBalanceEntity())
     }
@@ -39,19 +37,17 @@ class BrofinRepositoryImpl (
         return budgetingDao.getBudgetingByMonth(monthAndYear)?.toBudgetingDiary()
     }
 
-    // fungsi ini untuk menyimpan data budgeting diary ke dalam database
     override suspend fun insertOrUpdateUserBalance(entry: BudgetingDiary, monthAndYear: Long) {
         try {
-            val currentBalance = userBalanceDao.getCurrentBalance(entry.userId, monthAndYear) ?: 0.0
+            val currentBalance = userBalanceDao.getCurrentBalance(monthAndYear) ?: 0.0
             val updatedBalance = currentBalance - entry.amount
-            val existingBalance = userBalanceDao.getUserBalance(entry.userId, monthAndYear).firstOrNull()
+            val existingBalance = userBalanceDao.getUserBalanceByMonthAndYear(monthAndYear).firstOrNull()
             if (existingBalance != null) {
-                userBalanceDao.updateBalance(entry.userId, monthAndYear, updatedBalance)
+                userBalanceDao.updateBalance(monthAndYear, updatedBalance)
             } else {
                 userBalanceDao.insertOrUpdateUserBalance(
                     UserBalanceEntity(
                         monthAndYear = entry.monthAndYear,
-                        userId = entry.userId,
                         currentBalance = updatedBalance
                     )
                 )
@@ -62,103 +58,73 @@ class BrofinRepositoryImpl (
         }
     }
 
-    // fungsi ini untuk menyimpan data user balance ke dalam database fungsinya sama dengan fungsi insertUserBalance
     override suspend fun updateUserBalance(userBalance: UserBalance) {
         userBalanceDao.insertOrUpdateUserBalance(userBalance.toUserBalanceEntity())
     }
 
-    // fungsi ini untuk mendapatkan data user balance berdasarkan userId dan monthAndYear
-    override fun getUserCurrentBalance(userId: String, monthAndYear: Long): Flow<Double?> {
-        return userBalanceDao.getUserBalance(userId, monthAndYear).map { it?.currentBalance }
+    override fun getUserCurrentBalance(monthAndYear: Long): Flow<Double?> {
+        return userBalanceDao.getUserBalanceByMonthAndYear(monthAndYear).map { it?.currentBalance }
     }
 
-    // Mengambil total amount berdasarkan list categoryId dan monthAndYear
     override fun getTotalAmountByCategoryAndMonth(
-        userId: String,
         categoryIds: List<Int>,
         monthAndYear: Long
     ): Flow<Double> {
-        return budgetingDiaryDao.getTotalAmountByCategoryAndMonth(userId, categoryIds, monthAndYear)
+        return budgetingDiaryDao.getTotalAmountByCategoryAndMonth(categoryIds, monthAndYear)
     }
 
-    // fungsi ini untuk mendapatkan data user balance berdasarkan userId dan monthAndYear
-    override fun getUserBalance(userId: String, monthAndYear: Long): Flow<Double?> {
-        return userBalanceDao.getUserBalance(userId, monthAndYear).map { it?.balance }
+    override fun getUserBalance(monthAndYear: Long): Flow<Double?> {
+        return userBalanceDao.getUserBalanceByMonthAndYear(monthAndYear).map { it?.balance }
     }
 
-    // fungsi ini untuk mengecek apakah data user balance sudah ada atau belum pada bulan dan tahun tertentu
-    override suspend fun userBalanceExists(userId: String, monthAndYear: Long): Boolean {
-        return userBalanceDao.userBalanceExists(userId, monthAndYear)
+    override suspend fun userBalanceExists(monthAndYear: Long): Boolean {
+        return userBalanceDao.userBalanceExists(monthAndYear)
     }
 
-    // fungsi ini untuk mendapatkan total tabungan dari user berdasarkan userId
-    override fun getTotalSavings(userId: String): Flow<Double?> {
-        return userProfileDao.getTotalSavings(userId)
+    override fun getTotalSavings(): Flow<Double?> {
+        return userProfileDao.getTotalSavings()
     }
 
-    override suspend fun getUserProfile(userId: String): UserProfileEntity? {
-        return userProfileDao.getUserProfile2(userId)
+    override suspend fun getUserProfile(): UserProfileEntity? {
+        return userProfileDao.getUserProfile()
     }
 
     override suspend fun insertOrUpdateUserProfile(user: UserProfileEntity) {
         userProfileDao.insertOrUpdateUserProfile(user)
     }
 
-    // fungsi ini dipakai untuk menyimpan data financial goal ke dalam database
-//    override suspend fun insertFinancialGoal(goal: FinancialGoals) {
-////        financialGoalsDao.insertGoal(goal.toFinancialGoalsEntity())
-//    }
-//
-//    // fungsi ini untuk mendapatkan semua data financial goal yang ada
-//    override fun getAllFinancialGoals(): Flow<List<FinancialGoals?>> = financialGoalsDao.getAllGoals().map { goals ->
-//        goals.map { it?.toFinancialGoals() }
-//    }
-//
-//    // fungsi ini untuk mengupdate data financial goal
-//    override suspend fun updateFinancialGoal(goal: FinancialGoals) {
-////        financialGoalsDao.updateGoal(goal.toFinancialGoalsEntity())
-//    }
-
-    // fungsi ini untuk menghapus data financial goal berdasarkan goalId
     override suspend fun deleteFinancialGoal(goalId: Int) {
         financialGoalsDao.deleteGoalById(goalId)
     }
 
-    // fungsi ini untuk menyimpan data budgeting ke dalam database
     override suspend fun insertBudget(budget: Budgeting) {
         budgetingDao.insertBudget(budget.toBudgetingEntity())
     }
 
-    // fungsi ini untuk mendapatkan data budgeting dengan diaries berdasarkan monthAndYear dan userId
-    override fun getBudgetWithDiaries(monthAndYear: Long, userId: String): Flow<BudgetingWithDiaries> {
-        return budgetingDao.getBudgetWithDiaries(monthAndYear, userId)
+    override fun getBudgetWithDiaries(monthAndYear: Long): Flow<BudgetingWithDiaries> {
+        return budgetingDao.getBudgetWithDiaries(monthAndYear)
     }
 
-    override fun isUserBudgetingExist(
-        monthAndYear: Long,
-        userId: String
-    ): Flow<Boolean> {
-        return budgetingDao.isUserBudgetingExist(monthAndYear, userId)
+    override fun isUserBudgetingExist(monthAndYear: Long): Flow<Boolean> {
+        return budgetingDao.isUserBudgetingExist(monthAndYear)
     }
 
-    // fungsi ini untuk menyimpan data budgeting diary ke dalam database
     override suspend fun insertBudgetingDiaryEntry(entry: BudgetingDiary) {
         try {
-            val currentBalance = userBalanceDao.getCurrentBalance(entry.userId, entry.monthAndYear) ?: 0.0
+            val currentBalance = userBalanceDao.getCurrentBalance(entry.monthAndYear) ?: 0.0
             if (currentBalance < entry.amount) {
                 throw IllegalArgumentException("Saldo tidak mencukupi untuk melakukan pengeluaran sebesar ${entry.amount}.")
             }
 
             val updatedBalance = currentBalance - entry.amount
 
-            val existingBalance = userBalanceDao.getUserBalance(entry.userId, entry.monthAndYear).firstOrNull()
+            val existingBalance = userBalanceDao.getUserBalanceByMonthAndYear(entry.monthAndYear).firstOrNull()
             if (existingBalance != null) {
-                userBalanceDao.updateBalance(entry.userId, entry.monthAndYear, updatedBalance)
+                userBalanceDao.updateBalance(entry.monthAndYear, updatedBalance)
             } else {
                 userBalanceDao.insertOrUpdateUserBalance(
                     UserBalanceEntity(
                         monthAndYear = entry.monthAndYear,
-                        userId = entry.userId,
                         balance = currentBalance,
                         currentBalance = updatedBalance
                     )
@@ -175,48 +141,34 @@ class BrofinRepositoryImpl (
         }
     }
 
-    // fungsi ini untuk mendapatkan semua data budgeting diary yang ada
-    override fun getAllBudgetingDiaryEntries(userId: String): Flow<List<BudgetingDiary?>> {
-        return budgetingDiaryDao.getLatestBudgetingDiaries(userId = userId).map { entries ->
+    override fun getAllBudgetingDiaryEntries(): Flow<List<BudgetingDiary?>> {
+        return budgetingDiaryDao.getLatestBudgetingDiaries().map { entries ->
             entries.map { it.toBudgetingDiary() }
         }
     }
 
-    // fungsi ini untuk mengupdate data budgeting diary
     override suspend fun updateBudgetingDiaryEntry(entry: BudgetingDiary) {
         budgetingDiaryDao.updateBudgetingDiary(entry.toBudgetingDiaryEntity())
     }
 
-    // fungsi ini untuk menghapus data budgeting diary berdasarkan entryId
     override suspend fun deleteBudgetingDiaryEntry(entryId: Int) {
         budgetingDiaryDao.deleteBudgetingDiaryById(entryId)
     }
 
-    // fungsi ini untuk menghapus semua data budgeting diary
     override suspend fun deleteAllBudgetingDiaryEntries() {
         budgetingDiaryDao.deleteAllBudgetingDiaries()
     }
 
-    // fungsi ini untuk mendapatkan data budgeting diary berdasarkan tanggal
-    override fun getTotalExpenses(
-        monthAndYear: Long,
-        userId: String
-    ): Flow<Double?> {
-        return budgetingDiaryDao.getTotalExpensesMonth( monthAndYear, userId)
-    }
-
-    // fungsi ini untuk mendapatkan data budgeting diary berdasarkan tanggal
     override fun getBudgetingDiaryEntriesByDateRange(
         startDate: Long,
         endDate: Long
     ): Flow<List<BudgetingDiary?>> {
         return budgetingDiaryDao.getBudgetingDiariesByDateRange(startDate, endDate).map { entries ->
-            entries.map { it?.toBudgetingDiary()}
+            entries.map { it?.toBudgetingDiary() }
         }
     }
 
     override fun filterBudgetingDiaries(
-        userId: String,
         monthAndYear: Long?,
         startDate: Long?,
         endDate: Long?,
@@ -226,7 +178,6 @@ class BrofinRepositoryImpl (
         sortOrder: String
     ): Flow<List<BudgetingDiaryEntity?>> {
         return budgetingDiaryDao.filterBudgetingDiaries(
-            userId = userId,
             monthAndYear = monthAndYear,
             startDate = startDate,
             endDate = endDate,
@@ -237,7 +188,11 @@ class BrofinRepositoryImpl (
         )
     }
 
-    companion object{
+    override fun getTotalExpenses(monthAndYear: Long): Flow<Double?> {
+        return budgetingDiaryDao.getTotalExpensesMonth(monthAndYear)
+    }
+
+    companion object {
         const val TAG = "BrofinRepositoryImpl"
     }
 }

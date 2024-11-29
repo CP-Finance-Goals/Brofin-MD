@@ -8,9 +8,8 @@ import androidx.room.PrimaryKey
 data class UserProfileEntity (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val userId: String,
     val name: String?,
     val email: String?,
     val photoUrl: String?,
-    val savings: Double = 0.0,
+    val savings: Double? = 0.0,
 )
