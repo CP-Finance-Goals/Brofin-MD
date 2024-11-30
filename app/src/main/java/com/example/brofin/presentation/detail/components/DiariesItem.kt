@@ -15,9 +15,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,17 +65,19 @@ fun DiariesItem(
                 modifier = Modifier
                     .size(58.dp)
             ) {
-                AsyncImage(
-                    model = diary.photoUri,
-                    placeholder = painterResource(id = R.drawable.placeholder),
-                    contentDescription = "Photo",
-                    error = painterResource(id = R.drawable.placeholder),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-                    contentScale = ContentScale.Crop
-                )
+//                    AsyncImage(
+//                        model = diary.photoUrl ?: "",
+//                        placeholder = painterResource(id = R.drawable.placeholder),
+//                        contentDescription = "Photo",
+//                        error = painterResource(id = R.drawable.placeholder),
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                            .clip(RoundedCornerShape(12.dp))
+//                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+//                        contentScale = ContentScale.Crop
+//                    )
+
+                ImageWithLoadingIndicator(diaryImageUrl = diary.photoUrl ?: "")
             }
 
 
@@ -126,3 +133,45 @@ fun DiariesItem(
         }
     }
 }
+
+    @Composable
+    fun ImageWithLoadingIndicator(diaryImageUrl: String) {
+        var isLoading by remember { mutableStateOf(true) }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Load image using AsyncImage
+            AsyncImage(
+                model = diaryImageUrl,
+                contentDescription = "Diary Image",
+                error = painterResource(id = R.drawable.placeholder),
+                onLoading = {
+                    isLoading = true
+                },
+                onSuccess = {
+                    isLoading = false
+                },
+                onError = {
+                    isLoading = false
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+            // Show loading spinner if the image is loading
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                        .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp))
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }

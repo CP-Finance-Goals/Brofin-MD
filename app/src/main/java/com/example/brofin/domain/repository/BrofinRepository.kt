@@ -2,6 +2,7 @@ package com.example.brofin.domain.repository
 
 import com.example.brofin.data.local.room.entity.BudgetingWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
@@ -14,6 +15,10 @@ interface BrofinRepository {
         categoryIds: List<Int>,
         monthAndYear: Long
     ): Flow<Double>
+
+    suspend fun getUserBalanceData(monthAndYear: Long): UserBalanceEntity?
+
+    suspend fun getCurrentBalance(monthAndYear: Long): Double
 
     suspend fun getBudgetingByMonth(monthAndYear: Long): Budgeting?
 
@@ -66,4 +71,15 @@ interface BrofinRepository {
     suspend fun insertOrUpdateUserProfile(user: UserProfileEntity)
 
     suspend fun deleteFinancialGoal(goalId: Int)
+
+    suspend fun logout(): Boolean
+
+    suspend fun insertNoValidation(budgetingDiary: BudgetingDiary)
+
+    suspend fun insertNoValidation(userBalance: UserBalance)
+
+    suspend fun insertNoValidation(userProfile: UserProfileEntity)
+
+    suspend fun insertNoValidation(budgeting: Budgeting)
+
 }

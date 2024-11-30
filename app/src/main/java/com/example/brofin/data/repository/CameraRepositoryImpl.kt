@@ -41,8 +41,7 @@ class CameraRepositoryImpl @Inject constructor(
                             scope.launch {
                                 try {
                                     val uri = processAndSavePhoto(image)
-
-                                    continuation.resume(uri) { cause, _, _ ->
+                                    continuation.resume(uri) { cause->
                                         onCancellation(cause)
                                     }
                                 } catch (e: Exception) {

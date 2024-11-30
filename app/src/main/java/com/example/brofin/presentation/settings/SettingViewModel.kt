@@ -2,6 +2,7 @@ package com.example.brofin.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.brofin.domain.repository.BrofinRepository
 import com.example.brofin.domain.repository.datastore.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -10,6 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val brofinRepository: BrofinRepository
 ): ViewModel() {
 
     val userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
@@ -23,6 +25,7 @@ class SettingViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             userPreferencesRepository.updateToken(null)
+            brofinRepository.logout()
         }
     }
 

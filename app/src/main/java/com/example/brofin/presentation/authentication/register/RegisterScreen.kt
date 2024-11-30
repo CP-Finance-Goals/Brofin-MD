@@ -57,6 +57,7 @@ import com.example.brofin.presentation.authentication.components.GoogleAuthButto
 import com.example.brofin.presentation.authentication.components.IdentifierTextField
 import com.example.brofin.presentation.authentication.components.LottieAnimationTwo
 import com.example.brofin.presentation.authentication.state.AuthState
+import com.example.brofin.presentation.components.ErrorDialog
 import com.example.brofin.presentation.components.LoadingDialog
 
 @Composable
@@ -66,6 +67,8 @@ fun RegisterScreen(
 ) {
 
     val stateRegister = viewmodel.authState.collectAsStateWithLifecycle(initialValue = AuthState.Idle)
+    var errorDialog by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf("") }
 
     var showLoadingDialog by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
@@ -114,12 +117,11 @@ fun RegisterScreen(
                 showLoadingDialog = false
                 snackbarMessage = "Registrasi berhasil"
                 showSnackbar = true
-//                goHome()
             }
             is AuthState.Error -> {
                 showLoadingDialog = false
-                snackbarMessage = state.message.toString()
-                showSnackbar = true
+                errorDialog = true
+                message = state.message ?: "Terjadi kesalahan saat registrasi"
             }
             else -> {
                 showLoadingDialog = false
@@ -131,6 +133,10 @@ fun RegisterScreen(
         showDialog = showLoadingDialog,
         onDismissRequest = { showLoadingDialog = false }
     )
+
+    ErrorDialog(showDialog = errorDialog, message = message) {
+        errorDialog = false
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

@@ -3,6 +3,7 @@ package com.example.brofin.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.example.brofin.data.remote.ApiService
+import com.example.brofin.data.remote.AuthInterceptor
 import com.example.brofin.data.repository.RemoteDataRepositoryImpl
 import com.example.brofin.domain.repository.RemoteDataRepository
 import com.example.brofin.utils.Constant
@@ -28,16 +29,16 @@ object NetworkModule {
         }
     }
 
-//    @Provides
-//    fun provideAuthInterceptor(dataStore: DataStore<Preferences>): AuthInterceptor {
-//        return AuthInterceptor(dataStore)
-//    }
+    @Provides
+    fun provideAuthInterceptor(dataStore: DataStore<Preferences>): AuthInterceptor {
+        return AuthInterceptor(dataStore)
+    }
 
     @Provides
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, authInterceptor: AuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-//            .addInterceptor(authInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 

@@ -21,12 +21,13 @@ import com.example.brofin.domain.repository.BrofinRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+
 class BrofinRepositoryImpl(
     private val userBalanceDao: UserBalanceDao,
     private val financialGoalsDao: FinancialGoalsDao,
     private val budgetingDiaryDao: BudgetingDiaryDao,
     private val budgetingDao: BudgetingDao,
-    private val userProfileDao: UserProfileDao
+    private val userProfileDao: UserProfileDao,
 ): BrofinRepository {
 
     override suspend fun insertUserBalance(userBalance: UserBalance) {
@@ -73,6 +74,14 @@ class BrofinRepositoryImpl(
         return budgetingDiaryDao.getTotalAmountByCategoryAndMonth(categoryIds, monthAndYear)
     }
 
+    override suspend fun getUserBalanceData(monthAndYear: Long): UserBalanceEntity? {
+        return userBalanceDao.getUserBalanceData(monthAndYear)
+    }
+
+    override suspend fun getCurrentBalance(monthAndYear: Long): Double {
+        return userBalanceDao.getCurrentBalance(monthAndYear) ?: 0.0
+    }
+
     override fun getUserBalance(monthAndYear: Long): Flow<Double?> {
         return userBalanceDao.getUserBalanceByMonthAndYear(monthAndYear).map { it?.balance }
     }
@@ -95,6 +104,35 @@ class BrofinRepositoryImpl(
 
     override suspend fun deleteFinancialGoal(goalId: Int) {
         financialGoalsDao.deleteGoalById(goalId)
+    }
+
+    override suspend fun logout(): Boolean {
+        try {
+            userProfileDao.deleteAllUserProfiles()
+            userBalanceDao.deleteAllUserBalances()
+            budgetingDiaryDao.deleteAllBudgetingDiaries()
+            budgetingDao.deleteAllBudgeting()
+            return true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saat logout", e)
+            return false
+        }
+    }
+
+    override suspend fun insertNoValidation(budgetingDiary: BudgetingDiary) {
+        budgetingDiaryDao.insertBudgetingDiary(budgetingDiary.toBudgetingDiaryEntity())
+    }
+
+    override suspend fun insertNoValidation(userBalance: UserBalance) {
+        userBalanceDao.insertOrUpdateUserBalance(userBalance.toUserBalanceEntity())
+    }
+
+    override suspend fun insertNoValidation(userProfile: UserProfileEntity) {
+        userProfileDao.insertOrUpdateUserProfile(userProfile)
+    }
+
+    override suspend fun insertNoValidation(budgeting: Budgeting) {
+        budgetingDao.insertBudget(budgeting.toBudgetingEntity())
     }
 
     override suspend fun insertBudget(budget: Budgeting) {

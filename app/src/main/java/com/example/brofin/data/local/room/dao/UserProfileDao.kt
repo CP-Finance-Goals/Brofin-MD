@@ -24,4 +24,7 @@ interface UserProfileDao {
 
     @Query("UPDATE user_profile SET savings = :newSavings")
     suspend fun updateSavings(newSavings: Double)
+
+    @Query("DELETE FROM user_profile")
+    suspend fun deleteAllUserProfiles()
 }

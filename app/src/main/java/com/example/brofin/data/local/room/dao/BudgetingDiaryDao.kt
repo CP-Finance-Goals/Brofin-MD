@@ -88,6 +88,7 @@ interface BudgetingDiaryDao {
         categoryIds: List<Int>,
         monthAndYear: Long
     ): Flow<Double>
+
 }
 
 

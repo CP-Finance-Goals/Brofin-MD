@@ -34,4 +34,7 @@ interface BudgetingDao {
 
     @Insert
     suspend fun insertBudget(budget: BudgetingEntity)
+
+    @Query("DELETE FROM budgeting")
+    suspend fun deleteAllBudgeting()
 }

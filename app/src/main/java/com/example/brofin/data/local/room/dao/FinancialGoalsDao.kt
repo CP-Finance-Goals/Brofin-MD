@@ -21,4 +21,7 @@ interface FinancialGoalsDao {
 
     @Query("DELETE FROM financial_goals WHERE id = :id")
     suspend fun deleteGoalById(id: Int)
+
+    @Query("DELETE FROM financial_goals")
+    suspend fun deleteAllGoals()
 }

@@ -9,8 +9,8 @@ private const val USER_PREFERENCES = "user_preferences"
 val Context.userPreferences by preferencesDataStore(name = USER_PREFERENCES)
 
 data class UserPreferences(
-    val isDarkMode: Boolean? = false,                    // Preferensi tema aplikasi (dark/light mode)
-    val token: String? = null                            // Token autentikasi pengguna
+    val isDarkMode: Boolean? = false,
+    val token: String? = null
 )
 
 object PreferencesKeys {

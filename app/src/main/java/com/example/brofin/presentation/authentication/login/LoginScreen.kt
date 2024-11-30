@@ -56,9 +56,7 @@ import com.example.brofin.presentation.authentication.components.LottieAnimation
 import com.example.brofin.presentation.authentication.components.LottieAnimationTwo
 import com.example.brofin.presentation.authentication.state.AuthState
 import com.example.brofin.presentation.components.LoadingDialog
-import com.stevdzasan.onetap.OneTapGoogleButton
-import com.stevdzasan.onetap.OneTapSignInState
-import com.stevdzasan.onetap.OneTapSignInWithGoogle
+
 import kotlin.text.isBlank
 import kotlin.text.isNotBlank
 

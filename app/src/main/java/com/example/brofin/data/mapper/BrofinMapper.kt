@@ -37,8 +37,8 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
     id = id,
     date = date,
     description = description,
+    photoUrl = photoUrl,
     amount = amount,
-    photoUri = photoUri,
     categoryId = categoryId,
     monthAndYear = monthAndYear
 )
@@ -79,10 +79,11 @@ fun Budgeting.toBudgetingEntity() = BudgetingEntity(
 )
 
 fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
+    id = id,
     date = date,
     description = description,
+    photoUrl = photoUrl,
     amount = amount,
-    photoUri = photoUri,
     categoryId = categoryId,
     monthAndYear = monthAndYear
 )

@@ -17,6 +17,9 @@ interface UserBalanceDao {
     fun getUserBalanceByMonthAndYear(monthAndYear: Long): Flow<UserBalanceEntity?>
 
     @Query("SELECT * FROM user_balance WHERE monthAndYear = :monthAndYear")
+    suspend fun getUserBalanceData(monthAndYear: Long): UserBalanceEntity?
+
+    @Query("SELECT * FROM user_balance WHERE monthAndYear = :monthAndYear")
     suspend fun getUserBalanceByMonthAndYearOnce(monthAndYear: Long): UserBalanceEntity?
 
     @Query("SELECT EXISTS(SELECT 1 FROM user_balance WHERE monthAndYear = :monthAndYear)")
@@ -29,5 +32,8 @@ interface UserBalanceDao {
 
     @Query("UPDATE user_balance SET currentBalance = :newBalance WHERE monthAndYear = :monthAndYear")
     suspend fun updateBalance(monthAndYear: Long, newBalance: Double)
+
+    @Query("DELETE FROM user_balance")
+    suspend fun deleteAllUserBalances()
 }
 

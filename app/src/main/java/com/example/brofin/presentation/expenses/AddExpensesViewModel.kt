@@ -1,13 +1,21 @@
 package com.example.brofin.presentation.expenses
 
+import android.content.ContentResolver
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.repository.AuthRepository
 import com.example.brofin.domain.repository.BrofinRepository
+import com.example.brofin.domain.repository.RemoteDataRepository
 import com.example.brofin.utils.Expense
+import com.example.brofin.utils.ReponseUtils
 import com.example.brofin.utils.decodeMonthAndYearFromLong
 import com.example.brofin.utils.getCurrentMonthAndYearAsLong
 import com.example.brofin.utils.getCurrentMonthAndYearInIndonesian
@@ -16,6 +24,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
@@ -23,6 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddExpensesViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
+    private val remoteDataRepository: RemoteDataRepository
 ) : ViewModel() {
 
     private val _addState = MutableStateFlow<StateApp<Boolean>>(StateApp.Idle)
@@ -110,7 +125,7 @@ class AddExpensesViewModel @Inject constructor(
         return date in yesterdayStart..todayEnd
     }
 
-    suspend fun getBudgetingByMonth(monthAndYear: Long) = brofinRepository.getBudgetingByMonth(monthAndYear)
+    private suspend fun getBudgetingByMonth(monthAndYear: Long) = brofinRepository.getBudgetingByMonth(monthAndYear)
 
     private val _totalAmountKebutuhan = MutableStateFlow<Double>(0.0)
     private val _totalAmountKeinginan = MutableStateFlow<Double>(0.0)
@@ -129,17 +144,68 @@ class AddExpensesViewModel @Inject constructor(
         }
     }
 
+    // Fungsi untuk meresize gambar
+    private fun resizeImage(photoUri: Uri, contentResolver: ContentResolver, context: Context, maxWidth: Int, maxHeight: Int): File? {
+        try {
+            // Membaca gambar dari URI ke dalam Bitmap
+            val inputStream = contentResolver.openInputStream(photoUri)
+            val originalBitmap = BitmapFactory.decodeStream(inputStream)
+
+            // Menghitung rasio untuk menjaga proporsi
+            val aspectRatio = originalBitmap.width.toFloat() / originalBitmap.height.toFloat()
+            val newWidth = if (originalBitmap.width > originalBitmap.height) maxWidth else (maxHeight * aspectRatio).toInt()
+            val newHeight = if (originalBitmap.height > originalBitmap.width) maxHeight else (newWidth / aspectRatio).toInt()
+
+            // Membuat Bitmap yang diubah ukurannya
+            val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, false)
+
+            // Simpan Bitmap yang diubah ukurannya ke file sementara di cache directory
+            val resizedFile = File(context.cacheDir, "resized_${System.currentTimeMillis()}.jpg")
+            val outputStream = FileOutputStream(resizedFile)  // Pastikan menggunakan FileOutputStream yang sesuai
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // Kompresi 80% kualitas
+            outputStream.flush()
+            outputStream.close()
+
+            return resizedFile
+        } catch (e: Exception) {
+            Log.e("Image Resize", "Error resizing image", e)
+        }
+        return null
+    }
+
+    // Fungsi untuk menyiapkan bagian foto menjadi MultipartBody.Part
+    private fun preparePhotoPart(photoUri: Uri?, contentResolver: ContentResolver, context: Context): MultipartBody.Part? {
+        return if (photoUri != null) {
+            try {
+                // Resize gambar sebelum diproses
+                val resizedFile = resizeImage(photoUri, contentResolver, context, maxWidth = 800, maxHeight = 800) // Sesuaikan ukuran max jika perlu
+
+                resizedFile?.let { file ->
+                    // Membuat MultipartBody.Part dari file yang sudah disalin
+                    val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("image", file.name, requestBody)
+                }
+            } catch (e: Exception) {
+                Log.e("File Error", "Failed to process the image", e)
+                null
+            }
+        } else {
+            null
+        }
+    }
+
 
     fun insert(
         date: Long,
-        photoUri: String? = null,
+        photoUri: Uri? = null,
         description: String? = null,
         amount: Double,
-        categoryId: Int
+        categoryId: Int,
+        contentResolver: ContentResolver,
+        context: Context
     ) {
         viewModelScope.launch {
             _addState.value = StateApp.Loading
-
 
             Log.d("AddExpensesViewModel", "insert: $date")
 
@@ -160,7 +226,6 @@ class AddExpensesViewModel @Inject constructor(
             val budgeting = getBudgetingByMonth(getCurrentMonthAndYearAsLong())
 
             _limitKebutuhan.value = budgeting?.essentialNeedsLimit ?: 0.0
-
             _limitKeinginan.value = budgeting?.wantsLimit ?: 0.0
 
             if (categoryId in lisIdKebutuhan) {
@@ -177,20 +242,55 @@ class AddExpensesViewModel @Inject constructor(
                 }
             }
 
+            val currentBalance = brofinRepository.getCurrentBalance(getCurrentMonthAndYearAsLong())
+
+            if (currentBalance < amount) {
+                _addState.value = StateApp.Error("Saldo tidak mencukupi untuk melakukan pengeluaran sebesar ${amount}.")
+                return@launch
+            }
+
+            val updateBalance = currentBalance - amount
+            val userBalance = brofinRepository.getUserBalanceData(getCurrentMonthAndYearAsLong())
+
+            if (userBalance == null) {
+                _addState.value = StateApp.Error("Kamu belum memasukan pendapatan bulan ini pada halaman home.")
+            }
+
+
 
             try {
-                brofinRepository.insertBudgetingDiaryEntry(
-                    BudgetingDiary(
-                        date = date,
-                        photoUri = photoUri,
-                        description = description,
-                        amount = amount,
-                        categoryId = categoryId,
-                        monthAndYear = getCurrentMonthAndYearAsLong(),
-                    ),
+                val monthAndYearData = getCurrentMonthAndYearAsLong().toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                val dateData = date.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                val descriptionData = description?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val amountData = amount.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                val categoryIdData = categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                val photoData = preparePhotoPart(photoUri, contentResolver, context)
+
+                val response = remoteDataRepository.addBudgetingDiary(
+                    monthAndYear = monthAndYearData,
+                    date = dateData,
+                    description = descriptionData,
+                    amount = amountData,
+                    categoryId = categoryIdData,
+                    photo = photoData
                 )
 
-                _addState.value = StateApp.Success(true)
+                if (response.message == ReponseUtils.ADD_DIARY_SUCCES){
+                    brofinRepository.insertBudgetingDiaryEntry(
+                        BudgetingDiary(
+                            date = date,
+                            description = description,
+                            amount = amount,
+                            categoryId = categoryId,
+                            photoUrl = response.photoUrl,
+                            monthAndYear = getCurrentMonthAndYearAsLong(),
+                        ),
+                    )
+                    _addState.value = StateApp.Success(true)
+                } else {
+                    _addState.value = StateApp.Error("Gagal menambahkan data")
+                }
+
             } catch (e: IllegalArgumentException) {
                 Log.e("AddExpensesViewModel", "Insert Error: IllegalArgumentException", e)
                 _addState.value = StateApp.Error(e.message ?: "Saldo tidak mencukupi")

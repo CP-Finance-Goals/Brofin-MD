@@ -119,10 +119,6 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
-    // Google One Tap
-    implementation(libs.onetapcompose)
-    implementation(libs.kotlinx.coroutines.play.services)
-
     // Material
     implementation(libs.material)
 

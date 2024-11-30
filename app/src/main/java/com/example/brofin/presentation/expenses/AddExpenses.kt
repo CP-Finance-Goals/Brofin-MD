@@ -109,11 +109,11 @@ fun AddExpenses(
     var isLoading by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
     var attachmentVisible by remember { mutableStateOf(false) }
-    var idCategory = addExpensesViewModel.idCategory.collectAsStateWithLifecycle().value
+    val idCategory = addExpensesViewModel.idCategory.collectAsStateWithLifecycle().value
     val amount = addExpensesViewModel.amount.collectAsStateWithLifecycle().value
     val description = addExpensesViewModel.description.collectAsStateWithLifecycle().value
     val selectedCategory = addExpensesViewModel.selectedCategory.collectAsStateWithLifecycle().value
-    var date = getFormattedTimeInMillis(addExpensesViewModel.date.collectAsStateWithLifecycle().value)
+    val date = getFormattedTimeInMillis(addExpensesViewModel.date.collectAsStateWithLifecycle().value)
     var photoUriData by remember { mutableStateOf<Uri?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
@@ -121,6 +121,8 @@ fun AddExpenses(
     var message by remember {
         mutableStateOf("")
     }
+
+    val contentResolver = context.contentResolver
 
 
 
@@ -298,8 +300,10 @@ fun AddExpenses(
                                     date = date,
                                     amount = amount.toDouble(),
                                     description = description,
-                                    photoUri = photoUriData.toString(),
+                                    photoUri = photoUriData,
                                     categoryId = idCategory,
+                                    contentResolver = contentResolver,
+                                    context = context
                                 )
                                 addExpensesViewModel.reset()
                             }

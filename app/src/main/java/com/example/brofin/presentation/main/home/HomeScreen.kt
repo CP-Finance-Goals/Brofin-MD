@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.UserBalance
+import com.example.brofin.presentation.components.ErrorDialog
+import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.main.home.components.BudgetItem
 import com.example.brofin.presentation.main.home.components.BudgetingSheetContent
 import com.example.brofin.presentation.main.home.components.WarningCard
@@ -48,6 +52,7 @@ fun HomeScreen(
     goList: () -> Unit,
     viewmodel: HomeViewModel = hiltViewModel()
 ) {
+    val state = viewmodel.state.collectAsStateWithLifecycle(StateApp.Idle)
     val backgroundColor = MaterialTheme.colorScheme.background
     val diaries by viewmodel.budgetingDiaries.collectAsStateWithLifecycle(emptyList())
     val totalIncome by viewmodel.totalIncome.collectAsStateWithLifecycle(0.0)
@@ -56,11 +61,44 @@ fun HomeScreen(
     val savings by viewmodel.totalSavings.collectAsStateWithLifecycle(0.0)
     var isSheetOpen by remember { mutableStateOf(false) }
 
+    var errorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var showLoadingDialog by remember { mutableStateOf(false) }
     val budgetingIsExist by viewmodel.budgetingUserIsExist.collectAsStateWithLifecycle(false)
 
     val sheetState = rememberModalBottomSheetState()
 
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(state.value) {
+        when (state.value) {
+            is StateApp.Success -> {
+                showLoadingDialog = false
+            }
+
+            is StateApp.Error -> {
+                showLoadingDialog = false
+                errorDialog = true
+                errorMessage = (state.value as StateApp.Error).exception
+            }
+
+            is StateApp.Loading -> {
+                showLoadingDialog = true
+            }
+
+            else -> {
+
+            }
+        }
+    }
+
+    LoadingDialog(showDialog = showLoadingDialog) {
+        showLoadingDialog = false
+    }
+
+    ErrorDialog(showDialog = errorDialog , message = errorMessage) {
+        errorDialog = false
+    }
 
 
     Column(
