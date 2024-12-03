@@ -34,6 +34,7 @@ fun BudgetingSheetContent(
     var pendapatanMonthe by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var pendapatanConfirm by remember { mutableStateOf("0") }
 
     Column(
         modifier = Modifier
@@ -55,8 +56,7 @@ fun BudgetingSheetContent(
                     it.isEmpty() -> "Pendapatan tidak boleh kosong"
                     it.toDoubleOrNull() == null -> "Pendapatan harus berupa angka"
                     it.toDouble() < 0 -> "Pendapatan tidak boleh kurang dari 0"
-                    it.toDouble() < 1000000 -> "Pendapatan tidak boleh kurang dari atau sama dengan 1.000.000"
-                    else -> "" // Valid
+                    else -> ""
                 }
 
             },
@@ -69,7 +69,7 @@ fun BudgetingSheetContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = onCancel) {
-                Text("Batal")
+                Text("Batal", style = MaterialTheme.typography.bodyMedium)
             }
             Spacer(Modifier.width(8.dp))
             Button(
@@ -78,16 +78,15 @@ fun BudgetingSheetContent(
                            pendapatanMonthe.isEmpty() -> Toast.makeText(context, "Pendapatan tidak boleh kosong", Toast.LENGTH_LONG).show()
                            pendapatanMonthe.toDoubleOrNull() == null -> Toast.makeText(context, "Pendapatan harus berupa angka", Toast.LENGTH_LONG).show()
                            pendapatanMonthe.toDouble() < 0 -> Toast.makeText(context, "Pendapatan tidak boleh kurang dari 0", Toast.LENGTH_LONG).show()
-                           pendapatanMonthe.toDouble() < 1000000 -> Toast.makeText(context, "Pendapatan tidak boleh kurang dari 1.000.000", Toast.LENGTH_LONG).show()
                            else -> {
                                  showDialog = true
+                                    pendapatanConfirm = pendapatanMonthe
                            }
                        }
 
-
                 }
             ) {
-                Text("Simpan")
+                Text("Simpan", style = MaterialTheme.typography.bodyMedium)
             }
 
         }
@@ -99,7 +98,8 @@ fun BudgetingSheetContent(
             onConfirm = {
                 onSaveBudget(pendapatanMonthe.toDouble())
                 showDialog = false
-            }
+            },
+            amount = pendapatanConfirm.toDouble()
         )
     }
 }

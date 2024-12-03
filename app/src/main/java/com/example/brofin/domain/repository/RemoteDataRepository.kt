@@ -1,6 +1,8 @@
 package com.example.brofin.domain.repository
 
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
+import com.example.brofin.data.remote.dto.AddExpensesResponseDto
+import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
@@ -10,6 +12,7 @@ import com.example.brofin.data.remote.dto.RegisterResponseDto
 import com.example.brofin.data.remote.dto.UpdateBalanceResponseDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Part
 
 interface RemoteDataRepository {
 
@@ -42,11 +45,45 @@ interface RemoteDataRepository {
     suspend fun editbalance(monthAndYear: Long, amount: Double, currentBalance: Double): UpdateBalanceResponseDto
 
     // add budgeting
-    suspend fun addBudgeting( monthAndYear: Long,
-                              total: Double,
-                              essentialNeedsLimit: Double,
-                              wantsLimit: Double,
-                              savingsLimit: Double,
-                              isReminder: Boolean): AddOrUpateBudgetingResponseDto
+    suspend fun addBudgeting(
+        monthAndYear: Long,
+        total: Double,
+        essentialNeedsLimit: Double,
+        wantsLimit: Double,
+        savingsLimit: Double,
+        isReminder: Boolean
+    ): AddOrUpateBudgetingResponseDto
 
+    // add expenses
+    suspend fun addExpenses(
+        monthAndYear: RequestBody,
+        date: RequestBody,
+        description: RequestBody? = null,
+        amount: RequestBody,
+        categoryId: RequestBody,
+        total: RequestBody,
+        essentialNeeds: RequestBody,
+        wants: RequestBody,
+        savingsLimit: RequestBody,
+        balance: RequestBody,
+        currentBalance: RequestBody,
+        image: MultipartBody.Part? = null
+    ): AddExpensesResponseDto
+
+
+ // Setup budgeting
+    suspend fun setupBudgeting(
+        monthAndYear: RequestBody,
+        total: RequestBody,
+        essentialNeedsLimit: RequestBody,
+        wantsLimit: RequestBody,
+        balance: RequestBody,
+        currentBalance: RequestBody,
+        isReminder: RequestBody,
+        savingsLimit: RequestBody,
+        savings: RequestBody,
+        dob: RequestBody,
+        username: RequestBody,
+        image: MultipartBody.Part? = null
+    ): SetupBudgeingResponseDto
 }

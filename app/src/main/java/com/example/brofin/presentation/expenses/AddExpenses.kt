@@ -66,6 +66,7 @@ import com.example.brofin.R
 import com.example.brofin.domain.StateApp
 import com.example.brofin.presentation.components.ErrorDialog
 import com.example.brofin.presentation.components.LoadingDialog
+import com.example.brofin.presentation.components.NetworkErrorDialog
 import com.example.brofin.presentation.expenses.components.AttachmentBottomSheet
 import com.example.brofin.presentation.expenses.components.CategoryModalBottomSheet
 import com.example.brofin.presentation.main.home.components.CustomTextFieldTwo
@@ -90,6 +91,15 @@ fun AddExpenses(
 ) {
     LaunchedEffect(Unit) {
         currentBackStack()
+    }
+
+    val networkState = addExpensesViewModel.isConnected.collectAsStateWithLifecycle().value
+    var networkDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(networkState) {
+        if (!networkState) {
+            networkDialog = true
+        }
     }
 
     BackHandler(enabled = true) {
@@ -124,8 +134,6 @@ fun AddExpenses(
 
     val contentResolver = context.contentResolver
 
-
-
     LaunchedEffect(state) {
         when(state){
             is StateApp.Error -> {
@@ -158,7 +166,7 @@ fun AddExpenses(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tambahkan Pengeluaran") },
+                title = { Text("Tambahkan Pengeluaran", style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Kembali")
@@ -177,17 +185,22 @@ fun AddExpenses(
                 isLoading = false
             }
 
-            if (errorDialog.value) {
-                ErrorDialog(
-                    showDialog = errorDialog.value,
-                    message = message,
-                    onDismissRequest = {
-                        errorDialog.value = false
-                        addExpensesViewModel.resetState()
-
-                    }
-                )
+            NetworkErrorDialog(
+                showDialog = networkDialog
+            ) {
+                networkDialog = false
+                goback()
             }
+
+            ErrorDialog(
+                showDialog = errorDialog.value,
+                message = message,
+                onDismissRequest = {
+                    errorDialog.value = false
+                    addExpensesViewModel.resetState()
+                    goback()
+                }
+            )
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

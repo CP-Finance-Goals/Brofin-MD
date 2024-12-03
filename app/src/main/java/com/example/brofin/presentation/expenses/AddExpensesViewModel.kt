@@ -8,12 +8,12 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.BudgetingDiary
-import com.example.brofin.domain.repository.AuthRepository
+import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.repository.BrofinRepository
 import com.example.brofin.domain.repository.RemoteDataRepository
+import com.example.brofin.utils.ConnectivityObserver
 import com.example.brofin.utils.Expense
 import com.example.brofin.utils.ReponseUtils
 import com.example.brofin.utils.decodeMonthAndYearFromLong
@@ -22,6 +22,7 @@ import com.example.brofin.utils.getCurrentMonthAndYearInIndonesian
 import com.example.brofin.utils.toIndonesianCurrency2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -37,8 +38,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AddExpensesViewModel @Inject constructor(
     private val brofinRepository: BrofinRepository,
-    private val remoteDataRepository: RemoteDataRepository
+    private val remoteDataRepository: RemoteDataRepository,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
+
+    val isConnected: StateFlow<Boolean> = connectivityObserver.isConnected
 
     private val _addState = MutableStateFlow<StateApp<Boolean>>(StateApp.Idle)
     val addState = _addState.asStateFlow()
@@ -69,7 +73,9 @@ class AddExpensesViewModel @Inject constructor(
         _date.value = System.currentTimeMillis()
         fetchTotalAmount(lisIdKebutuhan, getCurrentMonthAndYearAsLong())
         fetchTotalAmount(lisIdKeinginan, getCurrentMonthAndYearAsLong())
+        checkBudgeting()
     }
+
     fun setCategoryId(id: Int) {
         _idCategory.value = id
     }
@@ -133,33 +139,32 @@ class AddExpensesViewModel @Inject constructor(
 
     private fun fetchTotalAmount(categoryIds: List<Int>, monthAndYear: Long) {
         viewModelScope.launch {
-            brofinRepository.getTotalAmountByCategoryAndMonth(categoryIds, monthAndYear)
-                .collect { amount ->
-                    if (categoryIds == lisIdKebutuhan) {
-                        _totalAmountKebutuhan.value = amount
-                    } else {
-                        _totalAmountKeinginan.value = amount
-                    }
-                }
+          try {
+              brofinRepository.getTotalAmountByCategoryAndMonth(categoryIds, monthAndYear)
+                  .collect { amount ->
+                      if (categoryIds == lisIdKebutuhan) {
+                          _totalAmountKebutuhan.value = amount
+                      } else {
+                          _totalAmountKeinginan.value = amount
+                      }
+                  }
+          } catch (e: Exception) {
+              Log.e("AddExpensesViewModel", "fetchTotalAmount: Error", e)
+          }
         }
     }
 
-    // Fungsi untuk meresize gambar
     private fun resizeImage(photoUri: Uri, contentResolver: ContentResolver, context: Context, maxWidth: Int, maxHeight: Int): File? {
         try {
-            // Membaca gambar dari URI ke dalam Bitmap
             val inputStream = contentResolver.openInputStream(photoUri)
             val originalBitmap = BitmapFactory.decodeStream(inputStream)
 
-            // Menghitung rasio untuk menjaga proporsi
             val aspectRatio = originalBitmap.width.toFloat() / originalBitmap.height.toFloat()
             val newWidth = if (originalBitmap.width > originalBitmap.height) maxWidth else (maxHeight * aspectRatio).toInt()
             val newHeight = if (originalBitmap.height > originalBitmap.width) maxHeight else (newWidth / aspectRatio).toInt()
 
-            // Membuat Bitmap yang diubah ukurannya
             val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, false)
 
-            // Simpan Bitmap yang diubah ukurannya ke file sementara di cache directory
             val resizedFile = File(context.cacheDir, "resized_${System.currentTimeMillis()}.jpg")
             val outputStream = FileOutputStream(resizedFile)  // Pastikan menggunakan FileOutputStream yang sesuai
             resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // Kompresi 80% kualitas
@@ -173,15 +178,12 @@ class AddExpensesViewModel @Inject constructor(
         return null
     }
 
-    // Fungsi untuk menyiapkan bagian foto menjadi MultipartBody.Part
     private fun preparePhotoPart(photoUri: Uri?, contentResolver: ContentResolver, context: Context): MultipartBody.Part? {
         return if (photoUri != null) {
             try {
-                // Resize gambar sebelum diproses
                 val resizedFile = resizeImage(photoUri, contentResolver, context, maxWidth = 800, maxHeight = 800) // Sesuaikan ukuran max jika perlu
 
                 resizedFile?.let { file ->
-                    // Membuat MultipartBody.Part dari file yang sudah disalin
                     val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                     MultipartBody.Part.createFormData("image", file.name, requestBody)
                 }
@@ -191,6 +193,15 @@ class AddExpensesViewModel @Inject constructor(
             }
         } else {
             null
+        }
+    }
+
+    private fun checkBudgeting() {
+        viewModelScope.launch {
+            val budgeting = getBudgetingByMonth(getCurrentMonthAndYearAsLong())
+            if (budgeting == null) {
+                _addState.value = StateApp.Error("Kamu belum membuat alokasi budgeting bulan ini")
+            }
         }
     }
 
@@ -205,6 +216,7 @@ class AddExpensesViewModel @Inject constructor(
         context: Context
     ) {
         viewModelScope.launch {
+
             _addState.value = StateApp.Loading
 
             Log.d("AddExpensesViewModel", "insert: $date")
@@ -256,26 +268,80 @@ class AddExpensesViewModel @Inject constructor(
                 _addState.value = StateApp.Error("Kamu belum memasukan pendapatan bulan ini pada halaman home.")
             }
 
-
+//            try {
+//                val responsetwo = remoteDataRepository.editbalance(
+//                    monthAndYear = getCurrentMonthAndYearAsLong(),
+//                    amount = userBalance?.balance!!,
+//                    currentBalance = updateBalance
+//                )
+//                if(responsetwo.data != null){
+//                    brofinRepository.insertUserBalance(
+//                        UserBalance(
+//                            monthAndYear = getCurrentMon`thAndYearAsLong(),
+//                            balance = userBalance.balance,
+//                            currentBalance = updateBalance
+//                        )
+//                    )
+//                } else {
+//                    _addState.value = StateApp.Error("Gagal mengupdate uang bulanan kamu")
+//                }
+//            } catch (
+//                e: Exception
+//            ) {
+//                Log.e("AddExpensesViewModel", "Insert Error:", e)
+//                _addState.value = StateApp.Error("Terjadi kesalahan saat mengupdate saldo")
+//            }
 
             try {
-                val monthAndYearData = getCurrentMonthAndYearAsLong().toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                val dateData = date.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                val descriptionData = description?.toRequestBody("text/plain".toMediaTypeOrNull())
-                val amountData = amount.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                val categoryIdData = categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                val photoData = preparePhotoPart(photoUri, contentResolver, context)
+//                val monthAndYearData = getCurrentMonthAndYearAsLong().toString().toRequestBody("text/plain".toMediaTypeOrNull())
+//                val dateData = date.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+//                val descriptionData = description?.toRequestBody("text/plain".toMediaTypeOrNull())
+//                val amountData = amount.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+//                val categoryIdData = categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+//                val photoData = preparePhotoPart(photoUri, contentResolver, context)
+//
+//                val response = remoteDataRepository.addBudgetingDiary(
+//                    monthAndYear = monthAndYearData,
+//                    date = dateData,
+//                    description = descriptionData,
+//                    amount = amountData,
+//                    categoryId = categoryIdData,
+//                    photo = photoData
+//                )
+//
+//                if (response.message == ReponseUtils.ADD_DIARY_SUCCES){
+//                    brofinRepository.insertBudgetingDiaryEntry(
+//                        BudgetingDiary(
+//                            date = date,
+//                            description = description,
+//                            amount = amount,
+//                            categoryId = categoryId,
+//                            photoUrl = response.photoUrl,
+//                            monthAndYear = getCurrentMonthAndYearAsLong(),
+//                        ),
+//                    )
+//                    _addState.value = StateApp.Success(true)
+//                } else {
+//                    _addState.value = StateApp.Error("Gagal menambahkan data")
+//                }
 
-                val response = remoteDataRepository.addBudgetingDiary(
-                    monthAndYear = monthAndYearData,
-                    date = dateData,
-                    description = descriptionData,
-                    amount = amountData,
-                    categoryId = categoryIdData,
-                    photo = photoData
+
+                val response = remoteDataRepository.addExpenses(
+                    monthAndYear = getCurrentMonthAndYearAsLong().toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    date = date.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    description = description?.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    amount = amount.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    categoryId = categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    total = budgeting?.total.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    essentialNeeds = budgeting?.essentialNeedsLimit.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    wants = budgeting?.wantsLimit.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    savingsLimit = budgeting?.savingsLimit.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    balance = userBalance?.balance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    currentBalance =updateBalance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    image = preparePhotoPart(photoUri, contentResolver, context)
                 )
 
-                if (response.message == ReponseUtils.ADD_DIARY_SUCCES){
+                if (response.message == ReponseUtils.ADD_EXPENSES_SUCCESS){
                     brofinRepository.insertBudgetingDiaryEntry(
                         BudgetingDiary(
                             date = date,
@@ -285,6 +351,14 @@ class AddExpensesViewModel @Inject constructor(
                             photoUrl = response.photoUrl,
                             monthAndYear = getCurrentMonthAndYearAsLong(),
                         ),
+                    )
+
+                    brofinRepository.insertUserBalance(
+                        UserBalance(
+                            monthAndYear = getCurrentMonthAndYearAsLong(),
+                            balance = userBalance?.balance!!,
+                            currentBalance = updateBalance
+                        )
                     )
                     _addState.value = StateApp.Success(true)
                 } else {

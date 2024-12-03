@@ -1,11 +1,8 @@
 package com.example.brofin.presentation.authentication.login
 
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -50,12 +47,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.brofin.presentation.authentication.AuthViewModel
 import com.example.brofin.presentation.authentication.components.CustomTextField
-import com.example.brofin.presentation.authentication.components.GoogleAuthButton
 import com.example.brofin.presentation.authentication.components.IdentifierTextField
 import com.example.brofin.presentation.authentication.components.LottieAnimationOnce
 import com.example.brofin.presentation.authentication.components.LottieAnimationTwo
 import com.example.brofin.presentation.authentication.state.AuthState
 import com.example.brofin.presentation.components.LoadingDialog
+import com.example.brofin.presentation.components.NetworkErrorDialog
 
 import kotlin.text.isBlank
 import kotlin.text.isNotBlank
@@ -69,11 +66,13 @@ fun LoginScreen(
 ) {
 
     val state by viewmodel.authState.collectAsStateWithLifecycle()
+    val isConnect by viewmodel.isConnected.collectAsStateWithLifecycle(false)
 
     val context = LocalContext.current
-    var snackbarMessage by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
     var showSnackbar by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -109,16 +108,16 @@ fun LoginScreen(
         when (val stateData = state) {
             is AuthState.Loading -> {
                 showLoadingDialog = true
+                showErrorDialog = false
             }
             is AuthState.Success -> {
                 showLoadingDialog = false
-                Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
                 goHome()
             }
             is AuthState.Error -> {
                 showLoadingDialog = false
-                snackbarMessage = stateData.message.toString()
-                showSnackbar = true
+                message = stateData.message ?: "Terjadi kesalahan saat login"
+                showErrorDialog = true
             }
             else -> {
                 showLoadingDialog = false
@@ -126,11 +125,20 @@ fun LoginScreen(
         }
     }
 
-
     LoadingDialog(
         showDialog = showLoadingDialog,
-        onDismissRequest = { showLoadingDialog = false }
+        onDismissRequest = { showLoadingDialog = false
+            viewmodel.resetState()
+        }
     )
+
+    NetworkErrorDialog(
+        showDialog = showErrorDialog,
+        message = if (isConnect) message else "Tidak ada koneksi internet, silahkan coba lagi nanti",
+    ) {
+        showErrorDialog = false
+        viewmodel.resetState()
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -236,7 +244,7 @@ fun LoginScreen(
                             password.length >= 8 ) {
                             viewmodel.loginWithEmail(email, password)
                         } else {
-                            snackbarMessage = when {
+                            message = when {
                                 email.isBlank() -> "Email tidak boleh kosong"
                                 !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Email tidak valid"
                                 password.length < 8 -> "Password harus lebih dari 8 karakter"
@@ -290,8 +298,8 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (showSnackbar) {
-                    LaunchedEffect(snackbarMessage) {
-                        snackbarHostState.showSnackbar(snackbarMessage)
+                    LaunchedEffect(message) {
+                        snackbarHostState.showSnackbar(message)
                         showSnackbar = false
                     }
                 }

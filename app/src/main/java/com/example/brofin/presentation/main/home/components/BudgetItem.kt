@@ -1,7 +1,6 @@
 package com.example.brofin.presentation.main.home.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -43,12 +42,12 @@ fun BudgetItem(label: String, amount: String, color: Color) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
             Text(
                 text = amount,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onPrimary,
                 maxLines = 1,
                 fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Ellipsis

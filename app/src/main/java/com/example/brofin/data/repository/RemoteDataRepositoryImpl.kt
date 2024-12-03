@@ -3,6 +3,8 @@ package com.example.brofin.data.repository
 import android.util.Log
 import com.example.brofin.data.remote.ApiService
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
+import com.example.brofin.data.remote.dto.AddExpensesResponseDto
+import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
@@ -14,8 +16,10 @@ import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.repository.RemoteDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class RemoteDataRepositoryImpl @Inject constructor(
@@ -156,6 +160,84 @@ class RemoteDataRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun addExpenses(
+        monthAndYear: RequestBody,
+        date: RequestBody,
+        description: RequestBody?,
+        amount: RequestBody,
+        categoryId: RequestBody,
+        total: RequestBody,
+        essentialNeeds: RequestBody,
+        wants: RequestBody,
+        savingsLimit: RequestBody,
+        balance: RequestBody,
+        currentBalance: RequestBody,
+        image: MultipartBody.Part?
+    ): AddExpensesResponseDto {
+        return withContext(Dispatchers.Default){
+            try {
+                apiService.addExpenses(
+                    monthAndYear,
+                    date,
+                    description,
+                    amount,
+                    categoryId,
+                    isReminder = "false".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    total,
+                    essentialNeeds,
+                    wants,
+                    savingsLimit,
+                    balance,
+                    currentBalance,
+                    image,
+                )
+            } catch (e: Exception){
+                Log.e(TAG, "error when adding expenses")
+                throw e
+            }
+        }
+    }
+
+    override suspend fun setupBudgeting(
+        monthAndYear: RequestBody,
+        total: RequestBody,
+        essentialNeedsLimit: RequestBody,
+        wantsLimit: RequestBody,
+        balance: RequestBody,
+        currentBalance: RequestBody,
+        isReminder: RequestBody,
+        savingsLimit: RequestBody,
+        savings: RequestBody,
+        dob: RequestBody,
+        username: RequestBody,
+        image: MultipartBody.Part?
+    ): SetupBudgeingResponseDto {
+        return withContext(Dispatchers.Default){
+            try {
+                apiService.setupBudgeting(
+                    monthAndYear,
+                    total,
+                    essentialNeedsLimit,
+                    wantsLimit,
+                    balance,
+                    gender = "tidak diketahui".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    currentBalance,
+                    isReminder,
+                    savingsLimit,
+                    savings,
+                    dob,
+                    username,
+                    image
+                )
+            } catch (e: Exception){
+                Log.e(TAG, "error when setup budgeting")
+                throw e
+            }
+        }
+    }
+
+
 
 
     companion object{

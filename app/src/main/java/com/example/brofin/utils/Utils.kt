@@ -12,6 +12,7 @@ fun getCurrentMonthAndYearInIndonesian(): String {
     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     return formatter.format(Date(System.currentTimeMillis()))
 }
+
 fun getFormattedTimeInMillis(currentTimeMillis: Long): Long {
 
     if (currentTimeMillis == 0L) {

@@ -49,7 +49,7 @@ fun LoadingDialog(
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Mohon tunggu...")
+                    Text(text = "Mohon tunggu...", style = MaterialTheme.typography.bodyMedium)
                 }
             },
             confirmButton = {}

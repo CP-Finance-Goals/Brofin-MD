@@ -149,7 +149,6 @@ fun ContentBox2() {
         }
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Menampilkan listNamaItem dan listNilai dalam Row
         combined.forEachIndexed { index, pair ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -169,7 +168,7 @@ fun ContentBox2() {
 
                 Column(modifier = Modifier.weight(0.2f)) {
                     RowEditButton {
-                        if (index == 1) { // Jika ini baris estimasi, maka tampilkan date picker
+                        if (index == 1) {
                             showDatePicker = true
                         }
                     }
@@ -177,7 +176,6 @@ fun ContentBox2() {
             }
         }
 
-        // Menampilkan DatePicker jika showDatePicker true
         if (showDatePicker) {
             DatePickerDialog(
                 onDismissRequest = { showDatePicker = false },
@@ -185,7 +183,6 @@ fun ContentBox2() {
                     Button(
                         onClick = {
                             datePickerState.selectedDateMillis?.let {
-                                // Update date dengan nilai baru yang dipilih
                                 listNilai[1] = it.toFormattedDate()
                             }
                             showDatePicker = false
@@ -208,169 +205,13 @@ fun ContentBox2() {
                 content = {
                     DatePicker(
                         state = datePickerState,
-                        showModeToggle = true
+                        showModeToggle = false
                     )
                 }
             )
         }
     }
 }
-
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun FinancialSelected() {
-//
-//    val categories = listOf("Mobil", "Gadget", "Motor", "Luxury Brand", "Games")
-//    var selectedValue by remember { mutableStateOf("Pilih Kategori") }
-//    var textValue by remember { mutableStateOf("") }
-//    var showDatePicker by remember { mutableStateOf(false) }
-//    var date by remember { mutableLongStateOf(getFormattedTimeInMillis(System.currentTimeMillis())) }
-//    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date)
-//    var isDatePickerVisible by remember { mutableStateOf(false) }
-//    val scrrollState = rememberScrollState()
-//
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//    ){
-//        Column(
-//            Modifier.verticalScroll(state = scrrollState)
-//        ) {
-//            Spacer(modifier = Modifier.height(16.dp))
-//            MyDropDownCustom(
-//                selectedValue = selectedValue,
-//                options = categories,
-//                onValueChangedEvent = {
-//                    selectedValue = it
-//                },
-//                color = MaterialTheme.colorScheme.surface
-//            )
-//            Spacer(modifier = Modifier.height(10.dp))
-//            CustomTextFieldTwo(
-//                label = "Jumlah Target Uang",
-//                text = textValue,
-//                onTextChange = {
-//                    textValue = it
-//                },
-//                validate = {
-//                    if (it.isEmpty()) {
-//                        "Jumlah Target Uang tidak boleh kosong"
-//                    } else if (it.toDoubleOrNull() == null) {
-//                        "Jumlah Target Uang harus berupa angka"
-//                    } else {
-//                        ""
-//                    }
-//                },
-//                keyboardOptions = KeyboardOptions.Default.copy(
-//                    keyboardType = KeyboardType.Number
-//                ),
-//                singleLine = true,
-//                maxLines = 1
-//            )
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            OutlinedButton(
-//                onClick = {
-//                    showDatePicker = true
-//                },
-//                shape = RoundedCornerShape(15.dp),
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                Text(
-//                    "Estimasi",
-//                    style = MaterialTheme.typography.bodyMedium,
-//                    modifier = Modifier
-//                        .padding(8.dp)
-//                )
-//            }
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Button(
-//                onClick = {
-//
-//                },
-//                shape = RoundedCornerShape(15.dp),
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                Text(
-//                    "Hitung Prediksi",
-//                    style = MaterialTheme.typography.bodyMedium,
-//                    modifier = Modifier
-//                        .padding(8.dp)
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            Card(
-//                modifier = Modifier
-//                    .borderDashed(
-//                        width = 1.dp,
-//                        color = MaterialTheme.colorScheme.onSurface,
-//                        dashLength = 10f,
-//                        gapLength = 6f
-//                    )
-//                    .padding(5.dp)
-//                    .fillMaxWidth()
-//                    .fillMaxHeight()
-//                    .shadow(
-//                        elevation = 0.dp,
-//                        shape = RoundedCornerShape(16.dp)
-//                    )
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .padding(16.dp)
-//                ) {
-//                    Text(
-//                        text = "Hasil prediksi yang sesuai dengan input :\nElden Ring\nRed Dead Redemption 2\nDevil May Cry 5\nResident Evil 4 Remake\nFar Cry 3",
-//                        style = MaterialTheme.typography.bodyMedium
-//                    )
-//                }
-//            }
-//
-//        }
-//
-//        if (showDatePicker) {
-//            DatePickerDialog(
-//                onDismissRequest = { showDatePicker = false },
-//                confirmButton = {
-//                    Button(
-//                        onClick = {
-//                            datePickerState.selectedDateMillis?.let {
-//                                date = it
-//                            }
-//                            showDatePicker = false
-//                        },
-//                        colors = ButtonDefaults.buttonColors(
-//                            containerColor = MaterialTheme.colorScheme.primary,
-//                            contentColor = MaterialTheme.colorScheme.onPrimary
-//                        )
-//                    ) {
-//                        Text("Pilih")
-//                    }
-//                },
-//                dismissButton = {
-//                    TextButton(onClick = {
-//                        isDatePickerVisible = false
-//                        showDatePicker = false
-//                    }) {
-//                        Text("Batal")
-//                    }
-//                },
-//                content = {
-//                    DatePicker(
-//                        state = datePickerState,
-//                        showModeToggle = true
-//                    )
-//                }
-//            )
-//
-//        }
-//    }
-//
-//}
 
 fun Modifier.borderDashed(
     width: Dp,
@@ -380,18 +221,16 @@ fun Modifier.borderDashed(
 ): Modifier = this.then(
     Modifier.drawBehind {
         val size = this.size
-        val cornerRadius = 16.dp.toPx() // Mengonversi radius ke px
+        val cornerRadius = 16.dp.toPx()
 
         val paint = Paint().apply {
             this.color = color
             this.style = Stroke
-            this.strokeWidth = width.toPx() // Mengonversi Dp ke Px untuk lebar border
-            this.pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashLength, gapLength)) // Border putus-putus
+            this.strokeWidth = width.toPx()
+            this.pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashLength, gapLength))
         }
 
-        // Membuat path dengan rounded corners
         val path = Path().apply {
-            // Menambahkan rounded rect (segmen dengan radius sudut)
             addRoundRect(
                 RoundRect(
                     left = 0f,
@@ -404,9 +243,8 @@ fun Modifier.borderDashed(
             )
         }
 
-        // Menggambar path (border putus-putus) ke canvas
         drawIntoCanvas { canvas ->
-            canvas.drawPath(path, paint) // Menggambar path menggunakan canvas
+            canvas.drawPath(path, paint)
         }
     }
 )

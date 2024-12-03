@@ -30,7 +30,6 @@ fun UserBalanceItem.toUserBalance(): UserBalance {
 fun BudgetingsItem.toBudgeting(): Budgeting {
     return Budgeting(
         total = total,
-        isReminder = isReminder,
         essentialNeedsLimit = essentialNeedsLimit,
         savingsLimit = savingsLimit,
         monthAndYear = monthAndYear,

@@ -7,4 +7,7 @@ object ReponseUtils {
     const val UPDATED_USER_PROFILE_SUCCESS = "User details has been updated"
     const val EMAIL_ALREADY_USED = "Email already used!"
     const val ADD_DIARY_SUCCES = "Diary successfully added"
+    const val ADD_EXPENSES_SUCCESS = "Expenses(Budgeting, Diary, Balance) successfully updated"
+    const val ADD_USER_BALANCE_SUCCESS = "Expenses(Budgeting, Diary, Balance) successfully added"
+
 }

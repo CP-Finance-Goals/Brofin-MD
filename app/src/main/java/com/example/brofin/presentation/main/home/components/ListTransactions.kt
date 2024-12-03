@@ -61,6 +61,7 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>, goList: () -> Unit) {
            Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(56.dp)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
                     ),
@@ -80,7 +81,7 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>, goList: () -> Unit) {
                           goList()
                    },
                    modifier = Modifier
-                       .padding(16.dp)
+                       .padding(horizontal = 16.dp)
                        .align(Alignment.CenterVertically),
                    colors = ButtonDefaults.buttonColors(
                        containerColor = MaterialTheme.colorScheme.primary,

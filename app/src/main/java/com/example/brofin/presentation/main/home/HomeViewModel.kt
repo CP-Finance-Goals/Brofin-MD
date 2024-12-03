@@ -99,6 +99,67 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun inserBudgetingWithNewAPI(userBalance: UserBalance) {
+        _state.value = StateApp.Loading
+        viewModelScope.launch {
+            Log.d(TAG, "Insert User Balance: $userBalance")
+            try {
+
+                val userData = brofinRepository.getUserProfile()
+
+                if (userData == null) {
+                    _state.value = StateApp.Error("Profil pengguna tidak ditemukan.")
+                    return@launch
+                }
+
+                val currentSavings = userData.savings ?: 0.0
+                val updatedsavings = currentSavings.plus((userBalance.balance!!.times(0.2)))
+
+                val response = remoteDataRepository.setupBudgeting(
+                    monthAndYear = userBalance.monthAndYear.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    total = userBalance.balance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    essentialNeedsLimit = (userBalance.balance.times(0.5)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    wantsLimit = (userBalance.balance.times(0.3)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    balance = userBalance.balance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    currentBalance = userBalance.currentBalance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    isReminder = "false".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    savingsLimit = (userBalance.balance.times(0.2)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    savings = updatedsavings.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    dob = "2000-01-01".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    username = userData.name?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: " ".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    image = preparePhotoPart(null)
+                )
+
+                if ( response.message == ReponseUtils.ADD_USER_BALANCE_SUCCESS) {
+                    brofinRepository.insertUserBalance(userBalance)
+                    brofinRepository.insertOrUpdateUserProfile(userData.copy(savings = updatedsavings))
+                    brofinRepository.insertBudget(
+                        Budgeting(
+                            monthAndYear = userBalance.monthAndYear,
+                            total = userBalance.balance,
+                            essentialNeedsLimit = userBalance.balance.times(0.5),
+                            wantsLimit = userBalance.balance.times(0.3),
+                            savingsLimit = userBalance.balance.times(0.2),
+                        )
+                    )
+                    _state.value = StateApp.Success(true)
+                } else if (response.message == ReponseUtils.TOKEN_EXPIRED) {
+                    userPreferencesRepository.updateToken(null)
+                    _state.value = StateApp.Error("Token kadaluarsa, silakan login kembali")
+                    brofinRepository.logout()
+                } else {
+                    Log.e(TAG, "Error on saving user balance data")
+                    _state.value = StateApp.Error("Error ketika menyimpan data uang pengguna")
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error on saving user balance data", e)
+                _state.value = StateApp.Error("Error ketika menyimpan data uang pengguna")
+            }
+        }
+
+    }
+
     private fun preparePhotoPart(photoFile: File?): MultipartBody.Part? {
         return photoFile?.let {
             val requestFile = it.asRequestBody("image/*".toMediaTypeOrNull()) // Set the MIME type for the image

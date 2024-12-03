@@ -22,9 +22,6 @@ data class BudgetingsItem(
 	@Json(name="total")
 	val total: Double,
 
-	@Json(name="isReminder")
-	val isReminder: Boolean,
-
 	@Json(name="essentialNeedsLimit")
 	val essentialNeedsLimit: Double,
 

@@ -36,15 +36,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -53,12 +54,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.brofin.presentation.authentication.AuthViewModel
 import com.example.brofin.presentation.authentication.components.CustomTextField
-import com.example.brofin.presentation.authentication.components.GoogleAuthButton
 import com.example.brofin.presentation.authentication.components.IdentifierTextField
 import com.example.brofin.presentation.authentication.components.LottieAnimationTwo
 import com.example.brofin.presentation.authentication.state.AuthState
 import com.example.brofin.presentation.components.ErrorDialog
 import com.example.brofin.presentation.components.LoadingDialog
+import com.example.brofin.presentation.components.NetworkErrorDialog
 
 @Composable
 fun RegisterScreen(
@@ -67,7 +68,6 @@ fun RegisterScreen(
 ) {
 
     val stateRegister = viewmodel.authState.collectAsStateWithLifecycle(initialValue = AuthState.Idle)
-    var errorDialog by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
 
     var showLoadingDialog by remember { mutableStateOf(false) }
@@ -87,6 +87,8 @@ fun RegisterScreen(
     var snackbarMessage by remember { mutableStateOf<String?>("") }
     var showSnackbar by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val nameFocusRequester = remember { FocusRequester() }
     val emailFocusRequester = remember { FocusRequester() }
@@ -115,16 +117,21 @@ fun RegisterScreen(
             }
             is AuthState.Success -> {
                 showLoadingDialog = false
-                snackbarMessage = "Registrasi berhasil"
-                showSnackbar = true
+                Toast.makeText(
+                    context,
+                    "Registrasi berhasil, silakan login",
+                    Toast.LENGTH_SHORT
+                ).show()
+                goBack()
             }
             is AuthState.Error -> {
                 showLoadingDialog = false
-                errorDialog = true
+                showErrorDialog = true
                 message = state.message ?: "Terjadi kesalahan saat registrasi"
             }
             else -> {
                 showLoadingDialog = false
+                showErrorDialog = false
             }
         }
     }
@@ -134,9 +141,10 @@ fun RegisterScreen(
         onDismissRequest = { showLoadingDialog = false }
     )
 
-    ErrorDialog(showDialog = errorDialog, message = message) {
-        errorDialog = false
-    }
+    NetworkErrorDialog(
+        showDialog = showErrorDialog,
+        message = message,
+    ) { }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -202,7 +210,7 @@ fun RegisterScreen(
                             text = "Buat Akun Brofin",
                             style = MaterialTheme.typography.headlineSmall,
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -211,7 +219,7 @@ fun RegisterScreen(
                             text = "Daftar sekarang untuk mulai mengelola keuangan Anda dengan lebih mudah dan cerdas.",
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }

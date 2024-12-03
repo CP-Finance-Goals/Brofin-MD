@@ -36,6 +36,7 @@ import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.presentation.components.ErrorDialog
 import com.example.brofin.presentation.components.LoadingDialog
+import com.example.brofin.presentation.components.NetworkErrorDialog
 import com.example.brofin.presentation.main.home.components.BudgetItem
 import com.example.brofin.presentation.main.home.components.BudgetingSheetContent
 import com.example.brofin.presentation.main.home.components.WarningCard
@@ -96,7 +97,7 @@ fun HomeScreen(
         showLoadingDialog = false
     }
 
-    ErrorDialog(showDialog = errorDialog , message = errorMessage) {
+    NetworkErrorDialog(showDialog = errorDialog) {
         errorDialog = false
     }
 
@@ -142,7 +143,7 @@ fun HomeScreen(
                     onSaveBudget = {  budget ->
                         coroutineScope.launch { sheetState.hide() }
                         isSheetOpen = false
-                        viewmodel.insertUserBalance(
+                        viewmodel.inserBudgetingWithNewAPI(
                             userBalance = UserBalance(
                                 balance = budget,
                                 currentBalance = budget * 0.8,
@@ -164,6 +165,7 @@ fun HomeScreen(
 fun ConfirmationDialog(
     modifier: Modifier = Modifier,
     onConfirm: () -> Unit,
+    amount: Double,
     onCancel: () -> Unit,
     showDialog: Boolean
 ) {
@@ -172,19 +174,19 @@ fun ConfirmationDialog(
             onDismissRequest = { onCancel() },
             confirmButton = {
                 TextButton(onClick = { onConfirm() }) {
-                    Text("Simpan")
+                    Text("Simpan", style = MaterialTheme.typography.bodyMedium)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onCancel() }) {
-                    Text("Batal")
+                    Text("Batal", style = MaterialTheme.typography.bodyMedium)
                 }
             },
             title = {
-                Text(text = "Konfirmasi Simpan")
+                Text(text = "Konfirmasi Simpan", style = MaterialTheme.typography.headlineSmall)
             },
             text = {
-                Text(text = "Apakah pendapatan ini sudah benar?")
+                Text(text = "Apakah pendapatan sebesar ${amount.toIndonesianCurrency2()} ini sudah benar?", style = MaterialTheme.typography.bodyMedium)
             },
             modifier = modifier
         )

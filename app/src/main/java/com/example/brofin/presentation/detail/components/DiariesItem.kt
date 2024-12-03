@@ -65,31 +65,17 @@ fun DiariesItem(
                 modifier = Modifier
                     .size(58.dp)
             ) {
-//                    AsyncImage(
-//                        model = diary.photoUrl ?: "",
-//                        placeholder = painterResource(id = R.drawable.placeholder),
-//                        contentDescription = "Photo",
-//                        error = painterResource(id = R.drawable.placeholder),
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-//                        contentScale = ContentScale.Crop
-//                    )
-
                 ImageWithLoadingIndicator(diaryImageUrl = diary.photoUrl ?: "")
             }
 
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Informasi Utama
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.CenterVertically)
             ) {
-                // categori
                 Text(
                     text = Expense.getNameById(diary.categoryId) ?: "Kategori tidak ditemukan",
                     style = MaterialTheme.typography.bodyLarge,
@@ -134,44 +120,44 @@ fun DiariesItem(
     }
 }
 
-    @Composable
-    fun ImageWithLoadingIndicator(diaryImageUrl: String) {
-        var isLoading by remember { mutableStateOf(true) }
+@Composable
+fun ImageWithLoadingIndicator(diaryImageUrl: String) {
+    var isLoading by remember { mutableStateOf(true) }
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Load image using AsyncImage
-            AsyncImage(
-                model = diaryImageUrl,
-                contentDescription = "Diary Image",
-                error = painterResource(id = R.drawable.placeholder),
-                onLoading = {
-                    isLoading = true
-                },
-                onSuccess = {
-                    isLoading = false
-                },
-                onError = {
-                    isLoading = false
-                },
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Load image using AsyncImage
+        AsyncImage(
+            model = diaryImageUrl,
+            contentDescription = "Diary Image",
+            error = painterResource(id = R.drawable.placeholder),
+            onLoading = {
+                isLoading = true
+            },
+            onSuccess = {
+                isLoading = false
+            },
+            onError = {
+                isLoading = false
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
+        )
+
+        // Show loading spinner if the image is loading
+        if (isLoading) {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            // Show loading spinner if the image is loading
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                        .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp))
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                    .align(Alignment.Center)
+                    .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp))
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }
+}

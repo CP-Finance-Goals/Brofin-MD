@@ -2,6 +2,8 @@ package com.example.brofin.data.remote
 
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
+import com.example.brofin.data.remote.dto.AddExpensesResponseDto
+import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
 import com.example.brofin.data.remote.dto.GetAllDataResponseDto
@@ -95,4 +97,43 @@ interface ApiService {
     suspend fun editBugeting(
         @Body bugetRequet: Budgeting
     ): AddOrUpateBudgetingResponseDto
+
+    // setupBudgeting
+    @Multipart
+    @POST("user/expenses")
+    suspend fun setupBudgeting(
+        @Part("monthAndYear") monthAndYear: RequestBody,
+        @Part("total") total: RequestBody,
+        @Part("essentialNeedsLimit") essentialNeeds: RequestBody,
+        @Part("wantsLimit") wants: RequestBody,
+        @Part("balance") balance: RequestBody,
+        @Part("gender") gender: RequestBody,
+        @Part("currentBalance") currentBalance: RequestBody,
+        @Part("isReminder") isReminder: RequestBody,
+        @Part("savingsLimit") savingsLimit: RequestBody,
+        @Part("savings") savings: RequestBody,
+        @Part("dob") dob: RequestBody,
+        @Part("username") username: RequestBody,
+        @Part image: MultipartBody.Part? = null
+    ): SetupBudgeingResponseDto
+
+    // add expenses
+    @Multipart
+    @PUT("user/expenses")
+    suspend fun addExpenses(
+        @Part("monthAndYear") monthAndYear: RequestBody,
+        @Part("date") date: RequestBody,
+        @Part("description") description: RequestBody? = null,
+        @Part("amount") amount: RequestBody,
+        @Part("categoryId") categoryId: RequestBody,
+        @Part("isReminder") isReminder: RequestBody,
+        @Part("total") total: RequestBody,
+        @Part("essentialNeedsLimit") essentialNeeds: RequestBody,
+        @Part("wantsLimit") wants: RequestBody,
+        @Part("savingsLimit") savingsLimit: RequestBody,
+        @Part("balance") balance: RequestBody,
+        @Part("currentBalance") currentBalance: RequestBody,
+        @Part image: MultipartBody.Part? = null
+    ): AddExpensesResponseDto
+
 }
