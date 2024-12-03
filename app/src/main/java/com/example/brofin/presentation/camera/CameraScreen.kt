@@ -1,6 +1,8 @@
 package com.example.brofin.presentation.camera
 
+import android.Manifest
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -95,10 +97,18 @@ fun CameraScreen(
         }
     }
 
-    val cameraPermissionState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            android.Manifest.permission.CAMERA
+    val listState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        listOf(
+            Manifest.permission.CAMERA,
         )
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        listOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE )
+    } else {
+        listOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    val cameraPermissionState = rememberMultiplePermissionsState(
+        permissions = listState
     )
 
     PermissionHandler(

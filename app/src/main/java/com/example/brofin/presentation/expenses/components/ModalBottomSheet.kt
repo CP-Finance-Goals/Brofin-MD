@@ -131,7 +131,7 @@ fun CategoryItem(category: CategoryExpenses, onClick: (CategoryExpenses)-> Unit)
         Text(
             text = category.namaKategori,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 4.dp),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1

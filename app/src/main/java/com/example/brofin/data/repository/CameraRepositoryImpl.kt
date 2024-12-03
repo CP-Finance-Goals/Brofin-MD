@@ -70,7 +70,6 @@ class CameraRepositoryImpl @Inject constructor(
     }
 
     private suspend fun processAndSavePhoto(image: ImageProxy): Uri {
-        // Konversi ImageProxy ke Bitmap dan lakukan rotasi
         val bitmap = withContext(Dispatchers.IO) {
             val matrix = android.graphics.Matrix().apply {
                 postRotate(image.imageInfo.rotationDegrees.toFloat())

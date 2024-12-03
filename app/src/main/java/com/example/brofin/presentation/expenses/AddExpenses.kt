@@ -4,6 +4,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -327,20 +330,40 @@ fun AddExpenses(
                 }
 
                 if (photoUriData != null) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(
-                                photoUriData ?: R.drawable.placeholder
-                            )
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "Photo",
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp)),
-                        placeholder = painterResource(R.drawable.placeholder),
-                        error = painterResource(R.drawable.placeholder)
-                    )
+                            .clip(RoundedCornerShape(8.dp))
+                    ) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(context)
+                                .data(photoUriData)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "Photo",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp)),
+                            placeholder = painterResource(R.drawable.placeholder),
+                            error = painterResource(R.drawable.placeholder)
+                        )
+                        IconButton(
+                            onClick = {
+                                photoUriData = null
+                                backHandler()
+                            },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .background(MaterialTheme.colorScheme.surface, shape = CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Hapus Gambar",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 }
 
                 if (isVisible) {
@@ -351,11 +374,6 @@ fun AddExpenses(
                             isVisible = false
                         },
                         onClick = { category ->
-                            Toast.makeText(
-                                context,
-                                "Kategori ${category.id} dipilih",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             scope.launch { bottomSheetState.hide() }
                             isVisible = false
                             addExpensesViewModel.setCategory(category.namaKategori)

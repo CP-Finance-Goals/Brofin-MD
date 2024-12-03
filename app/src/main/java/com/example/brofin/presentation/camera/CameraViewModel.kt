@@ -1,6 +1,7 @@
 package com.example.brofin.presentation.camera
 
 import android.net.Uri
+import android.util.Log
 import androidx.camera.view.LifecycleCameraController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,8 +33,13 @@ class CameraViewModel @Inject constructor(
                 onPhotoTaken(uri)
                 _cameraState.value = StateApp.Success(true)
             } catch (e: Exception) {
+                Log.e(TAG, "Error when take a photo: $e")
                 _cameraState.value = StateApp.Error("Gagal mengambil foto")
             }
         }
+    }
+
+    companion object{
+        const val TAG = "CameraViewmodel"
     }
 }
