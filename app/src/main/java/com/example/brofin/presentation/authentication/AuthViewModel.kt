@@ -98,7 +98,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
-                val response = remoteDataRepository.register(email, password)
+                val response = remoteDataRepository.register(email, password, name = name)
 
                 if (response.user != null){
                     _authState.value = AuthState.Success

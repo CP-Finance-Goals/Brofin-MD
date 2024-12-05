@@ -53,7 +53,9 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.brofin.presentation.main.financials.components.MyDropDownCustom
+import com.example.brofin.presentation.main.financials.components.OpenTextDialog
 import com.example.brofin.presentation.main.home.components.CustomTextFieldTwo
 import com.example.brofin.utils.getFormattedTimeInMillis
 import com.example.brofin.utils.toFormattedDate
@@ -85,7 +87,9 @@ fun FinancialSelected(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentBox2() {
+fun ContentBox2(
+    viewmodel: FinancialViewModel = hiltViewModel()
+) {
     var showDatePicker by remember { mutableStateOf(false) }
     val date by remember { mutableLongStateOf(getFormattedTimeInMillis(System.currentTimeMillis())) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
@@ -93,14 +97,16 @@ fun ContentBox2() {
     var selectedOptionText by remember { mutableStateOf("Pilih Kategori") }
     val options = listOf("Mobil", "Gadget", "Motor", "Luxury Brand", "Games")
 
+    var editItemText by remember { mutableStateOf("") }
+    var showEditItemItemText by remember { mutableStateOf(false) }
+
     val listNamaItem = remember {
-        mutableStateListOf("Jumlah Target Uang", "Estimasi")
+        mutableStateListOf("Jumlah Target Uang")
     }
 
     val listNilai = remember {
         mutableStateListOf(
             "0",
-            date.toFormattedDate()
         )
     }
 
@@ -118,9 +124,11 @@ fun ContentBox2() {
             TextField(
                 value = selectedOptionText,
                 onValueChange = { selectedOptionText = it },
-                trailingIcon = { Icon(Icons.Default.ArrowDropDown, tint = MaterialTheme.colorScheme.onPrimary, contentDescription = null) },
+                trailingIcon = { Icon(Icons.Default.ArrowDropDown, tint = MaterialTheme.colorScheme.onSurface, contentDescription = null) },
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth().menuAnchor(type = MenuAnchorType.PrimaryEditable)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(type = MenuAnchorType.PrimaryEditable)
             )
 
             ExposedDropdownMenu(
@@ -166,11 +174,23 @@ fun ContentBox2() {
 
                 Column(modifier = Modifier.weight(0.2f)) {
                     RowEditButton {
-                        if (index == 1) {
-                            showDatePicker = true
-                        }
+                        showEditItemItemText = true
+                        editItemText = pair.second
                     }
                 }
+            }
+        }
+
+        if (showEditItemItemText){
+            OpenTextDialog(
+                textFieldValue = editItemText,
+                onTextChange = { editItemText = it },
+                label = "Jumlah Target Uang",
+                onDismiss = {
+                    showEditItemItemText = false
+                }) {
+                showEditItemItemText = false
+                listNilai[0] = editItemText
             }
         }
 

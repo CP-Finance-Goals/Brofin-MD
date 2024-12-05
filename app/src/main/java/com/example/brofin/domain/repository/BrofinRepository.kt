@@ -7,6 +7,7 @@ import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.UserBalance
+import com.example.brofin.domain.models.UserProfile
 import kotlinx.coroutines.flow.Flow
 
 interface BrofinRepository {
@@ -15,6 +16,8 @@ interface BrofinRepository {
         categoryIds: List<Int>,
         monthAndYear: Long
     ): Flow<Double>
+
+    suspend fun getUserFlow(): Flow<UserProfile?>
 
     suspend fun getUserBalanceData(monthAndYear: Long): UserBalanceEntity?
 

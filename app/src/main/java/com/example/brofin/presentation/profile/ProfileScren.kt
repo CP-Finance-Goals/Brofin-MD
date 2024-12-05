@@ -75,6 +75,8 @@ fun ProfileScreen(
 ) {
 
     val userState = viewmodel.dataProfile.collectAsStateWithLifecycle().value
+    val updateSucces = viewmodel.updatedSucces.collectAsStateWithLifecycle().value
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf("") }
@@ -83,6 +85,14 @@ fun ProfileScreen(
     var photoUriData by remember { mutableStateOf<Uri?>(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
+
+    LaunchedEffect(updateSucces) {
+        if (updateSucces) {
+            Toast.makeText(context, "Berhasil mengubah data", Toast.LENGTH_SHORT).show()
+            backHandler()
+            viewmodel.resetState()
+        }
+    }
 
     LaunchedEffect(profileUri) {
         photoUriData = profileUri
@@ -109,6 +119,7 @@ fun ProfileScreen(
             }
             is StateApp.Error -> {
                 showErrorDialog = true
+                message = userState.exception
             }
             is StateApp.Idle -> {
                 showErrorDialog = false
@@ -122,8 +133,6 @@ fun ProfileScreen(
 
     }
 
-    val context = LocalContext.current
-
     var showDatePicker by remember { mutableStateOf(false) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
@@ -134,17 +143,17 @@ fun ProfileScreen(
     ) {paddingValues ->
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)){
-
+            .padding(paddingValues)
+        ){
 
             LoadingDialog(showDialog = showDialog) {
                 showDialog = false
             }
 
-            ErrorDialog(showDialog = showErrorDialog, message = ) {
-
+            ErrorDialog(showDialog = showErrorDialog, message = message) {
+                showErrorDialog = false
+                viewmodel.resetState()
             }
-
 
             Column(
                 modifier = Modifier
@@ -262,7 +271,9 @@ fun ProfileScreen(
 
                 ) {
                     OutlinedButton(
-                        onClick = {},
+                        onClick = {
+                            backHandler()
+                        },
                     ) {
                         Text("Batal")
                     }

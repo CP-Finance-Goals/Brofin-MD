@@ -2,24 +2,32 @@ package com.example.brofin.domain.repository
 
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
 import com.example.brofin.data.remote.dto.AddExpensesResponseDto
-import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
+import com.example.brofin.data.remote.dto.GadgetResponseDto
+import com.example.brofin.data.remote.dto.GameResponseDto
 import com.example.brofin.data.remote.dto.GetAllDataResponseDto
 import com.example.brofin.data.remote.dto.LoginResponseDto
+import com.example.brofin.data.remote.dto.LuxuryResponseDto
+import com.example.brofin.data.remote.dto.MobilResponseDto
+import com.example.brofin.data.remote.dto.MotorResponseDto
 import com.example.brofin.data.remote.dto.PredictResponseDto
 import com.example.brofin.data.remote.dto.RegisterResponseDto
+import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.UpdateBalanceResponseDto
-import com.example.brofin.domain.models.PredictRequest
+import com.example.brofin.domain.models.GadgetRecommendation
+import com.example.brofin.domain.models.GameRecommendation
+import com.example.brofin.domain.models.LuxuryRecommendation
+import com.example.brofin.domain.models.MobilRecommendation
+import com.example.brofin.domain.models.MotorRecommendation
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.http.Part
 
 interface RemoteDataRepository {
 
     // register
-    suspend fun register(email: String, password: String): RegisterResponseDto
+    suspend fun register(email: String, password: String, name: String): RegisterResponseDto
 
     // Login a user
     suspend fun login(email: String, password: String): LoginResponseDto
@@ -93,4 +101,24 @@ interface RemoteDataRepository {
     suspend fun predictHouse(
        predictRequest: RequestBody
     ): PredictResponseDto
+
+    suspend fun getRecommendationMotor(
+        request: RequestBody
+    ): List<MotorRecommendation?>
+
+    suspend fun getRecommendationMobil(
+        request: RequestBody
+    ): List<MobilRecommendation?>
+
+    suspend fun getRecommendationGadget(
+        request: RequestBody
+    ): List<GadgetRecommendation?>
+
+    suspend fun getRecommendationLuxury(
+        request: RequestBody
+    ): List<LuxuryRecommendation?>
+
+    suspend fun getRecommendationGame(
+        request: RequestBody
+    ): List<GameRecommendation?>
 }

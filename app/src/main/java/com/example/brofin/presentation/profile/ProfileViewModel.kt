@@ -29,6 +29,9 @@ class ProfileViewModel @Inject constructor(
     private val _dataProfile = MutableStateFlow<StateApp<UserProfile>>(StateApp.Idle)
     val dataProfile = _dataProfile.asStateFlow()
 
+    private val _updatedSucces = MutableStateFlow<Boolean>(false)
+    val updatedSucces = _updatedSucces.asStateFlow()
+
 
     init {
         getUserProfile()
@@ -66,7 +69,7 @@ class ProfileViewModel @Inject constructor(
                     dob = dob ?: currentData.dob
                 )
 
-                remoteDataRepository.editUserProfile(
+                val response =  remoteDataRepository.editUserProfile(
                     username = updatedData?.name?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.name?.toRequestBody("text/plain".toMediaTypeOrNull()),
                     dob = updatedData?.dob?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.dob?.toRequestBody("text/plain".toMediaTypeOrNull()),
                     photo = preparePhotoPart(photoUri, contentResolver, context) ,
@@ -74,12 +77,14 @@ class ProfileViewModel @Inject constructor(
                     savings = updatedData?.savings?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.savings?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
                 )
 
-                if (updatedData != null) {
-                    _dataProfile.value = StateApp.Success(updatedData.toUserProfile())
-                } else {
-                    getUserProfile()
-                    _dataProfile.value = StateApp.Error("Error updating profile")
+                _updatedSucces.value = response.message == "User details has been updated"
+
+                if(_updatedSucces.value){
+                    brofinRepository.insertOrUpdateUserProfile(updatedData!!)
                 }
+
+//                _dataProfile.value = StateApp.Success(response.message
+//                _dataProfile.value = StateApp.Error("Terjadi kesalahan saat mengupdate profile")
 
             } catch (e: Exception) {
                 Log.e(TAG, "editProfile: ${e.message}")

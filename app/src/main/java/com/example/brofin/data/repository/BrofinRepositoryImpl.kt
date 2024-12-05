@@ -14,9 +14,11 @@ import com.example.brofin.data.mapper.toBudgetingDiary
 import com.example.brofin.data.mapper.toBudgetingDiaryEntity
 import com.example.brofin.data.mapper.toBudgetingEntity
 import com.example.brofin.data.mapper.toUserBalanceEntity
+import com.example.brofin.data.mapper.toUserProfile
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
 import com.example.brofin.domain.models.UserBalance
+import com.example.brofin.domain.models.UserProfile
 import com.example.brofin.domain.repository.BrofinRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -72,6 +74,12 @@ class BrofinRepositoryImpl(
         monthAndYear: Long
     ): Flow<Double> {
         return budgetingDiaryDao.getTotalAmountByCategoryAndMonth(categoryIds, monthAndYear)
+    }
+
+    override suspend fun getUserFlow(): Flow<UserProfile?> {
+        return userProfileDao.getUserProfileFlow().map {
+            it?.toUserProfile()
+        }
     }
 
     override suspend fun getUserBalanceData(monthAndYear: Long): UserBalanceEntity? {

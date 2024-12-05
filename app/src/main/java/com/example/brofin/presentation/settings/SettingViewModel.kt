@@ -23,8 +23,12 @@ class SettingViewModel @Inject constructor(
 
     private fun getUserData() {
         viewModelScope.launch {
-            brofinRepository.getUserProfile().let {
-                _userProfile.value = it?.toUserProfile()
+            brofinRepository.getUserFlow().collect {
+                if (it == null) {
+                    _userProfile.value = null
+                } else {
+                    _userProfile.value = it
+                }
             }
         }
     }

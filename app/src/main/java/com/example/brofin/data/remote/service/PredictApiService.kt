@@ -1,4 +1,4 @@
-package com.example.brofin.data.remote
+package com.example.brofin.data.remote.service
 
 import com.example.brofin.data.remote.dto.PredictResponseDto
 import okhttp3.RequestBody

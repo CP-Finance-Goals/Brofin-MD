@@ -194,8 +194,7 @@ fun RegisterScreen(
                         .padding(vertical = 24.dp)
                         .graphicsLayer(alpha = animationAlpha.value),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     elevation = CardDefaults.cardElevation(6.dp),
                     shape = RoundedCornerShape(12.dp)

@@ -9,3 +9,7 @@ annotation class BaseUrl
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class PredictUrl
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class RecommendationUrl

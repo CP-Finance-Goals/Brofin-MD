@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,10 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.brofin.data.local.datastore.utils.UserPreferences
 import com.example.brofin.presentation.detail.components.ImageWithLoadingIndicator
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
@@ -136,6 +133,8 @@ fun SettingScreen(
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
+
+                        Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
                     }
                 }
                 Row(
@@ -157,20 +156,7 @@ fun SettingScreen(
                         }
                     )
                 }
-
-
             }
-
-//            Button(
-//                onClick = {
-//                    settingViewModel.logout()
-//                },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 16.dp)
-//            ) {
-//                Text(text = "Logout")
-//            }
         }
     }
 }

@@ -115,6 +115,18 @@ fun Navigation() {
 
         composable(
             route = NavScreen.Profile.route,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { 1000 },
+                    animationSpec = tween(durationMillis = 500)
+                ) + fadeIn(animationSpec = tween(durationMillis = 500))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -1000 },
+                    animationSpec = tween(durationMillis = 500)
+                ) + fadeOut(animationSpec = tween(durationMillis = 500))
+            }
         ){
             ProfileScreen(
                 currenhtBackStack = {
@@ -128,6 +140,7 @@ fun Navigation() {
                 },
                 backHandler = {
                     photoProfile = null
+                    navController.popBackStack()
                 }
             )
         }

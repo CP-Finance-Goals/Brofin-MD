@@ -2,14 +2,16 @@ package com.example.brofin.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.example.brofin.data.remote.ApiService
+import com.example.brofin.data.remote.service.ApiService
 import com.example.brofin.data.remote.AuthInterceptor
-import com.example.brofin.data.remote.PredictApiService
+import com.example.brofin.data.remote.service.PredictApiService
+import com.example.brofin.data.remote.service.RecommendationApiService
 import com.example.brofin.data.repository.RemoteDataRepositoryImpl
 import com.example.brofin.domain.repository.RemoteDataRepository
 import com.example.brofin.utils.BaseUrl
 import com.example.brofin.utils.Constant
 import com.example.brofin.utils.PredictUrl
+import com.example.brofin.utils.RecommendationUrl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -73,6 +75,16 @@ object NetworkModule {
             .build()
     }
 
+    @Provides
+    @Singleton
+    @RecommendationUrl
+    fun provideRecommendationUrlRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(Constant.RECOMENDATION_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(okHttpClient)
+            .build()
+    }
 
     @Provides
     @Singleton
@@ -83,21 +95,29 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @RecommendationUrl
+    fun provideRecommendationUrlApiService(@RecommendationUrl retrofit: Retrofit): RecommendationUrl {
+        return retrofit.create(RecommendationUrl::class.java)
+    }
+
+    @Provides
+    @Singleton
     @PredictUrl
     fun providePredictUrlApiService(@PredictUrl retrofit: Retrofit): PredictApiService {
         return retrofit.create(PredictApiService::class.java)
     }
 
-
     @Provides
     @Singleton
     fun provideRemoteDataRepository(
         @BaseUrl apiService: ApiService,
-        @PredictUrl predictService: PredictApiService
+        @PredictUrl predictService: PredictApiService,
+        @RecommendationUrl recommendationService: RecommendationApiService
     ): RemoteDataRepository {
         return RemoteDataRepositoryImpl(
             apiService = apiService,
-            predictService = predictService
+            predictService = predictService,
+            recommendationService
         )
     }
 

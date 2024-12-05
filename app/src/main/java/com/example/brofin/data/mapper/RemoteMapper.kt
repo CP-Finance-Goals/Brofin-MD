@@ -2,11 +2,23 @@ package com.example.brofin.data.mapper
 
 import com.example.brofin.data.remote.dto.BudgetingDiariesItem
 import com.example.brofin.data.remote.dto.BudgetingsItem
+import com.example.brofin.data.remote.dto.GadgetResponseDtoItem
+import com.example.brofin.data.remote.dto.GameResponseDto
+import com.example.brofin.data.remote.dto.GameResponseDtoItem
+import com.example.brofin.data.remote.dto.LuxuryResponseDtoItem
+import com.example.brofin.data.remote.dto.MobilResponseDto
+import com.example.brofin.data.remote.dto.MobilResponseDtoItem
+import com.example.brofin.data.remote.dto.MotorResponseDtoItem
 import com.example.brofin.data.remote.dto.PredictResponseDto
 import com.example.brofin.data.remote.dto.UserBalanceItem
 import com.example.brofin.data.remote.dto.UserProfileItem
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.domain.models.GadgetRecommendation
+import com.example.brofin.domain.models.GameRecommendation
+import com.example.brofin.domain.models.LuxuryRecommendation
+import com.example.brofin.domain.models.MobilRecommendation
+import com.example.brofin.domain.models.MotorRecommendation
 import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
@@ -18,7 +30,7 @@ fun UserProfileItem.toUserProfile(): UserProfile {
         photoUrl = photoUrl,
         gender = gender,
         dob = dob,
-        name = name,
+        name = username,
         savings = savings,
         email = email
     )
@@ -65,3 +77,40 @@ fun PredictResponseDto.toPredictResponse(): PredictResponse {
         dp = dp,
     )
 }
+
+
+// Recommendation
+
+fun GadgetResponseDtoItem.toGadgetRecommendation(): GadgetRecommendation  = GadgetRecommendation(
+    brand = brand,
+    storage = storage,
+    price = price,
+    memory = memory
+)
+
+fun MobilResponseDtoItem.toMobilRecommendation(): MobilRecommendation = MobilRecommendation(
+    brand = brand,
+    price = price,
+    tipeBbm = tipeBbm,
+    transmisi = transmisi
+)
+
+fun GameResponseDtoItem.toGameRecommendation(): GameRecommendation = GameRecommendation(
+    kataKunci = kataKunci,
+    harga = harga,
+    nama = nama,
+    tipeReview = tipeReview
+)
+
+fun LuxuryResponseDtoItem.toLuxuryRecommendation(): LuxuryRecommendation = LuxuryRecommendation(
+    brand = brand,
+    price = price,
+    itemGroup = itemGroup,
+)
+
+fun MotorResponseDtoItem.toMotorRecommendation(): MotorRecommendation = MotorRecommendation(
+    harga = harga,
+    nama = nama,
+    transmisi = transmisi,
+    bahanBakar = bahanBakar
+)

@@ -1,4 +1,4 @@
-package com.example.brofin.data.remote
+package com.example.brofin.data.remote.service
 
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
 import com.example.brofin.data.remote.dto.AddExpensesResponseDto
@@ -25,7 +25,6 @@ import retrofit2.http.Part
 
 interface ApiService {
 
-    // login
     @FormUrlEncoded
     @POST("auth/login")
     suspend fun login(
@@ -33,19 +32,17 @@ interface ApiService {
         @Field("password") password: String
     ): Response<LoginResponseDto>
 
-    // Register
     @FormUrlEncoded
     @POST("auth/register")
     suspend fun register(
+        @Field("name") username: String,
         @Field("email") email: String,
         @Field("password") password: String
     ): Response<RegisterResponseDto>
 
-    // Get all data
     @GET("user/getAll")
     suspend fun getAllData(): GetAllDataResponseDto
 
-    // Edit user profile
     @Multipart
     @PUT("user/details")
     suspend fun editUserProfile(
@@ -53,11 +50,10 @@ interface ApiService {
         @Part("gender") gender: RequestBody?,
         @Part("dob") address: RequestBody?,
         @Part("savings") savings: RequestBody?,
-        @Part image: MultipartBody.Part? = null // Hapus nama parameter "image" di sini
+        @Part image: MultipartBody.Part? = null
     ): EditProfileResponseDto
 
 
-    // Add budgeting diary
     @Multipart
     @POST("user/diaries")
     suspend fun addBudgetingDiary(
@@ -69,7 +65,6 @@ interface ApiService {
         @Part photo: MultipartBody.Part? = null
     ): AddDiaryResponseDto
 
-    // Add Balance
     @FormUrlEncoded
     @POST("user/balances")
     suspend fun addBalance(
@@ -78,7 +73,6 @@ interface ApiService {
         @Field("currentBalance") currentBalance: Double
     ): AddUserBalanceResponseDto
 
-    // edit Balance
     @FormUrlEncoded
     @PUT("user/balances")
     suspend fun editBalance(
@@ -87,19 +81,16 @@ interface ApiService {
         @Field("currentBalance") currentBalance: Double
     ): UpdateBalanceResponseDto
 
-    // add bugeting
     @POST("user/budgetings")
     suspend fun addBudgeting(
         @Body budgetRequest: Budgeting
     ): AddOrUpateBudgetingResponseDto
 
-    // edit bugeting
     @PUT("user/budgeting")
     suspend fun editBugeting(
         @Body bugetRequet: Budgeting
     ): AddOrUpateBudgetingResponseDto
 
-    // setupBudgeting
     @Multipart
     @POST("user/expenses")
     suspend fun setupBudgeting(
@@ -118,7 +109,6 @@ interface ApiService {
         @Part image: MultipartBody.Part? = null
     ): SetupBudgeingResponseDto
 
-    // add expenses
     @Multipart
     @PUT("user/expenses")
     suspend fun addExpenses(

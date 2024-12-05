@@ -19,6 +19,9 @@ interface UserProfileDao {
     @Query("SELECT * FROM user_profile")
     suspend fun getUserProfile2(): UserProfileEntity?
 
+    @Query("SELECT * FROM user_profile LIMIT 1")
+    fun getUserProfileFlow(): Flow<UserProfileEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateUserProfile(user: UserProfileEntity)
 

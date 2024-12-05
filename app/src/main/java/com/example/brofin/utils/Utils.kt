@@ -36,8 +36,8 @@ fun resizeImage(photoUri: Uri, contentResolver: ContentResolver, context: Contex
         val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, false)
 
         val resizedFile = File(context.cacheDir, "resized_${System.currentTimeMillis()}.jpg")
-        val outputStream = FileOutputStream(resizedFile)  // Pastikan menggunakan FileOutputStream yang sesuai
-        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // Kompresi 80% kualitas
+        val outputStream = FileOutputStream(resizedFile)
+        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
         outputStream.flush()
         outputStream.close()
 
@@ -75,7 +75,7 @@ fun getFormattedTimeInMillis(currentTimeMillis: Long): Long {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val zonedDateTime = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(currentTimeMillis),
-            ZoneId.of("Asia/Jakarta") // Waktu Indonesia Barat (WIB)
+            ZoneId.of("Asia/Jakarta")
         )
         zonedDateTime.toInstant().toEpochMilli()
     } else {
@@ -104,14 +104,6 @@ fun getCurrentMonthAndYearAsLong(date: Long): Long {
     val dateFormat = SimpleDateFormat("yyyyMM", Locale("id", "ID")) // Format untuk Long
     return dateFormat.format(calendar.time).toLong()
 }
-
-//fun decodeMonthAndYearFromLong(value: Long): String {
-//    val inputFormat = SimpleDateFormat("yyyyMM", Locale.getDefault())
-//    val outputFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
-//
-//    val date = inputFormat.parse(value.toString())
-//    return outputFormat.format(date!!)
-//}
 
 fun decodeMonthAndYearFromLong(date: Long): String {
     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())

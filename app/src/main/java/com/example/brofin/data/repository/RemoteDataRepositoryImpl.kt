@@ -1,8 +1,14 @@
 package com.example.brofin.data.repository
 
 import android.util.Log
-import com.example.brofin.data.remote.ApiService
-import com.example.brofin.data.remote.PredictApiService
+import com.example.brofin.data.mapper.toGadgetRecommendation
+import com.example.brofin.data.mapper.toGameRecommendation
+import com.example.brofin.data.mapper.toLuxuryRecommendation
+import com.example.brofin.data.mapper.toMobilRecommendation
+import com.example.brofin.data.mapper.toMotorRecommendation
+import com.example.brofin.data.remote.service.ApiService
+import com.example.brofin.data.remote.service.PredictApiService
+import com.example.brofin.data.remote.service.RecommendationApiService
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
 import com.example.brofin.data.remote.dto.AddExpensesResponseDto
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
@@ -15,9 +21,15 @@ import com.example.brofin.data.remote.dto.RegisterResponseDto
 import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.UpdateBalanceResponseDto
 import com.example.brofin.domain.models.Budgeting
+import com.example.brofin.domain.models.GadgetRecommendation
+import com.example.brofin.domain.models.GameRecommendation
+import com.example.brofin.domain.models.LuxuryRecommendation
+import com.example.brofin.domain.models.MobilRecommendation
+import com.example.brofin.domain.models.MotorRecommendation
 import com.example.brofin.domain.repository.RemoteDataRepository
 import com.example.brofin.utils.BaseUrl
 import com.example.brofin.utils.PredictUrl
+import com.example.brofin.utils.RecommendationUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -28,16 +40,18 @@ import javax.inject.Inject
 
 class RemoteDataRepositoryImpl @Inject constructor(
     @BaseUrl private val apiService: ApiService,
-    @PredictUrl private val predictService: PredictApiService
+    @PredictUrl private val predictService: PredictApiService,
+    @RecommendationUrl private val recommendationService: RecommendationApiService
 ): RemoteDataRepository {
 
     override suspend fun register(
         email: String,
-        password: String
-    ): RegisterResponseDto {
+        password: String,
+        name:String
+        ): RegisterResponseDto {
         return withContext(Dispatchers.Default) {
             try {
-                val response = apiService.register(email, password)
+                val response = apiService.register(name, email, password)
                 if (response.isSuccessful){
                     if (response.body() != null){
                         response.body()!!
@@ -270,14 +284,98 @@ class RemoteDataRepositoryImpl @Inject constructor(
                     if (response.body() != null){
                         response.body()!!
                     } else {
-                        throw Exception("error fetching data1")
+                        throw Exception("Gagal saat mendapatkan data")
                     }
                 } else {
-                    throw Exception("error when predict house")
+                    throw Exception("Error saat prediksi")
                 }
             } catch (e: Exception){
                 Log.e(TAG, "error when predict house")
+                throw Exception("Error saat prediksi")
+            }
+        }
+    }
+
+    override suspend fun getRecommendationMotor(request: RequestBody): List<MotorRecommendation?> {
+        return withContext(Dispatchers.Default){
+            try {
+                val responseDto = recommendationService.getRecommendationMotor(request)
+                if (responseDto.isSuccessful){
+                    if (responseDto.body()?.motorResponseDto == null){
+                        throw Exception("Tidak ada rekomendasi")
+                    }
+                    responseDto.body()?.motorResponseDto?.map {
+                        it?.toMotorRecommendation()
+                    } ?: emptyList()
+                } else {
+                    throw Exception("Gagal mendapatkan Rekomendasi")
+                }
+            } catch (e: Exception){
                 throw e
+            }
+        }
+    }
+
+    override suspend fun getRecommendationMobil(request: RequestBody): List<MobilRecommendation?> {
+        return withContext(Dispatchers.Default){
+            val responseDto = recommendationService.getRecommendationMobil(request)
+            if (responseDto.isSuccessful){
+                if (responseDto.body()?.mobilResponseDto == null){
+                    throw Exception("Tidak ada rekomendasi")
+                }
+                responseDto.body()?.mobilResponseDto?.map {
+                    it?.toMobilRecommendation()
+                } ?: emptyList()
+            } else {
+                throw Exception("Gagal mendapatkan Rekomendasi")
+            }
+        }
+    }
+
+    override suspend fun getRecommendationGadget(request: RequestBody): List<GadgetRecommendation?> {
+        return withContext(Dispatchers.Default){
+            val responseDto = recommendationService.getRecommendationGadget(request)
+            if (responseDto.isSuccessful){
+                if (responseDto.body()?.gadgetResponseDto == null){
+                    throw Exception("Tidak ada rekomendasi")
+                }
+                responseDto.body()?.gadgetResponseDto?.map {
+                    it?.toGadgetRecommendation()
+                } ?: emptyList()
+            } else {
+                throw Exception("Gagal mendapatkan Rekomendasi")
+            }
+        }
+    }
+
+    override suspend fun getRecommendationLuxury(request: RequestBody): List<LuxuryRecommendation?> {
+        return withContext(Dispatchers.Default){
+            val responseDto = recommendationService.getRecommendationLuxury(request)
+            if (responseDto.isSuccessful){
+                if (responseDto.body()?.luxuryResponseDto == null){
+                    throw Exception("Tidak ada rekomendasi")
+                }
+                responseDto.body()?.luxuryResponseDto?.map {
+                    it?.toLuxuryRecommendation()
+                } ?: emptyList()
+            } else {
+                throw Exception("Gagal mendapatkan Rekomendasi")
+            }
+        }
+    }
+
+    override suspend fun getRecommendationGame(request: RequestBody): List<GameRecommendation?> {
+        return withContext(Dispatchers.Default){
+            val responseDto = recommendationService.getRecommendationGame(request)
+            if (responseDto.isSuccessful){
+                if (responseDto.body()?.gameResponseDto == null){
+                    throw Exception("Tidak ada rekomendasi")
+                }
+                responseDto.body()?.gameResponseDto?.map {
+                    it?.toGameRecommendation()
+                } ?: emptyList()
+            } else {
+                throw Exception("Gagal mendapatkan Rekomendasi")
             }
         }
     }
