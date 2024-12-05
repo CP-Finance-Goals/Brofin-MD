@@ -11,16 +11,14 @@ import com.example.brofin.domain.models.LuxuryRecommendation
 import com.example.brofin.domain.models.MobilRecommendation
 import com.example.brofin.domain.models.MotorRecommendation
 import com.example.brofin.domain.models.PredictResponse
-import com.example.brofin.domain.models.RecommendationRequest
 import com.example.brofin.domain.repository.RemoteDataRepository
+import com.example.brofin.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.http.Body
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,8 +43,6 @@ class FinancialViewModel @Inject constructor(
 
     private val _gadgetState = MutableStateFlow<StateApp<List<GadgetRecommendation?>>>(StateApp.Idle)
     val gadgetState = _gadgetState.asStateFlow()
-
-
 
 
     fun predict(
@@ -93,7 +89,7 @@ class FinancialViewModel @Inject constructor(
 
 
 
-    fun predictGameRecommendation(budget: Double, category: String) {
+    private fun predictGameRecommendation(budget: Double, category: String) {
         viewModelScope.launch {
             _gameState.value = StateApp.Loading
             try {
@@ -112,6 +108,7 @@ class FinancialViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
+                Log.e("FinancialViewModel", "predictGameRecommendation: ${e.message}")
                 _gameState.value = StateApp.Error("Terjadi kesalahan: ${e.message}")
             }
         }
@@ -119,7 +116,7 @@ class FinancialViewModel @Inject constructor(
 
 
 
-    fun predictMobilRecommendation(budget: Double, category: String){
+    private fun predictMobilRecommendation(budget: Double, category: String){
         viewModelScope.launch {
             _mobilState.value = StateApp.Loading
             try {
@@ -143,7 +140,7 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
-    fun predictMotorRecommendation(budget: Double, category: String){
+    private fun predictMotorRecommendation(budget: Double, category: String){
         viewModelScope.launch {
             _motorState.value = StateApp.Loading
             try {
@@ -167,7 +164,7 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
-    fun predictLuxuryRecommendation(budget: Double, category: String){
+    private fun predictLuxuryRecommendation(budget: Double, category: String){
         viewModelScope.launch {
             _luxuryState.value = StateApp.Loading
             try {
@@ -191,8 +188,8 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
-    
-    fun predictGadgetRecommendation(budget: Double, category: String){
+
+    private fun predictGadgetRecommendation(budget: Double, category: String){
         viewModelScope.launch {
             _gadgetState.value = StateApp.Loading
             try {
@@ -215,8 +212,31 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
+    fun recommendationPredict(index: Int, budget: Double) {
+        viewModelScope.launch {
+            resetState2()
+            val options = Constant.options
+            when (val selected = options[index]) {
+                "mobil" -> predictMobilRecommendation(budget, selected)
+                "gadget" -> predictGadgetRecommendation(budget, selected)
+                "motor" -> predictMotorRecommendation(budget, selected)
+                "luxury" -> predictLuxuryRecommendation(budget, selected)
+                "game" -> predictGameRecommendation(budget, selected)
+
+            }
+
+        }
+    }
+
     fun resetState() {
         _stateFinancial.value = StateApp.Idle
     }
 
+    fun resetState2() {
+        _gameState.value = StateApp.Idle
+        _motorState.value = StateApp.Idle
+        _mobilState.value = StateApp.Idle
+        _luxuryState.value = StateApp.Idle
+        _gadgetState.value = StateApp.Idle
+    }
 }

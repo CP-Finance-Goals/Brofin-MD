@@ -14,7 +14,7 @@ data class LuxuryResponseDtoItem(
 	val brand: String? = null,
 
 	@Json(name="price")
-	val price: Any? = null,
+	val price: Double? = null,
 
 	@Json(name="item group")
 	val itemGroup: String? = null

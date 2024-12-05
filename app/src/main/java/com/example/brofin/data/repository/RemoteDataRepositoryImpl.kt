@@ -297,88 +297,97 @@ class RemoteDataRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRecommendationMotor(request: RequestBody): List<MotorRecommendation?> {
-        return withContext(Dispatchers.Default){
+        return withContext(Dispatchers.Default) {
             try {
                 val responseDto = recommendationService.getRecommendationMotor(request)
-                if (responseDto.isSuccessful){
-                    if (responseDto.body()?.motorResponseDto == null){
-                        throw Exception("Tidak ada rekomendasi")
-                    }
-                    responseDto.body()?.motorResponseDto?.map {
-                        it?.toMotorRecommendation()
+                if (responseDto.isSuccessful) {
+                    responseDto.body()?.map {
+                        it.toMotorRecommendation()
                     } ?: emptyList()
                 } else {
-                    throw Exception("Gagal mendapatkan Rekomendasi")
+                    throw Exception("Gagal mendapatkan Rekomendasi Motor")
                 }
-            } catch (e: Exception){
-                throw e
+            } catch (e: Exception) {
+                // Menangkap exception dan memberikan log atau error message yang lebih jelas
+                Log.e("RecommendationError", "Error fetching motor recommendations: ${e.message}", e)
+                // Menangani error dengan mengembalikan daftar kosong untuk menjaga alur aplikasi
+                emptyList()
             }
         }
     }
 
     override suspend fun getRecommendationMobil(request: RequestBody): List<MobilRecommendation?> {
-        return withContext(Dispatchers.Default){
-            val responseDto = recommendationService.getRecommendationMobil(request)
-            if (responseDto.isSuccessful){
-                if (responseDto.body()?.mobilResponseDto == null){
-                    throw Exception("Tidak ada rekomendasi")
+        return withContext(Dispatchers.Default) {
+            try {
+                val responseDto = recommendationService.getRecommendationMobil(request)
+                if (responseDto.isSuccessful) {
+                    responseDto.body()?.map {
+                        it.toMobilRecommendation()
+                    } ?: emptyList()
+                } else {
+                    throw Exception("Gagal mendapatkan Rekomendasi Mobil")
                 }
-                responseDto.body()?.mobilResponseDto?.map {
-                    it?.toMobilRecommendation()
-                } ?: emptyList()
-            } else {
-                throw Exception("Gagal mendapatkan Rekomendasi")
+            } catch (e: Exception) {
+                Log.e("RecommendationError", "Error fetching mobil recommendations: ${e.message}", e)
+                emptyList()
             }
         }
     }
 
     override suspend fun getRecommendationGadget(request: RequestBody): List<GadgetRecommendation?> {
-        return withContext(Dispatchers.Default){
-            val responseDto = recommendationService.getRecommendationGadget(request)
-            if (responseDto.isSuccessful){
-                if (responseDto.body()?.gadgetResponseDto == null){
-                    throw Exception("Tidak ada rekomendasi")
+        return withContext(Dispatchers.Default) {
+            try {
+                val responseDto = recommendationService.getRecommendationGadget(request)
+                if (responseDto.isSuccessful) {
+                    responseDto.body()?.map {
+                        it.toGadgetRecommendation()
+                    } ?: emptyList()
+                } else {
+                    throw Exception("Gagal mendapatkan Rekomendasi Gadget")
                 }
-                responseDto.body()?.gadgetResponseDto?.map {
-                    it?.toGadgetRecommendation()
-                } ?: emptyList()
-            } else {
-                throw Exception("Gagal mendapatkan Rekomendasi")
+            } catch (e: Exception) {
+                Log.e("RecommendationError", "Error fetching gadget recommendations: ${e.message}", e)
+                emptyList()
             }
         }
     }
 
     override suspend fun getRecommendationLuxury(request: RequestBody): List<LuxuryRecommendation?> {
-        return withContext(Dispatchers.Default){
-            val responseDto = recommendationService.getRecommendationLuxury(request)
-            if (responseDto.isSuccessful){
-                if (responseDto.body()?.luxuryResponseDto == null){
-                    throw Exception("Tidak ada rekomendasi")
+        return withContext(Dispatchers.Default) {
+            try {
+                val responseDto = recommendationService.getRecommendationLuxury(request)
+                if (responseDto.isSuccessful) {
+                    responseDto.body()?.map {
+                        it.toLuxuryRecommendation()
+                    } ?: emptyList()
+                } else {
+                    throw Exception("Gagal mendapatkan Rekomendasi Luxury")
                 }
-                responseDto.body()?.luxuryResponseDto?.map {
-                    it?.toLuxuryRecommendation()
-                } ?: emptyList()
-            } else {
-                throw Exception("Gagal mendapatkan Rekomendasi")
+            } catch (e: Exception) {
+                Log.e("RecommendationError", "Error fetching luxury recommendations: ${e.message}", e)
+                emptyList()
             }
         }
     }
 
     override suspend fun getRecommendationGame(request: RequestBody): List<GameRecommendation?> {
-        return withContext(Dispatchers.Default){
-            val responseDto = recommendationService.getRecommendationGame(request)
-            if (responseDto.isSuccessful){
-                if (responseDto.body()?.gameResponseDto == null){
-                    throw Exception("Tidak ada rekomendasi")
+        return withContext(Dispatchers.Default) {
+            try {
+                val responseDto = recommendationService.getRecommendationGame(request)
+                if (responseDto.isSuccessful) {
+                    responseDto.body()?.map {
+                        it.toGameRecommendation()
+                    } ?: emptyList()
+                } else {
+                    throw Exception("Gagal mendapatkan Rekomendasi Game")
                 }
-                responseDto.body()?.gameResponseDto?.map {
-                    it?.toGameRecommendation()
-                } ?: emptyList()
-            } else {
-                throw Exception("Gagal mendapatkan Rekomendasi")
+            } catch (e: Exception) {
+                Log.e("RecommendationError", "Error fetching game recommendations: ${e.message}", e)
+                emptyList()
             }
         }
     }
+
 
 
     companion object{

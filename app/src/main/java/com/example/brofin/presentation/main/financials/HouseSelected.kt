@@ -468,6 +468,58 @@ fun RowEditButton(onEdit: () -> Unit) {
     }
 }
 
+
+@Composable
+fun PredictButton2(
+    enabled: Boolean,  // Menambahkan parameter enabled
+    onClick: () -> Unit
+) {
+    val colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .height(45.dp)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .clickable(enabled = enabled, onClick = onClick)  // Gunakan enabled untuk menonaktifkan
+                .background(Brush.horizontalGradient(colors)),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+            ),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "Predict",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Predict",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = if (enabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun PredictButton(
     onClick: () -> Unit

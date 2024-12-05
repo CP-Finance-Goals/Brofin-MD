@@ -96,8 +96,8 @@ object NetworkModule {
     @Provides
     @Singleton
     @RecommendationUrl
-    fun provideRecommendationUrlApiService(@RecommendationUrl retrofit: Retrofit): RecommendationUrl {
-        return retrofit.create(RecommendationUrl::class.java)
+    fun provideRecommendationUrlApiService(@RecommendationUrl retrofit: Retrofit): RecommendationApiService {
+        return retrofit.create(RecommendationApiService::class.java)
     }
 
     @Provides
@@ -117,7 +117,7 @@ object NetworkModule {
         return RemoteDataRepositoryImpl(
             apiService = apiService,
             predictService = predictService,
-            recommendationService
+            recommendationService = recommendationService
         )
     }
 

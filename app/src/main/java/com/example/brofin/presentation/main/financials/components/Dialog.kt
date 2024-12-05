@@ -31,7 +31,100 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.brofin.presentation.main.home.components.CustomTextFieldTwo
+import com.example.brofin.utils.toIndonesianCurrency2
 import java.util.Calendar
+
+@Composable
+fun OpenTextDialog2(
+    label: String,
+    textFieldValue: String,
+    onTextChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+    minAmount: Double,
+    maxAmount: Double
+) {
+    var isError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(textFieldValue) {
+        isError = when {
+            textFieldValue.isEmpty() -> {
+                true
+            }
+
+            textFieldValue == "0" -> {
+                true
+            }
+
+            textFieldValue.toDoubleOrNull() == null -> {
+                true
+            }
+
+            textFieldValue.toDouble() < minAmount || textFieldValue.toDouble() > maxAmount -> {
+                true
+            }
+
+            else -> {
+                false
+            }
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Masukkan Data") },
+        text = {
+            Column {
+                CustomTextFieldTwo(
+                    label = label,
+                    text = if (textFieldValue == "0") "" else textFieldValue,
+                    onTextChange = {
+                        onTextChange(it)
+                    },
+                    validate = {
+                        when {
+                            it.isEmpty() -> "Jumlah tidak boleh kosong"
+                            it.toDoubleOrNull() == null -> "Jumlah harus berupa angka"
+                            it.toDouble() < 0 -> "Jumlah tidak boleh kurang dari 0"
+                            it.toDouble() < minAmount -> "minimal ${minAmount.toIndonesianCurrency2()}"
+                            it.toDouble() > maxAmount -> "maksimal ${maxAmount.toIndonesianCurrency2()}"
+                            else -> ""
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    when {
+                        textFieldValue.isEmpty() -> {
+                            isError = false
+                        }
+                        else -> {
+                            isError = false
+                            onConfirm(textFieldValue)
+                        }
+                    }
+                },
+                enabled = !isError
+            ) {
+                Text("Simpan", style = MaterialTheme.typography.bodyMedium)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Batal", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    )
+}
+
 
 
 @Composable
@@ -121,6 +214,8 @@ fun OpenTextDialog(
         }
     )
 }
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenElectricityDialog(

@@ -5,6 +5,6 @@ object Constant {
     const val PREDICT_URL = "https://fiturhouse-35695338676.asia-southeast2.run.app/"
     const val RECOMENDATION_URL = "https://catagorypredict-35695338676.asia-southeast2.run.app/"
 
-    val options = listOf("Mobil", "Gadget", "Motor", "Luxury Brand", "Games")
+    val options = listOf("mobil", "gadget", "motor", "luxury", "game")
 
 }
