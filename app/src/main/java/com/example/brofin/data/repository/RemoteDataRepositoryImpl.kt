@@ -2,18 +2,22 @@ package com.example.brofin.data.repository
 
 import android.util.Log
 import com.example.brofin.data.remote.ApiService
+import com.example.brofin.data.remote.PredictApiService
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
 import com.example.brofin.data.remote.dto.AddExpensesResponseDto
-import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
 import com.example.brofin.data.remote.dto.GetAllDataResponseDto
 import com.example.brofin.data.remote.dto.LoginResponseDto
+import com.example.brofin.data.remote.dto.PredictResponseDto
 import com.example.brofin.data.remote.dto.RegisterResponseDto
+import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.UpdateBalanceResponseDto
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.repository.RemoteDataRepository
+import com.example.brofin.utils.BaseUrl
+import com.example.brofin.utils.PredictUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -23,7 +27,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class RemoteDataRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
+    @BaseUrl private val apiService: ApiService,
+    @PredictUrl private val predictService: PredictApiService
 ): RemoteDataRepository {
 
     override suspend fun register(
@@ -32,8 +37,18 @@ class RemoteDataRepositoryImpl @Inject constructor(
     ): RegisterResponseDto {
         return withContext(Dispatchers.Default) {
             try {
-                apiService.register(email, password)
+                val response = apiService.register(email, password)
+                if (response.isSuccessful){
+                    if (response.body() != null){
+                        response.body()!!
+                    } else {
+                        throw Exception("Error saat mengambil data")
+                    }
+                } else {
+                    throw Exception("Error saat register")
+                }
             } catch (e: Exception){
+                Log.e(TAG, "error when register")
                 throw e
             }
         }
@@ -46,8 +61,18 @@ class RemoteDataRepositoryImpl @Inject constructor(
     ): LoginResponseDto {
         return withContext(Dispatchers.Default){
             try {
-                apiService.login(email, password)
+               val response = apiService.login(email, password)
+                if (response.isSuccessful){
+                    if (response.body() != null){
+                        response.body()!!
+                    } else {
+                        throw Exception("Error saat mengambil data")
+                    }
+                } else {
+                    throw Exception("Error saat login")
+                }
             } catch (e: Exception) {
+                Log.e(TAG, "error when login")
                 throw e
             }
         }
@@ -237,7 +262,25 @@ class RemoteDataRepositoryImpl @Inject constructor(
         }
     }
 
-
+    override suspend fun predictHouse(predictRequest: RequestBody): PredictResponseDto {
+        return withContext(Dispatchers.Default){
+            try {
+               val response = predictService.predictHouse(predictRequest)
+                if (response.isSuccessful){
+                    if (response.body() != null){
+                        response.body()!!
+                    } else {
+                        throw Exception("error fetching data1")
+                    }
+                } else {
+                    throw Exception("error when predict house")
+                }
+            } catch (e: Exception){
+                Log.e(TAG, "error when predict house")
+                throw e
+            }
+        }
+    }
 
 
     companion object{

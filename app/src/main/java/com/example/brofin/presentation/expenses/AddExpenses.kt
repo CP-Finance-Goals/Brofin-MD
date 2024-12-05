@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -74,6 +75,7 @@ import com.example.brofin.presentation.expenses.components.AttachmentBottomSheet
 import com.example.brofin.presentation.expenses.components.CategoryModalBottomSheet
 import com.example.brofin.presentation.main.home.components.CustomTextFieldTwo
 import com.example.brofin.utils.getFormattedTimeInMillis
+import com.example.brofin.utils.toIndonesianCurrency2
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -131,9 +133,8 @@ fun AddExpenses(
     var showDatePicker by remember { mutableStateOf(false) }
     var isDatePickerVisible by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date)
-    var message by remember {
-        mutableStateOf("")
-    }
+    var message by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
 
     val contentResolver = context.contentResolver
 
@@ -184,6 +185,34 @@ fun AddExpenses(
                 .padding(paddingValues)
 
         ) {
+
+            ConfirmationDialog(
+                showDialog = showDialog,
+                onConfirm = {
+                    when{
+                        amount.isEmpty() -> Toast.makeText(context, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                        amount.toDoubleOrNull() == null -> Toast.makeText(context, "Jumlah harus berupa angka", Toast.LENGTH_SHORT).show()
+                        amount.toDouble() < 0 -> Toast.makeText(context, "Jumlah tidak boleh kurang dari 0", Toast.LENGTH_SHORT).show()
+                        selectedCategory == "Pilih Kategori" -> Toast.makeText(context, "Kategori tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                        else -> {
+                            addExpensesViewModel.insert(
+                                date = date,
+                                amount = amount.toDouble(),
+                                description = description,
+                                photoUri = photoUriData,
+                                categoryId = idCategory,
+                                contentResolver = contentResolver,
+                                context = context
+                            )
+                            addExpensesViewModel.reset()
+                        }
+                    }
+                    showDialog = false
+                }
+            ) {
+                showDialog = false
+            }
+
             LoadingDialog(showDialog = isLoading) {
                 isLoading = false
             }
@@ -208,7 +237,9 @@ fun AddExpenses(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.verticalScroll(scrollState).padding(16.dp)
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(16.dp)
             ) {
 
                 Row(
@@ -306,24 +337,7 @@ fun AddExpenses(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = {
-                        when{
-                            amount.isEmpty() -> Toast.makeText(context, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                            amount.toDoubleOrNull() == null -> Toast.makeText(context, "Jumlah harus berupa angka", Toast.LENGTH_SHORT).show()
-                            amount.toDouble() < 0 -> Toast.makeText(context, "Jumlah tidak boleh kurang dari 0", Toast.LENGTH_SHORT).show()
-                            selectedCategory == "Pilih Kategori" -> Toast.makeText(context, "Kategori tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                            else -> {
-                                addExpensesViewModel.insert(
-                                    date = date,
-                                    amount = amount.toDouble(),
-                                    description = description,
-                                    photoUri = photoUriData,
-                                    categoryId = idCategory,
-                                    contentResolver = contentResolver,
-                                    context = context
-                                )
-                                addExpensesViewModel.reset()
-                            }
-                        }
+                        showDialog = true
                     }
                 ) {
                     Text("Tambahkan Pengeluaran")
@@ -515,4 +529,33 @@ fun DashedBorderCard(onClick: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun ConfirmationDialog(modifier: Modifier = Modifier, showDialog: Boolean,onConfirm: () -> Unit, onCancel: () -> Unit) {
+
+    if (showDialog){
+        AlertDialog(
+            onDismissRequest = { onCancel() },
+            confirmButton = {
+                TextButton(onClick = { onConfirm() }) {
+                    Text("Simpan", style = MaterialTheme.typography.bodyMedium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onCancel() }) {
+                    Text("Batal", style = MaterialTheme.typography.bodyMedium)
+                }
+            },
+            title = {
+                Text(text = "Konfirmasi Simpan", style = MaterialTheme.typography.headlineSmall)
+            },
+            text = {
+                Text(text = "Apakah kamu sudah yakin untuk menyimpan data transaksi ini?", style = MaterialTheme.typography.bodyMedium)
+            },
+            modifier = modifier
+        )
+
+    }
+
 }

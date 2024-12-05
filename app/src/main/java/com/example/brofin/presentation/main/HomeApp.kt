@@ -29,6 +29,7 @@ fun HomeApp(
     goLogin: () -> Unit,
     goCreateDiary: () -> Unit,
     goDetail: (List<BudgetingDiary>, BudgetAllocation, Double) -> Unit,
+    goProfile: () -> Unit,
     goList: () -> Unit,
 ) {
 
@@ -75,7 +76,7 @@ fun HomeApp(
                 0 -> HomeScreen(goList = goList)
                 1 -> BudgetScreen(goDetail = goDetail)
                 2 -> FinancialScreen()
-                3 -> SettingScreen()
+                3 -> SettingScreen(goProfile = goProfile)
             }
         }
     }

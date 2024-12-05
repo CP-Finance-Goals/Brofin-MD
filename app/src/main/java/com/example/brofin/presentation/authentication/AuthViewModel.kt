@@ -66,7 +66,7 @@ class AuthViewModel @Inject constructor(
         data.userProfile.map {
             it.toUserProfile()
         }.forEach { user ->
-            brofinRepository.insertNoValidation(user.toUserProfileEntity())  // Menggunakan insertNoValidation
+            brofinRepository.insertNoValidation(user.toUserProfileEntity())
         }
     }
 
@@ -82,7 +82,7 @@ class AuthViewModel @Inject constructor(
         data.budgetingDiaries?.mapNotNull {
             it?.toBudgeting()
         }?.forEach { diary ->
-            brofinRepository.insertNoValidation(diary)  // Menggunakan insertNoValidation
+            brofinRepository.insertNoValidation(diary)
         }
     }
 
@@ -90,7 +90,7 @@ class AuthViewModel @Inject constructor(
         data.userBalance?.mapNotNull {
             it?.toUserBalance()
         }?.forEach { balance ->
-            brofinRepository.insertNoValidation(balance)  // Menggunakan insertNoValidation
+            brofinRepository.insertNoValidation(balance)
         }
     }
 

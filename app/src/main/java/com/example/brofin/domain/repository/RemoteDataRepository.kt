@@ -8,8 +8,10 @@ import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
 import com.example.brofin.data.remote.dto.GetAllDataResponseDto
 import com.example.brofin.data.remote.dto.LoginResponseDto
+import com.example.brofin.data.remote.dto.PredictResponseDto
 import com.example.brofin.data.remote.dto.RegisterResponseDto
 import com.example.brofin.data.remote.dto.UpdateBalanceResponseDto
+import com.example.brofin.domain.models.PredictRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Part
@@ -86,4 +88,9 @@ interface RemoteDataRepository {
         username: RequestBody,
         image: MultipartBody.Part? = null
     ): SetupBudgeingResponseDto
+
+    // predict house
+    suspend fun predictHouse(
+       predictRequest: RequestBody
+    ): PredictResponseDto
 }

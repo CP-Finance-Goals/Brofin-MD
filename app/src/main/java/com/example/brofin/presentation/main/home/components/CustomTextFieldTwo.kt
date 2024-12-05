@@ -41,7 +41,9 @@ fun CustomTextFieldTwo(
     singleLine: Boolean = true,
     height: Dp? = null,
     maxLines: Int = 1,
-    color: Color? = null
+    color: Color? = null,
+    enable: Boolean = true,
+    readOnly: Boolean = false
 ) {
     var isError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -58,7 +60,7 @@ fun CustomTextFieldTwo(
         label = { Text(
             label,
             style = MaterialTheme.typography.bodyMedium,
-            color = if (color != null) color.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+            color = color?.copy(alpha = 0.8f) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
         ) },
         leadingIcon = leadingIcon,
         trailingIcon = {
@@ -73,13 +75,15 @@ fun CustomTextFieldTwo(
                 trailingIcon?.invoke()
             }
         },
+        enabled = enable,
         isError = isError,
         visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         singleLine = singleLine,
         maxLines = maxLines,
-        modifier = Modifier.fillMaxWidth().height(height ?: Dp.Unspecified)
+        readOnly = readOnly,
+        modifier = modifier.fillMaxWidth().height(height ?: Dp.Unspecified)
     )
     if (isError) {
         Text(

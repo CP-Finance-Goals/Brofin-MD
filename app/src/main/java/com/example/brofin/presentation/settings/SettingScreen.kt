@@ -1,6 +1,7 @@
 package com.example.brofin.presentation.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
+    goProfile: () -> Unit,
     settingViewModel: SettingViewModel = hiltViewModel()
 ) {
     val userPreferences by settingViewModel.userPreferencesFlow.collectAsStateWithLifecycle(initialValue = UserPreferences())
@@ -90,7 +92,12 @@ fun SettingScreen(
                 }
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .clickable(
+                            onClick = {
+                                goProfile()
+                            }
+                        ),
                     colors = CardDefaults.cardColors().copy(
                         containerColor = MaterialTheme.colorScheme.primary
                     ),

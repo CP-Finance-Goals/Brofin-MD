@@ -127,7 +127,6 @@ object Expense {
     }
 
 
-    // Fungsi untuk memetakan string ikon menjadi ImageVector
     fun getIconByName(name: String): ImageVector {
         return when (name) {
             "ShoppingCart" -> Icons.Default.ShoppingCart

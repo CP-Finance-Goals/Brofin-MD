@@ -55,7 +55,7 @@ fun MyDropDownCustom(
                 .fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 15.dp),
             shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(containerColor = if (color != null) color else Color(0xffE6F8D7))
+            colors = CardDefaults.cardColors(containerColor = color ?: Color(0xffE6F8D7))
         ) {
             Box(
                 Modifier.fillMaxWidth()

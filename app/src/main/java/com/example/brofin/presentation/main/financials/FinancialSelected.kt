@@ -87,25 +87,23 @@ fun FinancialSelected(modifier: Modifier = Modifier) {
 @Composable
 fun ContentBox2() {
     var showDatePicker by remember { mutableStateOf(false) }
-    var date by remember { mutableLongStateOf(getFormattedTimeInMillis(System.currentTimeMillis())) }
+    val date by remember { mutableLongStateOf(getFormattedTimeInMillis(System.currentTimeMillis())) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf("Pilih Kategori") }
     val options = listOf("Mobil", "Gadget", "Motor", "Luxury Brand", "Games")
 
-    // Daftar nama item dan nilai defaultnya
-    var listNamaItem = remember {
+    val listNamaItem = remember {
         mutableStateListOf("Jumlah Target Uang", "Estimasi")
     }
 
-    var listNilai = remember {
+    val listNilai = remember {
         mutableStateListOf(
             "0",
             date.toFormattedDate()
         )
     }
 
-    // Memperbarui combined setiap kali ada perubahan di listNilai
     val combined = listNamaItem.zip(listNilai) { nama, nilai ->
         Pair(nama, nilai)
     }
@@ -120,7 +118,7 @@ fun ContentBox2() {
             TextField(
                 value = selectedOptionText,
                 onValueChange = { selectedOptionText = it },
-                trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
+                trailingIcon = { Icon(Icons.Default.ArrowDropDown, tint = MaterialTheme.colorScheme.onPrimary, contentDescription = null) },
                 readOnly = true,
                 modifier = Modifier.fillMaxWidth().menuAnchor(type = MenuAnchorType.PrimaryEditable)
             )

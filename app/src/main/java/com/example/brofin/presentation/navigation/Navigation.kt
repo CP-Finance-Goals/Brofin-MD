@@ -29,7 +29,7 @@ import com.example.brofin.presentation.detail.DetailBudgetAllocation
 import com.example.brofin.presentation.diaries.DiariesList
 import com.example.brofin.presentation.expenses.AddExpenses
 import com.example.brofin.presentation.main.HomeApp
-import com.example.brofin.presentation.main.financials.CreateFinancialGoal
+import com.example.brofin.presentation.profile.ProfileScreen
 import com.example.brofin.presentation.splash.SplashScreen
 import com.example.brofin.utils.BudgetAllocation
 import kotlinx.serialization.json.Json
@@ -43,6 +43,9 @@ fun Navigation() {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         photoUri = uri
     }
+
+    var photoProfile by remember { mutableStateOf<Uri?>(null) }
+
 
     NavHost(
         navController = navController,
@@ -110,6 +113,25 @@ fun Navigation() {
             }
         }
 
+        composable(
+            route = NavScreen.Profile.route,
+        ){
+            ProfileScreen(
+                currenhtBackStack = {
+                    navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Uri?>(NavArgument.PHOTOURI)?.observeForever { uri ->
+                        photoProfile = uri
+                    }
+                },
+                profileUri = photoProfile,
+                goCamera = {
+                    navController.navigate(NavScreen.Camera.route)
+                },
+                backHandler = {
+                    photoProfile = null
+                }
+            )
+        }
+
 
         composable(
             route = NavScreen.Login.route,
@@ -158,6 +180,9 @@ fun Navigation() {
                 },
                 goList = {
                     navController.navigate(NavScreen.ListBudgetingDiary.route)
+                },
+                goProfile = {
+                    navController.navigate(NavScreen.Profile.route)
                 },
             )
         }

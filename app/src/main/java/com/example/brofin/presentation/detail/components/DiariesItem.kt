@@ -145,7 +145,6 @@ fun ImageWithLoadingIndicator(diaryImageUrl: String) {
             contentScale = ContentScale.Crop
         )
 
-        // Show loading spinner if the image is loading
         if (isLoading) {
             Box(
                 modifier = Modifier

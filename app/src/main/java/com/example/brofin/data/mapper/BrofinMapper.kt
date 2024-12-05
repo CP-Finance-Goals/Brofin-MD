@@ -18,10 +18,13 @@ fun UserBalanceEntity.toUser() = UserBalance(
 
 fun UserProfileEntity.toUserProfile() = UserProfile(
     id = id,
-    name = name,
-    email = email,
+    createdAt = createdAt,
     photoUrl = photoUrl,
-    savings = savings
+    gender = gender,
+    dob = dob,
+    name = name,
+    savings = savings,
+    email = email
 )
 
 fun BudgetingEntity.toBudgetingDiary() = Budgeting(
@@ -43,17 +46,6 @@ fun BudgetingDiaryEntity.toBudgetingDiary() = BudgetingDiary(
     monthAndYear = monthAndYear
 )
 
-//fun FinancialGoalsEntity.toFinancialGoals() = FinancialGoals(
-//    id = id,
-//    userId = userId,
-//    photoUri = photoUri,
-//    goalName = goalName,
-//    targetAmount = targetAmount,
-//    deadline = deadline,
-//    createdAt = createdAt
-//)
-
-
 // To Entity
 fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
     currentBalance = currentBalance,
@@ -63,10 +55,13 @@ fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
 
 fun UserProfile.toUserProfileEntity() = UserProfileEntity(
     id = id,
-    name = name,
-    email = email,
+    createdAt = createdAt,
     photoUrl = photoUrl,
-    savings = savings
+    gender = gender,
+    dob = dob,
+    name = name,
+    savings = savings,
+    email = email
 )
 
 fun Budgeting.toBudgetingEntity() = BudgetingEntity(
@@ -87,12 +82,3 @@ fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
     categoryId = categoryId,
     monthAndYear = monthAndYear
 )
-
-//fun FinancialGoals.toFinancialGoalsEntity() = FinancialGoalsEntity(
-//    userId = userId,
-//    photoUri = photoUri,
-//    goalName = goalName,
-//    targetAmount = targetAmount,
-//    deadline = deadline,
-//    createdAt = createdAt
-//)

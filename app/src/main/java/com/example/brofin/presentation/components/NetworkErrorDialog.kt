@@ -39,7 +39,6 @@ fun NetworkErrorDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f))
         )
 
         AlertDialog(

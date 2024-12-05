@@ -1,18 +1,19 @@
 package com.example.brofin.data.remote
 
-import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddDiaryResponseDto
 import com.example.brofin.data.remote.dto.AddExpensesResponseDto
-import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
+import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
 import com.example.brofin.data.remote.dto.GetAllDataResponseDto
 import com.example.brofin.data.remote.dto.LoginResponseDto
 import com.example.brofin.data.remote.dto.RegisterResponseDto
+import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto
 import com.example.brofin.data.remote.dto.UpdateBalanceResponseDto
 import com.example.brofin.domain.models.Budgeting
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -30,7 +31,7 @@ interface ApiService {
     suspend fun login(
         @Field("email") email: String,
         @Field("password") password: String
-    ): LoginResponseDto
+    ): Response<LoginResponseDto>
 
     // Register
     @FormUrlEncoded
@@ -38,7 +39,7 @@ interface ApiService {
     suspend fun register(
         @Field("email") email: String,
         @Field("password") password: String
-    ): RegisterResponseDto
+    ): Response<RegisterResponseDto>
 
     // Get all data
     @GET("user/getAll")

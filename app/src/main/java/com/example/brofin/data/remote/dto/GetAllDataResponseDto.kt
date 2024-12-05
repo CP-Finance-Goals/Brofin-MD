@@ -86,26 +86,26 @@ data class UserProfileItem(
 	val username: String? = null
 )
 
-	data class BudgetingDiariesItem(
+data class BudgetingDiariesItem(
 
-		@Json(name="date")
-		val date: Long,
+	@Json(name="date")
+	val date: Long,
 
-		@Json(name="photoUrl")
-		val photoUrl: String? = null,
+	@Json(name="photoUrl")
+	val photoUrl: String? = null,
 
-		@Json(name="amount")
-		val amount: Double,
+	@Json(name="amount")
+	val amount: Double,
 
-		@Json(name="monthAndYear")
-		val monthAndYear: Long,
+	@Json(name="monthAndYear")
+	val monthAndYear: Long,
 
-		@Json(name="description")
-		val description: String? = null,
+	@Json(name="description")
+	val description: String? = null,
 
-		@Json(name="id")
-		val id: Long,
+	@Json(name="id")
+	val id: Long,
 
-		@Json(name="categoryId")
-		val categoryId: Int
-	)
+	@Json(name="categoryId")
+	val categoryId: Int
+)

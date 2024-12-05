@@ -75,12 +75,11 @@ class HomeViewModel @Inject constructor(
                     currentBalance = userBalance.currentBalance!!
                 )
 
-                // Jika response data valid, lanjutkan ke insert budgeting dan update profile savings
                 if (response.data != null) {
                     brofinRepository.insertUserBalance(userBalance)
-                    val isBudgetingSuccess = insertBudgeting(userBalance.balance) // Insert budgeting
+                    val isBudgetingSuccess = insertBudgeting(userBalance.balance)
                     if (isBudgetingSuccess) {
-                        updateProfileSavings(userBalance.balance * 0.2) // Update profile savings
+                        updateProfileSavings(userBalance.balance * 0.2)
                     }
                     _state.value = StateApp.Success(true)
                 } else if (response.message == ReponseUtils.TOKEN_EXPIRED) {
@@ -125,31 +124,35 @@ class HomeViewModel @Inject constructor(
                     isReminder = "false".toRequestBody("text/plain".toMediaTypeOrNull()),
                     savingsLimit = (userBalance.balance.times(0.2)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     savings = updatedsavings.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                    dob = "2000-01-01".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    dob = userData.dob?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: "No data".toRequestBody("text/plain".toMediaTypeOrNull()),
                     username = userData.name?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: " ".toRequestBody("text/plain".toMediaTypeOrNull()),
                     image = preparePhotoPart(null)
                 )
 
-                if ( response.message == ReponseUtils.ADD_USER_BALANCE_SUCCESS) {
-                    brofinRepository.insertUserBalance(userBalance)
-                    brofinRepository.insertOrUpdateUserProfile(userData.copy(savings = updatedsavings))
-                    brofinRepository.insertBudget(
-                        Budgeting(
-                            monthAndYear = userBalance.monthAndYear,
-                            total = userBalance.balance,
-                            essentialNeedsLimit = userBalance.balance.times(0.5),
-                            wantsLimit = userBalance.balance.times(0.3),
-                            savingsLimit = userBalance.balance.times(0.2),
+                when (response.message) {
+                    ReponseUtils.ADD_USER_BALANCE_SUCCESS -> {
+                        brofinRepository.insertUserBalance(userBalance)
+                        brofinRepository.insertOrUpdateUserProfile(userData.copy(savings = updatedsavings))
+                        brofinRepository.insertBudget(
+                            Budgeting(
+                                monthAndYear = userBalance.monthAndYear,
+                                total = userBalance.balance,
+                                essentialNeedsLimit = userBalance.balance.times(0.5),
+                                wantsLimit = userBalance.balance.times(0.3),
+                                savingsLimit = userBalance.balance.times(0.2),
+                            )
                         )
-                    )
-                    _state.value = StateApp.Success(true)
-                } else if (response.message == ReponseUtils.TOKEN_EXPIRED) {
-                    userPreferencesRepository.updateToken(null)
-                    _state.value = StateApp.Error("Token kadaluarsa, silakan login kembali")
-                    brofinRepository.logout()
-                } else {
-                    Log.e(TAG, "Error on saving user balance data")
-                    _state.value = StateApp.Error("Error ketika menyimpan data uang pengguna")
+                        _state.value = StateApp.Success(true)
+                    }
+                    ReponseUtils.TOKEN_EXPIRED -> {
+                        userPreferencesRepository.updateToken(null)
+                        _state.value = StateApp.Error("Token kadaluarsa, silakan login kembali")
+                        brofinRepository.logout()
+                    }
+                    else -> {
+                        Log.e(TAG, "Error on saving user balance data")
+                        _state.value = StateApp.Error("Error ketika menyimpan data uang pengguna")
+                    }
                 }
 
             } catch (e: Exception) {
@@ -168,7 +171,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    // Update user profile savings
     private suspend fun updateProfileSavings(newSavings: Double) {
         try {
             val userNow = brofinRepository.getUserProfile()
@@ -211,7 +213,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    // Insert budgeting data
     private suspend fun insertBudgeting(income: Double): Boolean {
         return try {
             val response = remoteDataRepository.addBudgeting(
