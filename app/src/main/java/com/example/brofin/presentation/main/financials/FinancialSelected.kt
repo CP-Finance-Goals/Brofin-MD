@@ -1,7 +1,6 @@
 package com.example.brofin.presentation.main.financials
 
 import android.widget.Toast
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -60,6 +58,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.wear.compose.material3.ScrollIndicator
 import com.example.brofin.domain.StateApp
 import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.components.NetworkErrorDialog
@@ -98,7 +97,6 @@ fun FinancialSelected(
         mutableStateOf("")
     }
 
-    // Function to filter non-null items from the state
     fun <T> filterNonNullItems(state: StateApp<List<T>>): List<T> {
         return when (state) {
             is StateApp.Success -> state.data.filterNotNull()
@@ -249,9 +247,8 @@ fun FinancialSelected(
                    }
                }
 
-               VerticalScrollbar(
-                   adapter = rememberScrollbarAdapter(listState),
-                   modifier = Modifier.align(Alignment.CenterEnd).padding(end = 4.dp)
+               ScrollIndicator(
+                   state = listState,
                )
            }
        }

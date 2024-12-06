@@ -47,6 +47,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -129,11 +130,13 @@ dependencies {
 
     // Worker
     implementation("androidx.startup:startup-runtime:1.2.0")
-
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     implementation("androidx.hilt:hilt-work:1.2.0")
 
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    implementation("androidx.wear.compose:compose-material3:1.0.0-alpha27")
+
 
     // Pager
     implementation(libs.accompanist.pager)
