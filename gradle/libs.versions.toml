@@ -1,7 +1,8 @@
 [versions]
 
-agp = "8.7.3"
+agp = "8.5.0"
 androidImageCropper = "4.6.0"
+composeMaterial3 = "1.0.0-alpha29"
 foundation = "1.7.5"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.0.21"
@@ -71,8 +72,9 @@ foundationDesktop = "1.7.0"
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
 android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
+androidx-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "composeMaterial3" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
+#androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }

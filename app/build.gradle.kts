@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.brofin"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -47,7 +47,7 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.foundation)
+//    implementation(libs.androidx.foundation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -76,7 +76,6 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.video)
-
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
 
@@ -135,7 +134,8 @@ dependencies {
 
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
-    implementation("androidx.wear.compose:compose-material3:1.0.0-alpha27")
+    // for my scrool indicator
+    implementation(libs.androidx.compose.material3)
 
 
     // Pager

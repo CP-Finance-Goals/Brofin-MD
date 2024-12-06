@@ -3,7 +3,6 @@ package com.example.brofin.presentation.temp.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.brofin.domain.repository.AuthRepository
-import com.example.brofin.domain.repository.FirestoreRepository
 import com.example.brofin.presentation.authentication.state.AuthState
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SetupProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-//    private val firestoreRepository: FirestoreRepository
 ): ViewModel() {
 
     private val _firebaseUser = MutableStateFlow<FirebaseUser?>(null)

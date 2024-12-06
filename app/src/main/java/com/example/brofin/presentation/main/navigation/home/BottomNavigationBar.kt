@@ -17,69 +17,23 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-
-//@Composable
-//fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit) {
-//   Box {
-//       NavigationBar(
-//           modifier = Modifier
-//               .fillMaxWidth()
-//               .background(MaterialTheme.colorScheme.background),
-//       ) {
-//           bottomNavItems.forEachIndexed { index, screen ->
-//               NavigationBarItem(
-//                   icon = { Icon(screen.icon, contentDescription = screen.title) },
-//                   label = { Text(screen.title) },
-//                   selected = currentPage == index,
-//                   onClick = {
-//                       onTabSelected(index)
-//                   }
-//               )
-//           }
-//       }
-//
-//       FloatingActionButton(
-//           onClick = { /*TODO*/ },
-//           modifier = Modifier
-//               .align(Alignment.TopCenter)
-//               .offset(y = (-28).dp),
-//           containerColor = Color(0xFFB39DDB),
-//           shape = RoundedCornerShape(21.dp),
-//       ) {
-//           Icon(
-//               imageVector = Icons.Default.Add,
-//               contentDescription = "Add",
-//               tint = Color.White
-//           )
-//       }
-//   }
-//}
-
-
 
 @Composable
 fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit, onAddClick: () -> Unit) {
@@ -88,11 +42,10 @@ fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit, onAddCli
     val unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     val disabledColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
 
-    // Use insets to avoid cutting the navigation bar at the bottom
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WindowInsets.navigationBars.asPaddingValues()) // Avoid navigation bar cut-off
+            .padding(WindowInsets.navigationBars.asPaddingValues())
             .background(backgroundColor)
     ) {
         Box(
@@ -101,17 +54,15 @@ fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit, onAddCli
                 .height(80.dp)
                 .background(backgroundColor)
         ) {
-            // Canvas to create the curved bottom navigation with shadow
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val width = size.width
                 val height = size.height
                 val fabRadius = 40.dp.toPx()
                 val fabCenterX = width / 2
                 val curveWidth = fabRadius + 25.dp.toPx()
-                val curveHeight = fabRadius * 0.6f // Adjust height to make the curve less sharp
+                val curveHeight = fabRadius * 0.6f
 
 
-                // Create path for the background with a curve in the middle
                 val backgroundPath = Path().apply {
                     moveTo(0f, 0f)
                     lineTo(fabCenterX - curveWidth, 0f)
@@ -131,22 +82,19 @@ fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit, onAddCli
                     close()
                 }
 
-                // Draw the background path with color
                 drawPath(
                     path = backgroundPath,
                     color = backgroundColor
                 )
 
-                // Draw the outline of the curve following the background path
                 drawPath(
                     path = backgroundPath,
-                    color = Color.Gray.copy(alpha = 0.3f), // Adjust color and alpha as needed
+                    color = Color.Gray.copy(alpha = 0.3f),
                     style = Stroke(width = 2.dp.toPx())
                 )
             }
 
 
-            // Bottom Navigation Items
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,7 +122,6 @@ fun BottomNavigationBar(currentPage: Int, onTabSelected: (Int) -> Unit, onAddCli
                         selected = currentPage == index,
                         onClick = { onTabSelected(index) },
                         colors = NavigationBarItemDefaults.colors().copy(
-//                            selectedTextColor = selectedColor,
                             selectedIndicatorColor = selectedColor,
                             unselectedIconColor = unselectedColor,
                             unselectedTextColor = unselectedColor,
