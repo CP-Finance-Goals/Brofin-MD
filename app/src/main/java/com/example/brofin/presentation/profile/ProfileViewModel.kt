@@ -64,27 +64,33 @@ class ProfileViewModel @Inject constructor(
             try {
                 val currentData = brofinRepository.getUserProfile()
 
-                val updatedData = currentData?.copy(
+                if (currentData == null) {
+                    _dataProfile.value = StateApp.Error("Data tidak di ketahui")
+                    return@launch
+                }
+
+                var updatedData = currentData.copy(
                     name = name ?: currentData.name,
                     dob = dob ?: currentData.dob
                 )
 
                 val response =  remoteDataRepository.editUserProfile(
-                    username = updatedData?.name?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.name?.toRequestBody("text/plain".toMediaTypeOrNull()),
-                    dob = updatedData?.dob?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.dob?.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    username = updatedData.name?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData.name?.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    dob = updatedData.dob?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData.dob?.toRequestBody("text/plain".toMediaTypeOrNull()),
                     photo = preparePhotoPart(photoUri, contentResolver, context) ,
-                    gender = updatedData?.gender?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.gender?.toRequestBody("text/plain".toMediaTypeOrNull()),
-                    savings = updatedData?.savings?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.savings?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+                    gender = updatedData.gender?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData.gender?.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    savings = updatedData.savings?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: currentData?.savings?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
                 )
+
+                updatedData = updatedData.copy(photoUrl = response.photoUrl)
 
                 _updatedSucces.value = response.message == "User details has been updated"
 
                 if(_updatedSucces.value){
-                    brofinRepository.insertOrUpdateUserProfile(updatedData!!)
+                    brofinRepository.insertOrUpdateUserProfile(updatedData)
                 }
 
-//                _dataProfile.value = StateApp.Success(response.message
-//                _dataProfile.value = StateApp.Error("Terjadi kesalahan saat mengupdate profile")
+                _dataProfile.value = StateApp.Success(updatedData.toUserProfile())
 
             } catch (e: Exception) {
                 Log.e(TAG, "editProfile: ${e.message}")

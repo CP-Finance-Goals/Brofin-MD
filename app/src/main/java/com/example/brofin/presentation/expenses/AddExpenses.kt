@@ -532,7 +532,12 @@ fun DashedBorderCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun ConfirmationDialog(modifier: Modifier = Modifier, showDialog: Boolean,onConfirm: () -> Unit, onCancel: () -> Unit) {
+fun ConfirmationDialog(
+    modifier: Modifier = Modifier,
+    message: String = "Apakah kamu sudah yakin untuk menyimpan data transaksi ini?",
+    showDialog: Boolean,onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
 
     if (showDialog){
         AlertDialog(
@@ -551,7 +556,7 @@ fun ConfirmationDialog(modifier: Modifier = Modifier, showDialog: Boolean,onConf
                 Text(text = "Konfirmasi Simpan", style = MaterialTheme.typography.headlineSmall)
             },
             text = {
-                Text(text = "Apakah kamu sudah yakin untuk menyimpan data transaksi ini?", style = MaterialTheme.typography.bodyMedium)
+                Text(text = message, style = MaterialTheme.typography.bodyMedium)
             },
             modifier = modifier
         )

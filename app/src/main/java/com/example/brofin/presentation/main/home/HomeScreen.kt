@@ -120,7 +120,6 @@ fun HomeScreen(
                 coroutineScope.launch { sheetState.show() }
                 isSheetOpen = true
             },
-            onAddIncomeClick = { /*TODO*/ },
             balance = userBalance,
             income = totalIncome,
             outcome = totalExpenses,
@@ -197,7 +196,6 @@ fun ConfirmationDialog(
 fun HomeHeader(
     showWarningHeader: Boolean,
     onSetBudgetClick: () -> Unit,
-    onAddIncomeClick: () -> Unit,
     balance: Double?,
     income: Double?,
     outcome : Double?,
@@ -207,7 +205,6 @@ fun HomeHeader(
         if (showWarningHeader) {
             WarningCard(
                 onSetBudgetClick = onSetBudgetClick,
-                onAddIncomeClick = onAddIncomeClick
             )
         } else {
             BudgetHeader(

@@ -22,7 +22,7 @@ fun RowNamaItem(itemText: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -37,7 +37,7 @@ fun RowNamaItem(itemText: String) {
 fun RowTitik2() {
     Row(
         modifier = Modifier
-            .padding(vertical = 16.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -72,7 +72,7 @@ fun RowItem(itemText: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {

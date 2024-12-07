@@ -3,6 +3,7 @@ package com.example.brofin.presentation.main.financials
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.brofin.data.mapper.toPredictEntity
 import com.example.brofin.data.mapper.toPredictResponse
 import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.GadgetRecommendation
@@ -11,8 +12,10 @@ import com.example.brofin.domain.models.LuxuryRecommendation
 import com.example.brofin.domain.models.MobilRecommendation
 import com.example.brofin.domain.models.MotorRecommendation
 import com.example.brofin.domain.models.PredictResponse
+import com.example.brofin.domain.repository.BrofinRepository
 import com.example.brofin.domain.repository.RemoteDataRepository
 import com.example.brofin.utils.Constant
+import com.example.brofin.utils.generateUniqueId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,11 +26,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FinancialViewModel @Inject constructor(
-    private val remoteDataRepository: RemoteDataRepository
+    private val remoteDataRepository: RemoteDataRepository,
+    private val brofinRepository: BrofinRepository
 ): ViewModel() {
 
     private val _stateFinancial = MutableStateFlow<StateApp<PredictResponse>>(StateApp.Idle)
     val stateFinancial = _stateFinancial.asStateFlow()
+
+    private val _stateInsertAndRemove = MutableStateFlow<StateApp<PredictResponse>>(StateApp.Idle)
+    val stateInsertAndRemove = _stateInsertAndRemove.asStateFlow()
 
     private val _gameState = MutableStateFlow<StateApp<List<GameRecommendation?>>>(StateApp.Idle)
     val gameState = _gameState.asStateFlow()
@@ -78,7 +85,7 @@ class FinancialViewModel @Inject constructor(
                     predictRequest = requestBody
                 )
 
-                Log.d("FinancialViewModel", "predict: $response")
+                Log.d(TAG, "predict: $response")
                 _stateFinancial.value = StateApp.Success(response.toPredictResponse())
             } catch (e: Exception) {
                 Log.e("FinancialViewModel", "predict: ${e.message}")
@@ -87,6 +94,39 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
+    fun insertPredict(predict: PredictResponse){
+        viewModelScope.launch {
+            _stateInsertAndRemove.value = StateApp.Loading
+            try {
+                val data = predict.copy(
+                    id = generateUniqueId(),
+                    datePredict = System.currentTimeMillis()
+                )
+                brofinRepository.insertPredict(data.toPredictEntity())
+                _stateInsertAndRemove.value = StateApp.Success(data)
+            } catch (e: Exception){
+                Log.d(TAG, "insertPredict: $e")
+                _stateInsertAndRemove.value = StateApp.Error("Error saat menyimpan prediksi")
+            }
+        }
+    }
+
+    fun deletePredict(predict: PredictResponse){
+        viewModelScope.launch {
+            try {
+                brofinRepository.deletePredict(predict.toPredictEntity())
+                StateApp.Success(null)
+            } catch (e: Exception){
+                Log.e(TAG,"Error saat menghapus prediksi")
+            }
+        }
+    }
+
+    fun resetStateInserAndRemove(){
+        viewModelScope.launch {
+            _stateInsertAndRemove.value = StateApp.Idle
+        }
+    }
 
 
     private fun predictGameRecommendation(budget: Double, category: String) {
@@ -238,5 +278,9 @@ class FinancialViewModel @Inject constructor(
         _mobilState.value = StateApp.Idle
         _luxuryState.value = StateApp.Idle
         _gadgetState.value = StateApp.Idle
+    }
+
+    companion object{
+        const val TAG = "FinancialViewModel"
     }
 }

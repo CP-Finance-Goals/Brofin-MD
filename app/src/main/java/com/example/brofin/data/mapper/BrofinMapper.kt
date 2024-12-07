@@ -2,10 +2,13 @@ package com.example.brofin.data.mapper
 
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
 import com.example.brofin.data.local.room.entity.BudgetingEntity
+import com.example.brofin.data.local.room.entity.PredictEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.domain.models.Predict
+import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
 
@@ -14,6 +17,38 @@ fun UserBalanceEntity.toUser() = UserBalance(
     monthAndYear = monthAndYear,
     balance = balance,
     currentBalance = currentBalance,
+)
+
+fun PredictEntity.toPredictResponse() = PredictResponse(
+    id = id,
+    sukuBunga = sukuBunga,
+    predictedPrice = predictedPrice,
+    dp = dp,
+    datePredict = datePredict,
+    tenor = tenor,
+    maxAffordablePrice = maxAffordablePrice,
+    adjustedPrice = adjustedPrice,
+    cicilanBulanan = cicilanBulanan
+)
+
+fun PredictEntity.toPredict() = Predict(
+    id = id,
+    sukuBunga = sukuBunga,
+    predictedPrice = predictedPrice,
+    dp = dp,
+    datePredict = datePredict,
+    tenor = tenor,
+    maxAffordablePrice = maxAffordablePrice,
+    adjustedPrice = adjustedPrice,
+    cicilanBulanan = cicilanBulanan,
+    jumlahLantai = jumlahLantai,
+    jumlahKamarMandi = jumlahKamarMandi,
+    jumlahKamarTidur = jumlahKamarTidur,
+    jumlahKamarPembantu = jumlahKamarPembantu,
+    ukuranbangunan = ukuranbangunan,
+    dayaListrik = dayaListrik,
+    ukurantanah = ukurantanah,
+    tahunTarget = tahunTarget
 )
 
 fun UserProfileEntity.toUserProfile() = UserProfile(
@@ -53,6 +88,38 @@ fun UserBalance.toUserBalanceEntity() = UserBalanceEntity(
     balance = balance,
 )
 
+fun Predict.toPredictEntity() = PredictEntity(
+    id = id,
+    sukuBunga = sukuBunga,
+    predictedPrice = predictedPrice,
+    dp = dp,
+    datePredict = datePredict,
+    tenor = tenor,
+    maxAffordablePrice = maxAffordablePrice,
+    adjustedPrice = adjustedPrice,
+    cicilanBulanan = cicilanBulanan,
+    jumlahLantai = jumlahLantai,
+    jumlahKamarMandi = jumlahKamarMandi,
+    jumlahKamarTidur = jumlahKamarTidur,
+    jumlahKamarPembantu = jumlahKamarPembantu,
+    ukuranbangunan = ukuranbangunan,
+    dayaListrik = dayaListrik,
+    ukurantanah = ukurantanah,
+    tahunTarget = tahunTarget
+)
+
+fun PredictResponse.toPredictEntity() = PredictEntity(
+    id = id,
+    sukuBunga = sukuBunga,
+    predictedPrice = predictedPrice,
+    datePredict = datePredict,
+    dp = dp,
+    maxAffordablePrice = maxAffordablePrice,
+    adjustedPrice = adjustedPrice,
+    cicilanBulanan = cicilanBulanan,
+    tenor = tenor
+)
+
 fun UserProfile.toUserProfileEntity() = UserProfileEntity(
     id = id,
     createdAt = createdAt,
@@ -82,3 +149,5 @@ fun BudgetingDiary.toBudgetingDiaryEntity() = BudgetingDiaryEntity(
     categoryId = categoryId,
     monthAndYear = monthAndYear
 )
+
+

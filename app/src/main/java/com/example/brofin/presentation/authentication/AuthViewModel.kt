@@ -53,11 +53,14 @@ class AuthViewModel @Inject constructor(
                     _authState.value = AuthState.Success
                     Log.d(TAG, "loginWithEmail: $data")
                 } ?: run {
+                    userPreferencesRepository.updateToken(null)
+                    brofinRepository.logout()
                     _authState.value = AuthState.Error("Login gagal, silakan coba lagi.")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "loginWithEmail: ${e.message}")
-                _authState.value = AuthState.Error("Email atau password salah, silakan coba lagi.")
+                userPreferencesRepository.updateToken(null)
+                brofinRepository.logout()
+                _authState.value = AuthState.Error(e.message)
             }
         }
     }

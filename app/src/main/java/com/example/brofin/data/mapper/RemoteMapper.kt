@@ -3,10 +3,8 @@ package com.example.brofin.data.mapper
 import com.example.brofin.data.remote.dto.BudgetingDiariesItem
 import com.example.brofin.data.remote.dto.BudgetingsItem
 import com.example.brofin.data.remote.dto.GadgetResponseDtoItem
-import com.example.brofin.data.remote.dto.GameResponseDto
 import com.example.brofin.data.remote.dto.GameResponseDtoItem
 import com.example.brofin.data.remote.dto.LuxuryResponseDtoItem
-import com.example.brofin.data.remote.dto.MobilResponseDto
 import com.example.brofin.data.remote.dto.MobilResponseDtoItem
 import com.example.brofin.data.remote.dto.MotorResponseDtoItem
 import com.example.brofin.data.remote.dto.PredictResponseDto

@@ -2,10 +2,12 @@ package com.example.brofin.domain.repository
 
 import com.example.brofin.data.local.room.entity.BudgetingWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.data.local.room.entity.PredictEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
 import kotlinx.coroutines.flow.Flow
@@ -73,8 +75,6 @@ interface BrofinRepository {
 
     suspend fun insertOrUpdateUserProfile(user: UserProfileEntity)
 
-    suspend fun deleteFinancialGoal(goalId: Int)
-
     suspend fun logout(): Boolean
 
     suspend fun insertNoValidation(budgetingDiary: BudgetingDiary)
@@ -85,4 +85,11 @@ interface BrofinRepository {
 
     suspend fun insertNoValidation(budgeting: Budgeting)
 
+    fun getAllPredict(): Flow<PredictResponse?>
+
+    suspend fun insertPredict(predict: PredictEntity)
+
+    suspend fun deletePredict(predict: PredictEntity)
+
+    suspend fun getById(id: String): PredictResponse
 }

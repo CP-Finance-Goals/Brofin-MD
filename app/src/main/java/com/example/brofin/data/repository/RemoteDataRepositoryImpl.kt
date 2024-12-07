@@ -80,14 +80,14 @@ class RemoteDataRepositoryImpl @Inject constructor(
                     if (response.body() != null){
                         response.body()!!
                     } else {
-                        throw Exception("Error saat mengambil data")
+                        throw Exception("login gagal terjadi kesalahan dalam server aplikasi")
                     }
                 } else {
-                    throw Exception("Error saat login")
+                    throw Exception("Terjadi kesalahan saat login mohon cek koneksi internet anda")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "error when login")
-                throw e
+                throw Exception("Terjadi kesalahan yang tidak terduga mohon coba lagi nanti")
             }
         }
     }
@@ -296,7 +296,7 @@ class RemoteDataRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRecommendationMotor(request: RequestBody): List<MotorRecommendation?> {
+    override suspend fun getRecommendationMotor(request: RequestBody): List<MotorRecommendation> {
         return withContext(Dispatchers.Default) {
             try {
                 val responseDto = recommendationService.getRecommendationMotor(request)
@@ -308,15 +308,13 @@ class RemoteDataRepositoryImpl @Inject constructor(
                     throw Exception("Gagal mendapatkan Rekomendasi Motor")
                 }
             } catch (e: Exception) {
-                // Menangkap exception dan memberikan log atau error message yang lebih jelas
                 Log.e("RecommendationError", "Error fetching motor recommendations: ${e.message}", e)
-                // Menangani error dengan mengembalikan daftar kosong untuk menjaga alur aplikasi
                 emptyList()
             }
         }
     }
 
-    override suspend fun getRecommendationMobil(request: RequestBody): List<MobilRecommendation?> {
+    override suspend fun getRecommendationMobil(request: RequestBody): List<MobilRecommendation> {
         return withContext(Dispatchers.Default) {
             try {
                 val responseDto = recommendationService.getRecommendationMobil(request)
@@ -334,7 +332,7 @@ class RemoteDataRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRecommendationGadget(request: RequestBody): List<GadgetRecommendation?> {
+    override suspend fun getRecommendationGadget(request: RequestBody): List<GadgetRecommendation> {
         return withContext(Dispatchers.Default) {
             try {
                 val responseDto = recommendationService.getRecommendationGadget(request)
@@ -352,7 +350,7 @@ class RemoteDataRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRecommendationLuxury(request: RequestBody): List<LuxuryRecommendation?> {
+    override suspend fun getRecommendationLuxury(request: RequestBody): List<LuxuryRecommendation> {
         return withContext(Dispatchers.Default) {
             try {
                 val responseDto = recommendationService.getRecommendationLuxury(request)
@@ -370,7 +368,7 @@ class RemoteDataRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRecommendationGame(request: RequestBody): List<GameRecommendation?> {
+    override suspend fun getRecommendationGame(request: RequestBody): List<GameRecommendation> {
         return withContext(Dispatchers.Default) {
             try {
                 val responseDto = recommendationService.getRecommendationGame(request)

@@ -3,7 +3,7 @@ package com.example.brofin.di
 import android.content.Context
 import com.example.brofin.data.local.room.dao.BudgetingDao
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
-import com.example.brofin.data.local.room.dao.FinancialGoalsDao
+import com.example.brofin.data.local.room.dao.PredictDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
 import com.example.brofin.data.local.room.dao.UserProfileDao
 import com.example.brofin.data.repository.BrofinRepositoryImpl
@@ -34,11 +34,11 @@ object AppModule {
     fun provideBrofinRepository(
         userBalanceDao: UserBalanceDao,
         budgetingDiaryDao: BudgetingDiaryDao,
-        financialGoalsDao: FinancialGoalsDao,
+        predictDao: PredictDao,
         budgetingDao: BudgetingDao,
         userProfileDao: UserProfileDao
     ): BrofinRepository {
-        return BrofinRepositoryImpl(userBalanceDao, financialGoalsDao, budgetingDiaryDao, budgetingDao, userProfileDao)
+        return BrofinRepositoryImpl(userBalanceDao, predictDao, budgetingDiaryDao, budgetingDao, userProfileDao)
     }
 
 }

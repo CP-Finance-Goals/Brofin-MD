@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,28 +46,24 @@ fun OpenTextDialog2(
 ) {
     var isError by remember { mutableStateOf(false) }
 
+    fun formatCurrency(value: String): String {
+        val cleanValue = value.replace(",", "") // Remove commas
+        return cleanValue.toDoubleOrNull()?.toIndonesianCurrency2() ?: ""
+    }
+
+    var formatedData by remember {
+        mutableStateOf(formatCurrency(textFieldValue))
+    }
     LaunchedEffect(textFieldValue) {
         isError = when {
-            textFieldValue.isEmpty() -> {
-                true
-            }
-
-            textFieldValue == "0" -> {
-                true
-            }
-
-            textFieldValue.toDoubleOrNull() == null -> {
-                true
-            }
-
-            textFieldValue.toDouble() < minAmount || textFieldValue.toDouble() > maxAmount -> {
-                true
-            }
-
-            else -> {
-                false
-            }
+            textFieldValue.isEmpty() -> true
+            textFieldValue == "0" -> true
+            textFieldValue.toDoubleOrNull() == null -> true
+            textFieldValue.toDouble() < minAmount || textFieldValue.toDouble() > maxAmount -> true
+            else -> false
         }
+
+        formatedData = formatCurrency(textFieldValue)
     }
 
     AlertDialog(
@@ -75,11 +71,14 @@ fun OpenTextDialog2(
         title = { Text("Masukkan Data") },
         text = {
             Column {
+                Text(text = "Banyak uang yang kamu masukan adalah $formatedData", style = MaterialTheme.typography.bodyMedium)
                 CustomTextFieldTwo(
                     label = label,
                     text = if (textFieldValue == "0") "" else textFieldValue,
-                    onTextChange = {
-                        onTextChange(it)
+                    onTextChange = { input ->
+                        // Prevent multiple decimal points
+                        val newText = if (input.count { it == '.' } <= 1) input else textFieldValue
+                        onTextChange(newText)
                     },
                     validate = {
                         when {
@@ -125,8 +124,6 @@ fun OpenTextDialog2(
     )
 }
 
-
-
 @Composable
 fun OpenTextDialog(
     label: String,
@@ -135,49 +132,47 @@ fun OpenTextDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-
     var isError by remember { mutableStateOf(false) }
+    fun formatCurrency(value: String): String {
+        val cleanValue = value.replace(",", "") // Menghapus koma
+        return cleanValue.toDoubleOrNull()?.toIndonesianCurrency2() ?: ""
+    }
+
+    var formatedData by remember {
+        mutableStateOf(formatCurrency(textFieldValue))
+    }
 
     LaunchedEffect(textFieldValue) {
-        isError = when{
-            textFieldValue.isEmpty() -> {
-                true
-            }
-
-            textFieldValue == "0" -> {
-                true
-            }
-
-            textFieldValue.toDoubleOrNull() == null -> {
-                true
-            }
-
-            textFieldValue.toDouble() < 0 -> {
-                true
-            }
-
-            else -> {
-                false
-            }
+        isError = when {
+            textFieldValue.isEmpty() -> true
+            textFieldValue == "0" -> true
+            textFieldValue.toDoubleOrNull() == null -> true
+            textFieldValue.toDouble() < 0 -> true
+            else -> false
         }
+
+        formatedData = formatCurrency(textFieldValue)
     }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("masukan data") },
+        title = { Text("Masukkan Data") },
         text = {
             Column {
+                Text(text = "Data yang Anda masukkan: $formatedData", style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.padding(8.dp))
                 CustomTextFieldTwo(
                     label = label,
                     text = if (textFieldValue == "0") "" else textFieldValue,
-                    onTextChange = {
-                        onTextChange(it)
+                    onTextChange = { input ->
+                        val newText = if (input.count { it == '.' } <= 1) input else textFieldValue
+                        onTextChange(newText)
                     },
                     validate = {
                         when {
-                            it.isEmpty() -> "Jumlah tidak boleh kosong"  // Validasi tidak kosong
-                            it.toDoubleOrNull() == null -> "Jumlah harus berupa angka"  // Validasi angka
-                            it.toDouble() < 0 -> "Jumlah tidak boleh kurang dari 0"  // Validasi angka negatif
+                            it.isEmpty() -> "Jumlah tidak boleh kosong"
+                            it.toDoubleOrNull() == null -> "Jumlah harus berupa angka"
+                            it.toDouble() < 0 -> "Jumlah tidak boleh kurang dari 0"
                             else -> ""
                         }
                     },
@@ -192,7 +187,7 @@ fun OpenTextDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    when{
+                    when {
                         textFieldValue.isEmpty() -> {
                             isError = false
                         }

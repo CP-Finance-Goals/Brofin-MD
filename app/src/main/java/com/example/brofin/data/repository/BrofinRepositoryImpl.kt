@@ -3,20 +3,23 @@ package com.example.brofin.data.repository
 import android.util.Log
 import com.example.brofin.data.local.room.dao.BudgetingDao
 import com.example.brofin.data.local.room.dao.BudgetingDiaryDao
-import com.example.brofin.data.local.room.dao.FinancialGoalsDao
+import com.example.brofin.data.local.room.dao.PredictDao
 import com.example.brofin.data.local.room.dao.UserBalanceDao
 import com.example.brofin.data.local.room.dao.UserProfileDao
 import com.example.brofin.data.local.room.entity.BudgetingWithDiaries
 import com.example.brofin.data.local.room.entity.BudgetingDiaryEntity
+import com.example.brofin.data.local.room.entity.PredictEntity
 import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.data.mapper.toBudgetingDiary
 import com.example.brofin.data.mapper.toBudgetingDiaryEntity
 import com.example.brofin.data.mapper.toBudgetingEntity
+import com.example.brofin.data.mapper.toPredictResponse
 import com.example.brofin.data.mapper.toUserBalanceEntity
 import com.example.brofin.data.mapper.toUserProfile
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
 import com.example.brofin.domain.repository.BrofinRepository
@@ -26,7 +29,7 @@ import kotlinx.coroutines.flow.map
 
 class BrofinRepositoryImpl(
     private val userBalanceDao: UserBalanceDao,
-    private val financialGoalsDao: FinancialGoalsDao,
+    private val predictDao: PredictDao,
     private val budgetingDiaryDao: BudgetingDiaryDao,
     private val budgetingDao: BudgetingDao,
     private val userProfileDao: UserProfileDao,
@@ -110,10 +113,6 @@ class BrofinRepositoryImpl(
         userProfileDao.insertOrUpdateUserProfile(user)
     }
 
-    override suspend fun deleteFinancialGoal(goalId: Int) {
-        financialGoalsDao.deleteGoalById(goalId)
-    }
-
     override suspend fun logout(): Boolean {
         try {
             userProfileDao.deleteAllUserProfiles()
@@ -141,6 +140,42 @@ class BrofinRepositoryImpl(
 
     override suspend fun insertNoValidation(budgeting: Budgeting) {
         budgetingDao.insertBudget(budgeting.toBudgetingEntity())
+    }
+
+    override fun getAllPredict(): Flow<PredictResponse?> {
+        try {
+           return predictDao.getAllPredict().map {
+               it?.toPredictResponse()
+           }
+        } catch (e: Exception){
+            Log.e(TAG, "Error when get all predict $e")
+            throw e
+        }
+    }
+
+    override suspend fun insertPredict(predict: PredictEntity) {
+        try {
+            predictDao.insertPredict(predict)
+        }catch (e: Exception){
+            Log.e(TAG, "Error when insert Predict $e")
+        }
+    }
+
+    override suspend fun deletePredict(predict: PredictEntity) {
+        try {
+            predictDao.deletePredict(predict)
+        } catch (e: Exception){
+            Log.e(TAG, "Error when delete product $e")
+        }
+    }
+
+    override suspend fun getById(id: String): PredictResponse? {
+        try {
+            return predictDao.getPredictById(id)?.toPredictResponse()
+        } catch (e: Exception){
+            Log.e(TAG, "Error when getByid $e")
+            return null
+        }
     }
 
     override suspend fun insertBudget(budget: Budgeting) {

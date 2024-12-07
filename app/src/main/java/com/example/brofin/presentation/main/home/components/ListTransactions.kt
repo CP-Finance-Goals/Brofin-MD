@@ -2,7 +2,12 @@ package com.example.brofin.presentation.main.home.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -27,27 +32,7 @@ import com.example.brofin.utils.toIndonesianCurrency
 @Composable
 fun ListTransactions(budgetList: List<BudgetingDiary?>, goList: () -> Unit) {
     if (budgetList.isEmpty()) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            shape = MaterialTheme.shapes.medium,
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Kamu belum menambahkan transaksi",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
+       EmptyListTransaction()
     } else {
        Card(
            modifier = Modifier
@@ -98,7 +83,7 @@ fun ListTransactions(budgetList: List<BudgetingDiary?>, goList: () -> Unit) {
            }
            LazyColumn(
                 modifier = Modifier
-                     .fillMaxWidth()
+                    .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.surface,
                     )
