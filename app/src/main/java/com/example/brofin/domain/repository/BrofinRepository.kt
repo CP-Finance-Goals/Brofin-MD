@@ -91,5 +91,5 @@ interface BrofinRepository {
 
     suspend fun deletePredict(predict: PredictEntity)
 
-    suspend fun getById(id: String): PredictResponse
+    suspend fun getById(id: String): PredictResponse?
 }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,10 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.wear.compose.material3.Confirmation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material3.IconButton
 import com.example.brofin.domain.StateApp
 import com.example.brofin.domain.models.PredictResponse
@@ -49,20 +47,35 @@ import com.example.brofin.utils.toIndonesianCurrency2
 
 @Composable
 fun HouseSelected(modifier: Modifier = Modifier, financialViewModel: FinancialViewModel = hiltViewModel()) {
-    val state = financialViewModel.stateFinancial.collectAsStateWithLifecycle().value
 
+    val state = financialViewModel.stateFinancial.collectAsStateWithLifecycle().value
     val inserSelected = financialViewModel.stateInsertAndRemove.collectAsStateWithLifecycle().value
 
     var showLoading by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
-    val context = LocalContext.current
     var showError by remember { mutableStateOf(false) }
     var dataState by remember { mutableStateOf<PredictResponse?>(null) }
-    var showConfirmationSave by remember {
-        mutableStateOf(false)
-    }
-    var insertIsSucces by remember {
-        mutableStateOf(false)
+    var showConfirmationSave by remember { mutableStateOf(false) }
+    var insertIsSucces by remember { mutableStateOf(false) }
+
+    var cityData by remember { mutableStateOf("") }
+    var bedroomsData by remember { mutableIntStateOf(0) }
+    var bathroomsData by remember { mutableIntStateOf(0) }
+    var landSizeM2Data by remember { mutableIntStateOf(0) }
+    var buildingSizeM2Data by remember { mutableIntStateOf(0) }
+    var electricityData by remember { mutableIntStateOf(0) }
+    var maidBedroomsData by remember { mutableIntStateOf(0) }
+    var floorsData by remember { mutableIntStateOf(0) }
+    var targetYearsData by remember { mutableIntStateOf(0) }
+
+    val context = LocalContext.current
+    val toastShown by financialViewModel.toastShown
+
+    LaunchedEffect(dataState) {
+        if (dataState != null && !toastShown) {
+            Toast.makeText(context, "Prediksi berhasil di dapatkan", Toast.LENGTH_SHORT).show()
+            financialViewModel.showToast()
+        }
     }
 
     LaunchedEffect(state) {
@@ -78,10 +91,7 @@ fun HouseSelected(modifier: Modifier = Modifier, financialViewModel: FinancialVi
             }
             is StateApp.Success -> {
                 showLoading = false
-                Toast.makeText(context, "Prediksi berhasil didapatkan", Toast.LENGTH_SHORT).show()
                 dataState = state.data
-                financialViewModel.resetState()
-
             }
             StateApp.Idle -> {
                 showLoading = false
@@ -123,7 +133,7 @@ fun HouseSelected(modifier: Modifier = Modifier, financialViewModel: FinancialVi
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize()
     ) {
-        LoadingDialog(showDialog =      showLoading) {
+        LoadingDialog(showDialog = showLoading) {
             showLoading = false
         }
 
@@ -132,7 +142,18 @@ fun HouseSelected(modifier: Modifier = Modifier, financialViewModel: FinancialVi
            message = "Apakah kamu yakin menyimpan prediksi ini? \nPrediksi ini akan tersimpan di favorite",
            onConfirm = {
                showConfirmationSave = false
-               financialViewModel.insertPredict(dataState!!)
+               financialViewModel.insertPredict(
+                   dataState!!,
+                   city = cityData,
+                   bedrooms = bedroomsData,
+                   bathrooms = bathroomsData,
+                   landSizeM2 = landSizeM2Data,
+                   buildingSizeM2 = buildingSizeM2Data,
+                   electricity = electricityData,
+                   maidBedrooms = maidBedroomsData,
+                   floors = floorsData,
+                   targetYears = targetYearsData,
+               )
        }) {
            showConfirmationSave = false
        }
@@ -161,7 +182,19 @@ fun HouseSelected(modifier: Modifier = Modifier, financialViewModel: FinancialVi
                         .padding(8.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    ContentBox()
+                    ContentBox(
+                        itemtransfer = {city, bedrooms, bathrooms, landSizeM2, buildingSizeM2, electricity, maidBedrooms, floors, targetYears ->
+                            cityData = city
+                            bedroomsData = bedrooms
+                            bathroomsData = bathrooms
+                            landSizeM2Data = landSizeM2
+                            buildingSizeM2Data = buildingSizeM2
+                            electricityData = electricity
+                            maidBedroomsData = maidBedrooms
+                            floorsData = floors
+                            targetYearsData = targetYears
+                        }
+                    )
                 }
             }
 

@@ -277,21 +277,20 @@ class RemoteDataRepositoryImpl @Inject constructor(
     }
 
     override suspend fun predictHouse(predictRequest: RequestBody): PredictResponseDto {
-        return withContext(Dispatchers.Default){
+        return withContext(Dispatchers.Default) {
             try {
-               val response = predictService.predictHouse(predictRequest)
-                if (response.isSuccessful){
-                    if (response.body() != null){
-                        response.body()!!
-                    } else {
-                        throw Exception("Gagal saat mendapatkan data")
-                    }
+                val response = predictService.predictHouse(predictRequest)
+
+                if (response.isSuccessful) {
+                    response.body()?.let { body ->
+                        return@withContext body
+                    } ?: throw Exception("Gagal saat mendapatkan data, response body null")
                 } else {
-                    throw Exception("Error saat prediksi")
+                    throw Exception("Gagal saat prediksi, response gagal dengan status: ${response.code()}")
                 }
-            } catch (e: Exception){
-                Log.e(TAG, "error when predict house")
-                throw Exception("Error saat prediksi")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error when predicting house: ${e.message}")
+                throw Exception("Error saat prediksi: ${e.message}")
             }
         }
     }

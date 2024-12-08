@@ -15,6 +15,7 @@ data class PredictEntity(
     val adjustedPrice: String? = null,
     val cicilanBulanan: String? = null,
     val dp: String? = null,
+    val kota : String? = null,
     val jumlahKamarTidur : Int? = null,
     val jumlahKamarMandi : Int? = null,
     val ukurantanah : Int? = null,

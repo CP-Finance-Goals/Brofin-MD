@@ -1,6 +1,8 @@
 package com.example.brofin.presentation.main.financials
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.brofin.data.mapper.toPredictEntity
@@ -51,6 +53,15 @@ class FinancialViewModel @Inject constructor(
     private val _gadgetState = MutableStateFlow<StateApp<List<GadgetRecommendation?>>>(StateApp.Idle)
     val gadgetState = _gadgetState.asStateFlow()
 
+    private var _toastShown = mutableStateOf(false)
+    val toastShown: State<Boolean> get() = _toastShown
+
+    fun showToast() {
+        if (!_toastShown.value) {
+            _toastShown.value = true
+        }
+    }
+
 
     fun predict(
         city: String,
@@ -87,6 +98,7 @@ class FinancialViewModel @Inject constructor(
 
                 Log.d(TAG, "predict: $response")
                 _stateFinancial.value = StateApp.Success(response.toPredictResponse())
+                _toastShown = mutableStateOf(false)
             } catch (e: Exception) {
                 Log.e("FinancialViewModel", "predict: ${e.message}")
                 _stateFinancial.value = StateApp.Error("Kesalahan tidak terduga saat memprediksi harga rumah")
@@ -94,7 +106,18 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
-    fun insertPredict(predict: PredictResponse){
+    fun insertPredict(
+        predict: PredictResponse,
+        city: String,
+        bedrooms: Int,
+        bathrooms: Int,
+        landSizeM2: Int,
+        buildingSizeM2: Int,
+        electricity: Int,
+        maidBedrooms: Int,
+        floors: Int,
+        targetYears: Int
+    ){
         viewModelScope.launch {
             _stateInsertAndRemove.value = StateApp.Loading
             try {
@@ -102,7 +125,20 @@ class FinancialViewModel @Inject constructor(
                     id = generateUniqueId(),
                     datePredict = System.currentTimeMillis()
                 )
-                brofinRepository.insertPredict(data.toPredictEntity())
+
+                val predictFinal = data.toPredictEntity().copy(
+                    jumlahKamarTidur = bedrooms,
+                    jumlahLantai = floors,
+                    jumlahKamarMandi = bathrooms,
+                    jumlahKamarPembantu = maidBedrooms,
+                    kota = city,
+                    ukuranbangunan = buildingSizeM2,
+                    dayaListrik = electricity,
+                    ukurantanah = landSizeM2,
+                    tahunTarget = targetYears,
+                )
+
+                brofinRepository.insertPredict(predictFinal)
                 _stateInsertAndRemove.value = StateApp.Success(data)
             } catch (e: Exception){
                 Log.d(TAG, "insertPredict: $e")

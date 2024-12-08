@@ -31,7 +31,18 @@ import com.example.brofin.presentation.main.financials.FinancialViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentBox(
-    financialViewModel: FinancialViewModel = hiltViewModel()
+    financialViewModel: FinancialViewModel = hiltViewModel(),
+    itemtransfer: (
+        city: String,
+        bedrooms: Int,
+        bathrooms: Int,
+        landSizeM2: Int,
+        buildingSizeM2: Int,
+        electricity: Int,
+        maidBedrooms: Int,
+        floors: Int,
+        targetYears: Int
+    ) -> Unit
 ) {
 
     var isDialogOpen by remember { mutableStateOf(false) }
@@ -59,8 +70,7 @@ fun ContentBox(
         "Jumlah kamar pembantu",
         "Jumlah Lantai",
         "Tahun Target"
-    )
-    }
+    )}
 
     val combinedList = listNamaItem.zip(listItems) { namaItem, itemValue ->
         Pair(namaItem, itemValue)
@@ -149,34 +159,34 @@ fun ContentBox(
         }
 
         PredictButton {
-//                if (validate() && selectedOptionText != "Pilih kota dari rumah tujuan anda") {
-//                    val listInt = listItems.map { it.toInt() }
-//                    financialViewModel.predict(
-//                        city = selectedOptionText,
-//                        bedrooms = listInt[0],
-//                        bathrooms = listInt[1],
-//                        landSizeM2 = listInt[2],
-//                        buildingSizeM2 = listInt[3],
-//                        electricity = listInt[4],
-//                        maidBedrooms = listInt[5],
-//                        floors = listInt[6],
-//                        targetYears = listInt[7]
-//                    )
-//                } else {
-//                    errorDialogConfirmation = true
-//                }
+            if (validate() && selectedOptionText != "Pilih kota dari rumah tujuan anda") {
+                val listInt = listItems.map { it.toInt() }
+                financialViewModel.predict(
+                    city = selectedOptionText,
+                    bedrooms = listInt[0],
+                    bathrooms = listInt[1],
+                    landSizeM2 = listInt[2],
+                    buildingSizeM2 = listInt[3],
+                    electricity = listInt[4],
+                    maidBedrooms = listInt[5],
+                    floors = listInt[6],
+                    targetYears = listInt[7]
+                )
 
-            financialViewModel.predict(
-                city = "Bekasi",
-                bedrooms = 2,
-                bathrooms = 1,
-                landSizeM2 = 120,
-                buildingSizeM2 = 100,
-                electricity = 1200,
-                maidBedrooms = 1,
-                floors = 1,
-                targetYears = 5
-            )
+                itemtransfer(
+                    selectedOptionText,
+                    listInt[0],
+                    listInt[1],
+                    listInt[2],
+                    listInt[3],
+                    listInt[4],
+                    listInt[5],
+                    listInt[6],
+                    listInt[7]
+                )
+            } else {
+                errorDialogConfirmation = true
+            }
         }
     }
 
@@ -211,8 +221,32 @@ fun ContentBox(
                     listItems[selectedItemIndex] = it.toString()
                 }
             }
+            2 -> {
+                OpenTextDialogV3(
+                    textFieldValue = editedText,
+                    onTextChange = { editedText = it },
+                    label = listNamaItem[selectedItemIndex],
+                    onDismiss = {
+                        isDialogOpen = false
+                    }) {
+                    isDialogOpen = false
+                    listItems[selectedItemIndex] = editedText
+                }
+            }
+            3 -> {
+                OpenTextDialogV3(
+                    textFieldValue = editedText,
+                    onTextChange = { editedText = it },
+                    label = listNamaItem[selectedItemIndex],
+                    onDismiss = {
+                        isDialogOpen = false
+                    }) {
+                    isDialogOpen = false
+                    listItems[selectedItemIndex] = editedText
+                }
+            }
             else -> {
-                OpenTextDialog(
+                OpenTextDialogXX(
                     textFieldValue = editedText,
                     onTextChange = { editedText = it },
                     label = listNamaItem[selectedItemIndex],

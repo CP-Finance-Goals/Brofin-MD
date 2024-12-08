@@ -134,7 +134,7 @@ fun OpenTextDialog(
 ) {
     var isError by remember { mutableStateOf(false) }
     fun formatCurrency(value: String): String {
-        val cleanValue = value.replace(",", "") // Menghapus koma
+        val cleanValue = value.replace(",", "")
         return cleanValue.toDoubleOrNull()?.toIndonesianCurrency2() ?: ""
     }
 
@@ -209,6 +209,172 @@ fun OpenTextDialog(
         }
     )
 }
+
+
+@Composable
+fun OpenTextDialogXX(
+    label: String,
+    textFieldValue: String,
+    onTextChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var isError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(textFieldValue) {
+        isError = when {
+            textFieldValue.isEmpty() -> true
+            textFieldValue == "0" -> true
+            textFieldValue.toDoubleOrNull() == null -> true
+            textFieldValue.toDouble() < 0 -> true
+            else -> false
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Masukkan Data") },
+        text = {
+            Column {
+                CustomTextFieldTwo(
+                    label = label,
+                    text = if (textFieldValue == "0") "" else textFieldValue,
+                    onTextChange = { input ->
+                        onTextChange(input)
+                    },
+                    validate = {
+                        when {
+                            it.isEmpty() -> "Jumlah tidak boleh kosong"
+                            it.toDoubleOrNull() == null -> "Jumlah harus berupa angka"
+                            it.toDouble() < 0 -> "Jumlah tidak boleh kurang dari 0"
+                            else -> ""
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    when {
+                        textFieldValue.isEmpty() -> {
+                            isError = false
+                        }
+
+                        else -> {
+                            isError = false
+                            onConfirm(textFieldValue)
+                        }
+                    }
+                },
+                enabled = !isError
+            ) {
+                Text("Simpan", style = MaterialTheme.typography.bodyMedium)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Batal", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    )
+}
+
+@Composable
+fun OpenTextDialogV3(
+    label: String,
+    textFieldValue: String,
+    onTextChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var isError by remember { mutableStateOf(false) }
+
+    fun convertToSquareMeter(value: String): String {
+        val cleanValue = value.replace(",", "")
+        return cleanValue.toDoubleOrNull()?.let {
+            it.toString()
+        } ?: ""
+    }
+
+    var formatedData by remember {
+        mutableStateOf(convertToSquareMeter(textFieldValue))
+    }
+
+
+    LaunchedEffect(textFieldValue) {
+        isError = when {
+            textFieldValue.isEmpty() -> true
+            textFieldValue == "0" -> true
+            textFieldValue.toDoubleOrNull() == null -> true
+            textFieldValue.toDouble() < 0 -> true
+            else -> false
+        }
+
+        formatedData = convertToSquareMeter(textFieldValue)
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Masukkan Data") },
+        text = {
+            Column {
+                Text(text = "Data yang Anda masukkan: $formatedData m", style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.padding(8.dp))
+                CustomTextFieldTwo(
+                    label = label,
+                    text = if (textFieldValue == "0") "" else textFieldValue,
+                    onTextChange = { input ->
+                        val newText = if (input.count { it == '.' } <= 1) input else textFieldValue
+                        onTextChange(newText)
+                    },
+                    validate = {
+                        when {
+                            it.isEmpty() -> "Jumlah tidak boleh kosong"
+                            it.toDoubleOrNull() == null -> "Jumlah harus berupa angka"
+                            it.toDouble() < 0 -> "Jumlah tidak boleh kurang dari 0"
+                            else -> ""
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    when {
+                        textFieldValue.isEmpty() -> {
+                            isError = false
+                        }
+                        else -> {
+                            isError = false
+                            onConfirm(textFieldValue)
+                        }
+                    }
+                },
+                enabled = !isError
+            ) {
+                Text("Simpan", style = MaterialTheme.typography.bodyMedium)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Batal", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    )
+}
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
