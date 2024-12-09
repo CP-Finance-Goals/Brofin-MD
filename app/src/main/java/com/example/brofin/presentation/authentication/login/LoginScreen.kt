@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.brofin.R
 import com.example.brofin.presentation.authentication.AuthViewModel
 import com.example.brofin.presentation.authentication.components.CustomTextField
 import com.example.brofin.presentation.authentication.components.IdentifierTextField
@@ -53,6 +54,7 @@ import com.example.brofin.presentation.authentication.components.LottieAnimation
 import com.example.brofin.presentation.authentication.state.AuthState
 import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.components.NetworkErrorDialog
+import com.example.brofin.presentation.splash.ImageFromSideAnimation
 
 import kotlin.text.isBlank
 import kotlin.text.isNotBlank
@@ -160,22 +162,22 @@ fun LoginScreen(
                 LottieAnimationTwo()
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = (-90).dp)
-                    .size(400.dp)
-            ) {
-                LottieAnimationOnce()
-            }
-
             Column(
                 modifier = modifier
                     .fillMaxSize()
                     .verticalScroll(stateScroll)
                     .padding(horizontal = 25.dp)
             ) {
-                Spacer(modifier = Modifier.height(220.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(180.dp)
+                ){
+                    ImageFromSideAnimation(R.drawable.brofin)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
                     modifier = Modifier
@@ -303,6 +305,8 @@ fun LoginScreen(
                         showSnackbar = false
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

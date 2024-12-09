@@ -135,6 +135,9 @@ fun BudgetScreen(
                         limit = listBudget[index] ?: 0.0
                     )
                 }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }

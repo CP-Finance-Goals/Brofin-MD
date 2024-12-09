@@ -144,7 +144,9 @@ fun RegisterScreen(
     NetworkErrorDialog(
         showDialog = showErrorDialog,
         message = message,
-    ) { }
+    ) {
+        showErrorDialog = false
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -375,6 +377,8 @@ fun RegisterScreen(
                         showSnackbar = false
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
             }
         }

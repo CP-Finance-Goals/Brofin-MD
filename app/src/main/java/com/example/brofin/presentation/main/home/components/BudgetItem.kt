@@ -15,16 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.brofin.ui.theme.BrofinTheme
+
 
 @Composable
-fun BudgetItem(label: String, amount: String, color: Color) {
+fun BudgetItem(label: String, amount: String, color: Color, modifier: Modifier = Modifier) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = color
         ),
-        border = BorderStroke(1.dp, Color.Black)
+        border = BorderStroke(1.dp, Color.Black),
+        modifier = modifier
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -32,7 +36,6 @@ fun BudgetItem(label: String, amount: String, color: Color) {
             modifier = Modifier
                 .padding(4.dp)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
-
         ) {
             Text(
                 text = label,
@@ -41,13 +44,25 @@ fun BudgetItem(label: String, amount: String, color: Color) {
             )
             Text(
                 text = amount,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimary,
                 maxLines = 1,
                 fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Ellipsis
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ShowItem() {
+    BrofinTheme {
+        BudgetItem(
+            label = "Income",
+            amount = "100,000",
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 

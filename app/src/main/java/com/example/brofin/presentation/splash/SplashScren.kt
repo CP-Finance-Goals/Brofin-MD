@@ -3,6 +3,7 @@ package com.example.brofin.presentation.splash
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +20,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.airbnb.lottie.compose.LottieConstants
-import com.example.brofin.presentation.authentication.components.LottieAnimationOnce
-import com.example.brofin.utils.AppFonts
+import com.example.brofin.R
 import kotlinx.coroutines.delay
 
 @Composable
@@ -59,7 +61,13 @@ fun SplashScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            // Tampilan utama SplashScreen
+            Image(
+                painter = painterResource(R.drawable.background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center
+            )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -67,7 +75,7 @@ fun SplashScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                LottieAnimationOnce(iterarion = LottieConstants.IterateForever)
+               ImageFromSideAnimation(R.drawable.brofin)
             }
 
             Column(
@@ -80,7 +88,6 @@ fun SplashScreen(
                 SlidingText(text = "Brofin\nBudgeting and Financial App")
             }
 
-            // Tampilkan indikator loading jika state belum siap
             if (uiState.isUserLoggedIn == null || uiState.userBalanceExist == null) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -88,7 +95,6 @@ fun SplashScreen(
                 )
             }
 
-            // Tampilkan pesan error jika ada
             uiState.errorMessage?.let { errorMessage ->
                 Text(
                     text = errorMessage,
@@ -116,9 +122,34 @@ fun SlidingText(text: String) {
 
     Text(
         text = text,
-        style = AppFonts.headlineMedium,
+        style = MaterialTheme.typography.headlineMedium,
+        color = Color.White,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .offset { IntOffset(offsetX.value.toInt(), 0) }
     )
+}
+
+@Composable
+fun ImageFromSideAnimation(imageRes: Int) {
+    val offsetX = remember { Animatable(500f) }
+
+    LaunchedEffect(Unit) {
+        offsetX.animateTo(
+            targetValue = 0f,
+            animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
+        )
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(imageRes),
+            contentDescription = null,
+            modifier = Modifier
+                .offset(x = offsetX.value.dp)
+        )
+    }
 }

@@ -82,7 +82,6 @@ fun CameraScreen(
 
             }
         }
-
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current

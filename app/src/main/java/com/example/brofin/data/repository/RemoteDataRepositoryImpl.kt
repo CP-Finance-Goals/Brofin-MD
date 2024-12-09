@@ -56,13 +56,13 @@ class RemoteDataRepositoryImpl @Inject constructor(
                     if (response.body() != null){
                         response.body()!!
                     } else {
-                        throw Exception("Error saat mengambil data")
+                        throw Exception("Terjadi kesalahan yang tidak terduga!")
                     }
                 } else {
-                    throw Exception("Error saat register")
+                    throw Exception("Pendaftaran gagal email kamu sudah di gunakan!")
                 }
             } catch (e: Exception){
-                Log.e(TAG, "error when register")
+                Log.e(TAG, "error when register $e")
                 throw e
             }
         }
@@ -83,11 +83,11 @@ class RemoteDataRepositoryImpl @Inject constructor(
                         throw Exception("login gagal terjadi kesalahan dalam server aplikasi")
                     }
                 } else {
-                    throw Exception("Terjadi kesalahan saat login mohon cek koneksi internet anda")
+                    throw Exception("Login gagal cek kembali email dan password kamu")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "error when login")
-                throw Exception("Terjadi kesalahan yang tidak terduga mohon coba lagi nanti")
+                Log.e(TAG, "error when login $e")
+                throw e
             }
         }
     }

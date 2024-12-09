@@ -287,9 +287,9 @@ fun BudgetHeader(balance: String, income: String, outcome: String, savings: Stri
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                BudgetItem("Pendapatan", income, Color(0xFF66BB6A))
-                BudgetItem("Pengeluaran", outcome, Color(0xFFEF5350))
-                BudgetItem("Tabungan", savings, Color(0xFF455A80))
+                BudgetItem("Pendapatan", income, Color(0xFF66BB6A), Modifier.weight(1f))
+                BudgetItem("Pengeluaran", outcome, Color(0xFFEF5350), Modifier.weight(1f))
+                BudgetItem("Tabungan", savings, Color(0xFF455A80), Modifier.weight(1f))
             }
         }
     }

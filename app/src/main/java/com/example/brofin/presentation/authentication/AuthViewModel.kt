@@ -111,7 +111,7 @@ class AuthViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "registerWithEmail: ${e.message}")
-                _authState.value = AuthState.Error("Registrasi gagal, silahkan cek internet anda. atau mungkin email sudah terdaftar")
+                _authState.value = AuthState.Error(e.message)
             }
         }
     }
