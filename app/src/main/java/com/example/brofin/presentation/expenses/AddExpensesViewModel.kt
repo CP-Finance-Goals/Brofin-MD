@@ -229,63 +229,7 @@ class AddExpensesViewModel @Inject constructor(
                 _addState.value = StateApp.Error("Kamu belum memasukan pendapatan bulan ini pada halaman home.")
             }
 
-//            try {
-//                val responsetwo = remoteDataRepository.editbalance(
-//                    monthAndYear = getCurrentMonthAndYearAsLong(),
-//                    amount = userBalance?.balance!!,
-//                    currentBalance = updateBalance
-//                )
-//                if(responsetwo.data != null){
-//                    brofinRepository.insertUserBalance(
-//                        UserBalance(
-//                            monthAndYear = getCurrentMon`thAndYearAsLong(),
-//                            balance = userBalance.balance,
-//                            currentBalance = updateBalance
-//                        )
-//                    )
-//                } else {
-//                    _addState.value = StateApp.Error("Gagal mengupdate uang bulanan kamu")
-//                }
-//            } catch (
-//                e: Exception
-//            ) {
-//                Log.e("AddExpensesViewModel", "Insert Error:", e)
-//                _addState.value = StateApp.Error("Terjadi kesalahan saat mengupdate saldo")
-//            }
-
             try {
-//                val monthAndYearData = getCurrentMonthAndYearAsLong().toString().toRequestBody("text/plain".toMediaTypeOrNull())
-//                val dateData = date.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-//                val descriptionData = description?.toRequestBody("text/plain".toMediaTypeOrNull())
-//                val amountData = amount.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-//                val categoryIdData = categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-//                val photoData = preparePhotoPart(photoUri, contentResolver, context)
-//
-//                val response = remoteDataRepository.addBudgetingDiary(
-//                    monthAndYear = monthAndYearData,
-//                    date = dateData,
-//                    description = descriptionData,
-//                    amount = amountData,
-//                    categoryId = categoryIdData,
-//                    photo = photoData
-//                )
-//
-//                if (response.message == ReponseUtils.ADD_DIARY_SUCCES){
-//                    brofinRepository.insertBudgetingDiaryEntry(
-//                        BudgetingDiary(
-//                            date = date,
-//                            description = description,
-//                            amount = amount,
-//                            categoryId = categoryId,
-//                            photoUrl = response.photoUrl,
-//                            monthAndYear = getCurrentMonthAndYearAsLong(),
-//                        ),
-//                    )
-//                    _addState.value = StateApp.Success(true)
-//                } else {
-//                    _addState.value = StateApp.Error("Gagal menambahkan data")
-//                }
-
 
                 val response = remoteDataRepository.addExpenses(
                     monthAndYear = getCurrentMonthAndYearAsLong().toString().toRequestBody("text/plain".toMediaTypeOrNull()),

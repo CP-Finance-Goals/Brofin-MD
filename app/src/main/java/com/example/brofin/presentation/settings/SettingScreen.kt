@@ -28,6 +28,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.brofin.data.local.datastore.utils.UserPreferences
+import com.example.brofin.domain.StateApp
+import com.example.brofin.presentation.components.LoadingDialog
 import com.example.brofin.presentation.detail.components.ImageWithLoadingIndicator
 import com.example.brofin.presentation.main.financials.components.OpenTextDialog
 
@@ -55,8 +58,35 @@ fun SettingScreen(
     var showConfirmationDialog by remember {
         mutableStateOf(false)
     }
-
     val context = LocalContext.current
+
+    var showLoading by remember {
+        mutableStateOf(false)
+    }
+
+    val updateTabungan = settingViewModel.updateProfile.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(updateTabungan) {
+        when (updateTabungan) {
+            is StateApp.Success -> {
+                Toast.makeText(context, "Tabungan berhasil diperbaharui", Toast.LENGTH_SHORT).show()
+                settingViewModel.resetState()
+                showLoading = false
+            }
+            is StateApp.Error -> {
+                Toast.makeText(context, "Gagal memperbaharui tabungan", Toast.LENGTH_SHORT).show()
+                settingViewModel.resetState()
+                showLoading = false
+            }
+            is StateApp.Loading -> {
+                showLoading = true
+            }
+            else -> {
+                showLoading = false
+            }
+        }
+    }
+
 
     var showEditTabunganDialog by remember {
         mutableStateOf(false)
@@ -83,6 +113,11 @@ fun SettingScreen(
             )
         }
 
+        LoadingDialog(showLoading) {
+            showLoading = false
+            settingViewModel.resetState()
+        }
+
         if (showEditTabunganDialog) {
             OpenTextDialog(
                 label = "Tabungan",
@@ -92,7 +127,16 @@ fun SettingScreen(
                     showEditTabunganDialog = false
                 }
             ) {
-                Toast.makeText(context, "Fitur ini masih dalam pengembangan masbro", Toast.LENGTH_SHORT).show()
+                if (it.isEmpty()) {
+                    Toast.makeText(context, "Tabungan tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                    return@OpenTextDialog
+                }
+                if (it.toDouble() < 0) {
+                    Toast.makeText(context, "Tabungan tidak boleh negatif", Toast.LENGTH_SHORT).show()
+                    return@OpenTextDialog
+                }
+
+                settingViewModel.updateSaving(it.toDouble())
                 showEditTabunganDialog = false
             }
         }

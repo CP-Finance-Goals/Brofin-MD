@@ -9,6 +9,7 @@ data class Predict (
     val maxAffordablePrice: String? = null,
     val adjustedPrice: String? = null,
     val cicilanBulanan: String? = null,
+    val kota: String? = null,
     val dp: String? = null,
     val jumlahKamarTidur : Int? = null,
     val jumlahKamarMandi : Int? = null,

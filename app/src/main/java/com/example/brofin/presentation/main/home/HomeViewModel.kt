@@ -1,5 +1,6 @@
 package com.example.brofin.presentation.main.home
 
+import android.net.http.HttpException
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -98,12 +99,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun inserBudgetingWithNewAPI(userBalance: UserBalance) {
+    fun insertBudgetingWithNewAPI(userBalance: UserBalance) {
         _state.value = StateApp.Loading
         viewModelScope.launch {
             Log.d(TAG, "Insert User Balance: $userBalance")
             try {
-
                 val userData = brofinRepository.getUserProfile()
 
                 if (userData == null) {
@@ -112,18 +112,18 @@ class HomeViewModel @Inject constructor(
                 }
 
                 val currentSavings = userData.savings ?: 0.0
-                val updatedsavings = currentSavings.plus((userBalance.balance!!.times(0.2)))
+                val updatedSavings = currentSavings.plus((userBalance.balance!! * 0.2))
 
                 val response = remoteDataRepository.setupBudgeting(
                     monthAndYear = userBalance.monthAndYear.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     total = userBalance.balance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                    essentialNeedsLimit = (userBalance.balance.times(0.5)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                    wantsLimit = (userBalance.balance.times(0.3)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    essentialNeedsLimit = (userBalance.balance * 0.5).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    wantsLimit = (userBalance.balance * 0.3).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     balance = userBalance.balance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     currentBalance = userBalance.currentBalance.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     isReminder = "false".toRequestBody("text/plain".toMediaTypeOrNull()),
-                    savingsLimit = (userBalance.balance.times(0.2)).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                    savings = updatedsavings.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    savingsLimit = (userBalance.balance * 0.2).toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                    savings = updatedSavings.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     dob = userData.dob?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: "No data".toRequestBody("text/plain".toMediaTypeOrNull()),
                     username = userData.name?.toRequestBody("text/plain".toMediaTypeOrNull()) ?: " ".toRequestBody("text/plain".toMediaTypeOrNull()),
                     image = preparePhotoPart(null)
@@ -132,14 +132,14 @@ class HomeViewModel @Inject constructor(
                 when (response.message) {
                     ReponseUtils.ADD_USER_BALANCE_SUCCESS -> {
                         brofinRepository.insertUserBalance(userBalance)
-                        brofinRepository.insertOrUpdateUserProfile(userData.copy(savings = updatedsavings))
+                        brofinRepository.insertOrUpdateUserProfile(userData.copy(savings = updatedSavings))
                         brofinRepository.insertBudget(
                             Budgeting(
                                 monthAndYear = userBalance.monthAndYear,
                                 total = userBalance.balance,
-                                essentialNeedsLimit = userBalance.balance.times(0.5),
-                                wantsLimit = userBalance.balance.times(0.3),
-                                savingsLimit = userBalance.balance.times(0.2),
+                                essentialNeedsLimit = userBalance.balance * 0.5,
+                                wantsLimit = userBalance.balance * 0.3,
+                                savingsLimit = userBalance.balance * 0.2
                             )
                         )
                         _state.value = StateApp.Success(true)
@@ -155,13 +155,15 @@ class HomeViewModel @Inject constructor(
                     }
                 }
 
-            } catch (e: Exception) {
+            }
+
+            catch (e: Exception) {
                 Log.e(TAG, "Error on saving user balance data", e)
                 _state.value = StateApp.Error("Error ketika menyimpan data uang pengguna")
             }
         }
-
     }
+
 
     private fun preparePhotoPart(photoFile: File?): MultipartBody.Part? {
         return photoFile?.let {
@@ -210,6 +212,10 @@ class HomeViewModel @Inject constructor(
             _state.value = StateApp.Error("Error ketika memperbarui profil: ${e.message}")
             Log.e("Profile Update", "Error updating profile: ${e.message}")
         }
+    }
+
+    fun resetStat() {
+        _state.value = StateApp.Idle
     }
 
 

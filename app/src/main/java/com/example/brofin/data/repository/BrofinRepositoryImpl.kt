@@ -14,11 +14,13 @@ import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.data.mapper.toBudgetingDiary
 import com.example.brofin.data.mapper.toBudgetingDiaryEntity
 import com.example.brofin.data.mapper.toBudgetingEntity
+import com.example.brofin.data.mapper.toPredict
 import com.example.brofin.data.mapper.toPredictResponse
 import com.example.brofin.data.mapper.toUserBalanceEntity
 import com.example.brofin.data.mapper.toUserProfile
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.domain.models.Predict
 import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
@@ -142,10 +144,12 @@ class BrofinRepositoryImpl(
         budgetingDao.insertBudget(budgeting.toBudgetingEntity())
     }
 
-    override fun getAllPredict(): Flow<PredictResponse?> {
+    override fun getAllPredict(): Flow<List<Predict>?> {
         try {
-           return predictDao.getAllPredict().map {
-               it?.toPredictResponse()
+           return predictDao.getAllPredict().map { listEntity ->
+               listEntity?.map {
+                     it.toPredict()
+               }
            }
         } catch (e: Exception){
             Log.e(TAG, "Error when get all predict $e")

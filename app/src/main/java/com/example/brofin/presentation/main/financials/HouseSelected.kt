@@ -205,14 +205,12 @@ fun HouseSelected(modifier: Modifier = Modifier, financialViewModel: FinancialVi
                 )
             }
 
-            item { Spacer(modifier = Modifier.height(8.dp)) }
 
             if (dataState != null) {
                 item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
                     ) {
                         Card(
                             modifier = Modifier

@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,9 +24,6 @@ fun BudgetItem(label: String, amount: String, color: Color) {
         colors = CardDefaults.cardColors(
             containerColor = color
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
         border = BorderStroke(1.dp, Color.Black)
     ) {
         Column(
@@ -36,7 +32,6 @@ fun BudgetItem(label: String, amount: String, color: Color) {
             modifier = Modifier
                 .padding(4.dp)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
-                .width(100.dp)
 
         ) {
             Text(
@@ -55,3 +50,5 @@ fun BudgetItem(label: String, amount: String, color: Color) {
         }
     }
 }
+
+

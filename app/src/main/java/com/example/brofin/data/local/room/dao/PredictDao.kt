@@ -25,7 +25,7 @@ interface PredictDao {
     suspend fun deletePredict(predict: PredictEntity)
 
     @Query("SELECT * FROM predictTable")
-    fun getAllPredict(): Flow<PredictEntity?>
+    fun getAllPredict(): Flow<List<PredictEntity>?>
 
     @Query("SELECT * FROM predictTable WHERE id = :id")
     suspend fun getPredictById(id: String): PredictEntity?

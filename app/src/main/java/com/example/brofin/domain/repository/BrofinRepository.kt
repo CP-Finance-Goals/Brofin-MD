@@ -7,6 +7,7 @@ import com.example.brofin.data.local.room.entity.UserBalanceEntity
 import com.example.brofin.data.local.room.entity.UserProfileEntity
 import com.example.brofin.domain.models.Budgeting
 import com.example.brofin.domain.models.BudgetingDiary
+import com.example.brofin.domain.models.Predict
 import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.models.UserBalance
 import com.example.brofin.domain.models.UserProfile
@@ -85,7 +86,7 @@ interface BrofinRepository {
 
     suspend fun insertNoValidation(budgeting: Budgeting)
 
-    fun getAllPredict(): Flow<PredictResponse?>
+    fun getAllPredict(): Flow<List<Predict>?>
 
     suspend fun insertPredict(predict: PredictEntity)
 

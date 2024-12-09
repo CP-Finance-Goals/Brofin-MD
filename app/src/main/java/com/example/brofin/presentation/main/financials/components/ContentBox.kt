@@ -55,7 +55,6 @@ fun ContentBox(
     val listItems = remember { mutableStateListOf(
         "0", "0", "0", "0", "0", "0", "0", "0"
     ) }
-
     val context = LocalContext.current
     fun validate(): Boolean {
         return listItems.all { it.isNotEmpty()}
@@ -75,7 +74,6 @@ fun ContentBox(
     val combinedList = listNamaItem.zip(listItems) { namaItem, itemValue ->
         Pair(namaItem, itemValue)
     }
-
 
     ErrorDialog(showDialog = errorDialogConfirmation, message = "Pastikan semua data telah terisi dengan benar!") {
         errorDialogConfirmation = false
@@ -143,7 +141,11 @@ fun ContentBox(
                 Column(
                     modifier = Modifier.weight(0.6f)
                 ) {
-                    RowItem(pair.second)
+                    if (index == 7){
+                        RowItem("${pair.second} tahun mendatang")
+                    } else {
+                        RowItem(pair.second)
+                    }
                 }
 
                 Column(

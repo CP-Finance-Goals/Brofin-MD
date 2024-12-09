@@ -13,6 +13,7 @@ import com.example.brofin.domain.models.GameRecommendation
 import com.example.brofin.domain.models.LuxuryRecommendation
 import com.example.brofin.domain.models.MobilRecommendation
 import com.example.brofin.domain.models.MotorRecommendation
+import com.example.brofin.domain.models.Predict
 import com.example.brofin.domain.models.PredictResponse
 import com.example.brofin.domain.repository.BrofinRepository
 import com.example.brofin.domain.repository.RemoteDataRepository
@@ -21,6 +22,7 @@ import com.example.brofin.utils.generateUniqueId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -31,6 +33,9 @@ class FinancialViewModel @Inject constructor(
     private val remoteDataRepository: RemoteDataRepository,
     private val brofinRepository: BrofinRepository
 ): ViewModel() {
+
+    private val _statePredict = MutableStateFlow<List<Predict?>>(emptyList())
+    val statePredict = _statePredict.asStateFlow()
 
     private val _stateFinancial = MutableStateFlow<StateApp<PredictResponse>>(StateApp.Idle)
     val stateFinancial = _stateFinancial.asStateFlow()
@@ -56,9 +61,24 @@ class FinancialViewModel @Inject constructor(
     private var _toastShown = mutableStateOf(false)
     val toastShown: State<Boolean> get() = _toastShown
 
+    init {
+        getAllPredict()
+    }
+
     fun showToast() {
         if (!_toastShown.value) {
             _toastShown.value = true
+        }
+    }
+
+    private fun getAllPredict(){
+        viewModelScope.launch {
+            brofinRepository.getAllPredict().catch { e ->
+                Log.e(TAG, "getAllPredict: ${e.message}")
+                _statePredict.value = emptyList()
+            }.collect { data ->
+                _statePredict.value = data ?: emptyList()
+            }
         }
     }
 
@@ -147,12 +167,12 @@ class FinancialViewModel @Inject constructor(
         }
     }
 
-    fun deletePredict(predict: PredictResponse){
+    fun deletePredict(predict: Predict){
         viewModelScope.launch {
             try {
                 brofinRepository.deletePredict(predict.toPredictEntity())
                 StateApp.Success(null)
-            } catch (e: Exception){
+            } catch (_: Exception){
                 Log.e(TAG,"Error saat menghapus prediksi")
             }
         }

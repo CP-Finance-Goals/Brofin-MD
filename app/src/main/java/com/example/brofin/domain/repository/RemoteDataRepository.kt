@@ -5,13 +5,8 @@ import com.example.brofin.data.remote.dto.AddExpensesResponseDto
 import com.example.brofin.data.remote.dto.AddOrUpateBudgetingResponseDto
 import com.example.brofin.data.remote.dto.AddUserBalanceResponseDto
 import com.example.brofin.data.remote.dto.EditProfileResponseDto
-import com.example.brofin.data.remote.dto.GadgetResponseDto
-import com.example.brofin.data.remote.dto.GameResponseDto
 import com.example.brofin.data.remote.dto.GetAllDataResponseDto
 import com.example.brofin.data.remote.dto.LoginResponseDto
-import com.example.brofin.data.remote.dto.LuxuryResponseDto
-import com.example.brofin.data.remote.dto.MobilResponseDto
-import com.example.brofin.data.remote.dto.MotorResponseDto
 import com.example.brofin.data.remote.dto.PredictResponseDto
 import com.example.brofin.data.remote.dto.RegisterResponseDto
 import com.example.brofin.data.remote.dto.SetupBudgeingResponseDto

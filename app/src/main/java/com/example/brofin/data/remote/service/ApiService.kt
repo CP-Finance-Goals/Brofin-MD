@@ -106,7 +106,7 @@ interface ApiService {
         @Part("savings") savings: RequestBody,
         @Part("dob") dob: RequestBody,
         @Part("username") username: RequestBody,
-        @Part image: MultipartBody.Part? = null
+        @Part image: MultipartBody.Part?
     ): SetupBudgeingResponseDto
 
     @Multipart

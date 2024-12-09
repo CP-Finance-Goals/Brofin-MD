@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,77 +30,80 @@ import com.example.brofin.utils.toIndonesianCurrency
 @Composable
 fun ListTransactions(budgetList: List<BudgetingDiary?>, goList: () -> Unit) {
     if (budgetList.isEmpty()) {
-       EmptyListTransaction()
+        EmptyListTransaction()
     } else {
-       Card(
-           modifier = Modifier
-               .fillMaxWidth()
-               .padding(vertical = 4.dp),
-           shape = MaterialTheme.shapes.large,
-           elevation = CardDefaults.cardElevation(
-               defaultElevation = 6.dp
-           )
-       ) {
-           Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-           ) {
-               Text(
-                   text = "Transaksi Terakhir",
-                   style = MaterialTheme.typography.bodyMedium,
-                   color = MaterialTheme.colorScheme.onSecondary,
-                   fontWeight = FontWeight.Bold,
-                   modifier = Modifier.padding(16.dp),
-               )
-
-               Button(
-                   onClick = {
-                          goList()
-                   },
-                   modifier = Modifier
-                       .padding(horizontal = 16.dp)
-                       .align(Alignment.CenterVertically),
-                   colors = ButtonDefaults.buttonColors(
-                       containerColor = MaterialTheme.colorScheme.primary,
-                   ),
-                   border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary)
-               ) {
-                   Text(
-                       text = "Lihat semua",
-                       style = MaterialTheme.typography.bodySmall,
-                       fontWeight = FontWeight.Bold,
-                          color = MaterialTheme.colorScheme.onPrimary
-                   )
-               }
-           }
-           LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            shape = MaterialTheme.shapes.large,
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            )
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Transaksi Terakhir",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(16.dp),
                     )
-           ) {
-                items(budgetList.take(3)) { budgetingDiary ->
-                     if (budgetingDiary != null) {
-                          DiaryItem(budgetingDiary = budgetingDiary)
-                          if (budgetList.indexOf(budgetingDiary) != budgetList.size - 1) {
-                              HorizontalDivider(
-                                  modifier = Modifier.padding(horizontal = 16.dp),
-                                  color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                              )
-                          }
-                     }
+
+                    Button(
+                        onClick = {
+                            goList()
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.CenterVertically),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary)
+                    ) {
+                        Text(
+                            text = "Lihat semua",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
-           }
-       }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                        )
+                ) {
+                    budgetList.take(3).forEachIndexed { index, budgetingDiary ->
+                        if (budgetingDiary != null) {
+                            DiaryItem(budgetingDiary = budgetingDiary)
+                            if (index != budgetList.size - 1 && index < 2) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
+
 
 @Composable
 fun DiaryItem(budgetingDiary: BudgetingDiary) {

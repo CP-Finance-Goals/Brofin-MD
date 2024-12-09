@@ -252,7 +252,7 @@ class RemoteDataRepositoryImpl @Inject constructor(
         username: RequestBody,
         image: MultipartBody.Part?
     ): SetupBudgeingResponseDto {
-        return withContext(Dispatchers.Default){
+        return withContext(Dispatchers.Default) {
             try {
                 apiService.setupBudgeting(
                     monthAndYear,
@@ -269,12 +269,13 @@ class RemoteDataRepositoryImpl @Inject constructor(
                     username,
                     image
                 )
-            } catch (e: Exception){
-                Log.e(TAG, "error when setup budgeting")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error when setting up budgeting", e)
                 throw e
             }
         }
     }
+
 
     override suspend fun predictHouse(predictRequest: RequestBody): PredictResponseDto {
         return withContext(Dispatchers.Default) {
@@ -384,8 +385,6 @@ class RemoteDataRepositoryImpl @Inject constructor(
             }
         }
     }
-
-
 
     companion object{
         const val TAG = "RemoteDataRepositoryImpl"

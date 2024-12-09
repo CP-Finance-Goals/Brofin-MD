@@ -24,6 +24,19 @@ fun getCurrentMonthAndYearInIndonesian(): String {
     return formatter.format(Date(System.currentTimeMillis()))
 }
 
+fun Long.toIndonesianDate(): String {
+    val date = Date(this)
+    val format = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+    return format.format(date)
+}
+
+fun calculateFutureYear(currentMillis: Long, yearsToAdd: Int): Int {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = currentMillis
+    calendar.add(Calendar.YEAR, yearsToAdd)
+    return calendar.get(Calendar.YEAR)
+}
+
 fun resizeImage(photoUri: Uri, contentResolver: ContentResolver, context: Context, maxWidth: Int, maxHeight: Int): File? {
     try {
         val inputStream = contentResolver.openInputStream(photoUri)
