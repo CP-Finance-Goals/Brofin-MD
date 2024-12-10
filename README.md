@@ -1,4 +1,4 @@
-# Proyek Aplikasi - Brofin
+# Brofin
 
 **Brofin** adalah aplikasi yang bertujuan untuk membantu pengguna dalam merencanakan dan mengelola keuangan pribadi mereka. Aplikasi ini memungkinkan pengguna untuk melacak pengeluaran, mencatat tabungan, dan merencanakan tujuan keuangan.
 
