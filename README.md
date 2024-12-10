@@ -17,7 +17,7 @@ Proyek ini dibangun menggunakan **Jetpack Compose** untuk UI, **API** untuk aute
 - [DataStore](https://developer.android.com/jetpack/androidx/releases/datastore)
 - [Retrofit](https://square.github.io/retrofit/)
 - [Hilt](https://developer.android.com/training/dependency-injection/hilt-jetpack)
-- [Acommpanist Permission(https://google.github.io/accompanist/permissions/)
+- [Acommpanist Permission](https://google.github.io/accompanist/permissions/)
 and the most importantly.... **[Kotlin](https://kotlinlang.org/)**
 
 ## Instalasi
