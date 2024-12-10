@@ -14,5 +14,7 @@ Clone repositori proyek ini ke komputer Anda menggunakan perintah berikut:
 ```bash
 git clone https://github.com/CP-Finance-Goals/Brofin-MD.git
 
-Anda dapat mengunduh aplikasi **Brofin** di Google Drive dengan mengklik link berikut:
+
+## Anda dapat mengunduh aplikasi **Brofin** di Google Drive dengan mengklik link berikut:
+
 [Unduh Brofin](https://drive.google.com/file/d/1w6OQrfyB_62f9wZWvca3Vq1YOtWAxqGl/view?usp=sharing)
